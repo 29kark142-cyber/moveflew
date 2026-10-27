@@ -1,7 +1,7 @@
 // Compatibility layer: the migrated pages were written against wouter's API.
 // It is implemented on TanStack Router so the app keeps a single router.
 import { Link as TLink, useLocation as useTLocation, useNavigate } from "@tanstack/react-router";
-import type { AnchorHTMLAttributes, ReactNode } from "react";
+import { useCallback, type AnchorHTMLAttributes, type ReactNode } from "react";
 
 type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
   href?: string;
@@ -26,14 +26,15 @@ export function Link({ href, to, children, ...rest }: LinkProps) {
 }
 
 export function useLocation(): [string, (to: string, opts?: { replace?: boolean }) => void] {
-  const location = useTLocation();
+  const pathname = useTLocation({ select: (l) => l.pathname });
   const navigate = useNavigate();
-  return [
-    location.pathname,
-    (to, opts) => {
+  const go = useCallback(
+    (to: string, opts?: { replace?: boolean }) => {
       void navigate({ to: to as never, replace: opts?.replace });
     },
-  ];
+    [navigate],
+  );
+  return [pathname, go];
 }
 
 export function useSearch(): string {
