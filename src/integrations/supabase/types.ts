@@ -44,12 +44,110 @@ export type Database = {
         }
         Relationships: []
       }
+      workspace_members: {
+        Row: {
+          created_at: string
+          email: string
+          id: number
+          name: string
+          role: string
+          user_id: string
+          workspace_id: number
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          id?: never
+          name?: string
+          role?: string
+          user_id: string
+          workspace_id: number
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: never
+          name?: string
+          role?: string
+          user_id?: string
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_members_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_records: {
+        Row: {
+          created_at: string
+          data: Json
+          id: number
+          kind: string
+          updated_at: string
+          workspace_id: number
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: never
+          kind: string
+          updated_at?: string
+          workspace_id: number
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: never
+          kind?: string
+          updated_at?: string
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_records_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: number
+          name: string
+          pricing: Json | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: never
+          name: string
+          pricing?: Json | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: never
+          name?: string
+          pricing?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_workspace: { Args: { _name: string }; Returns: number }
+      workspace_role: { Args: { _ws: number }; Returns: string }
     }
     Enums: {
       [_ in never]: never
