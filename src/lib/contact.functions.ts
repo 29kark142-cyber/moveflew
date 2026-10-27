@@ -10,7 +10,7 @@ const schema = z.object({
 });
 
 export const submitContact = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => schema.parse(input))
+  .validator((input: unknown) => schema.parse(input))
   .handler(async ({ data }) => {
     if (!data.email && !data.phone) throw new Error("Please add an email or phone number");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
