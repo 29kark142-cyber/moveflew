@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   MessageSquare,
 } from "lucide-react";
+import { submitContact } from "@/lib/contact.functions";
 import PublicLayout from "@/components/PublicLayout";
 import { useI18n } from "@/lib/i18n";
 
@@ -31,13 +32,7 @@ export default function Contact() {
     setPending(true);
     const values = Object.fromEntries(new FormData(e.currentTarget));
     try {
-      const r = await fetch("/api/crm/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error || SAVE_ERROR);
+      await submitContact({ data: values });
       setSuccess(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : UNKNOWN_ERROR);
