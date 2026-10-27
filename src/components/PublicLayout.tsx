@@ -24,7 +24,7 @@ export function PublicHeader({ hero = false }: { hero?: boolean }) {
       {announcement && (
         <div className="announcement">
           <span>{t("A smarter moving day starts here")}</span>
-          <Link href="/platform">
+          <Link href="/app/dashboard">
             {t("Meet your new workspace")} <ArrowRight size={13} />
           </Link>
           <button

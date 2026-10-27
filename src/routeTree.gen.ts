@@ -11,11 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AppSplatRouteImport } from './routes/app.$'
+import { Route as ApiCrmSplatRouteImport } from './routes/api/crm/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -25,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -53,73 +60,92 @@ const AppSplatRoute = AppSplatRouteImport.update({
   path: '/app/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCrmSplatRoute = ApiCrmSplatRouteImport.update({
+  id: '/api/crm/$',
+  path: '/api/crm/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
+  '/api/crm/$': typeof ApiCrmSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
+  '/api/crm/$': typeof ApiCrmSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
+  '/api/crm/$': typeof ApiCrmSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/contact'
+    | '/login'
     | '/mcp'
     | '/platform'
     | '/pricing'
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
+    | '/api/crm/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/contact'
+    | '/login'
     | '/mcp'
     | '/platform'
     | '/pricing'
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
+    | '/api/crm/$'
   id:
     | '__root__'
     | '/'
     | '/contact'
+    | '/login'
     | '/mcp'
     | '/platform'
     | '/pricing'
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
+    | '/api/crm/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContactRoute: typeof ContactRoute
+  LoginRoute: typeof LoginRoute
   McpRoute: typeof McpRoute
   PlatformRoute: typeof PlatformRoute
   PricingRoute: typeof PricingRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AppSplatRoute: typeof AppSplatRoute
+  ApiCrmSplatRoute: typeof ApiCrmSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -136,6 +162,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -173,18 +206,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/crm/$': {
+      id: '/api/crm/$'
+      path: '/api/crm/$'
+      fullPath: '/api/crm/$'
+      preLoaderRoute: typeof ApiCrmSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContactRoute: ContactRoute,
+  LoginRoute: LoginRoute,
   McpRoute: McpRoute,
   PlatformRoute: PlatformRoute,
   PricingRoute: PricingRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AppSplatRoute: AppSplatRoute,
+  ApiCrmSplatRoute: ApiCrmSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
