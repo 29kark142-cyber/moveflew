@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useWebMCP } from "use-webmcp-tool";
+import { runWebMCPTool } from "@/lib/webmcp-telemetry";
 import { Link } from "@/lib/wouter";
 import {
   ArrowRight,
@@ -55,6 +57,42 @@ export default function Pricing() {
   const [hours, setHours] = useState(2.5);
   const [packing, setPacking] = useState(false);
   const rate = DEFAULT_PRICING.rates[crew - 1];
+
+  useWebMCP({
+    name: "read_price_estimate",
+    description: "Read the price calculator's current crew size, hours, packing choice and estimated total.",
+    annotations: { readOnlyHint: true },
+    execute: () =>
+      runWebMCPTool("read_price_estimate", () =>
+        `${crew} movers, ${hours} hours, packing ${packing ? "on" : "off"}: estimated $${((rate + (packing ? 85 : 0)) * hours).toFixed(2)}`,
+      ),
+  });
+
+  useWebMCP({
+    name: "set_price_estimate",
+    description: "Set the price calculator's crew size, hours and packing option on the pricing page.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        movers: { type: "integer", minimum: 1, maximum: DEFAULT_PRICING.rates.length, description: "Number of movers." },
+        hours: { type: "number", minimum: 2.5, maximum: 48, description: "Hours, in 0.5 steps." },
+        packing: { type: "boolean", description: "Include packing help." },
+      },
+    },
+    execute: (args: { movers?: unknown; hours?: unknown; packing?: unknown }) =>
+      runWebMCPTool("set_price_estimate", () => {
+        const { movers, hours: h, packing: p } = args;
+        if (movers !== undefined && (!Number.isInteger(movers) || (movers as number) < 1 || (movers as number) > DEFAULT_PRICING.rates.length))
+          throw new Error(`movers must be 1-${DEFAULT_PRICING.rates.length}`);
+        if (h !== undefined && (typeof h !== "number" || h < 2.5 || h > 48 || (h * 2) % 1 !== 0))
+          throw new Error("hours must be 2.5-48 in 0.5 steps");
+        if (p !== undefined && typeof p !== "boolean") throw new Error("packing must be true or false");
+        if (movers !== undefined) setCrew(movers as number);
+        if (h !== undefined) setHours(h);
+        if (p !== undefined) setPacking(p);
+        return "Calculator updated.";
+      }),
+  });
   const formatNumber = (value: number) =>
     new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(value);
   return (
