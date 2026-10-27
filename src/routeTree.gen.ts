@@ -15,6 +15,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AppSplatRouteImport } from './routes/app.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -47,6 +48,11 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppSplatRoute = AppSplatRouteImport.update({
+  id: '/app/$',
+  path: '/app/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -55,6 +61,7 @@ export interface FileRoutesByFullPath {
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/app/$': typeof AppSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -63,6 +70,7 @@ export interface FileRoutesByTo {
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/app/$': typeof AppSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -72,6 +80,7 @@ export interface FileRoutesById {
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/app/$': typeof AppSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -82,6 +91,7 @@ export interface FileRouteTypes {
     | '/platform'
     | '/pricing'
     | '/.well-known/oauth-protected-resource'
+    | '/app/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -90,6 +100,7 @@ export interface FileRouteTypes {
     | '/platform'
     | '/pricing'
     | '/.well-known/oauth-protected-resource'
+    | '/app/$'
   id:
     | '__root__'
     | '/'
@@ -98,6 +109,7 @@ export interface FileRouteTypes {
     | '/platform'
     | '/pricing'
     | '/.well-known/oauth-protected-resource'
+    | '/app/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -107,6 +119,7 @@ export interface RootRouteChildren {
   PlatformRoute: typeof PlatformRoute
   PricingRoute: typeof PricingRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  AppSplatRoute: typeof AppSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -153,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/$': {
+      id: '/app/$'
+      path: '/app/$'
+      fullPath: '/app/$'
+      preLoaderRoute: typeof AppSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -164,6 +184,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  AppSplatRoute: AppSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
