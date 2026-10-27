@@ -73,7 +73,7 @@ function LoginPage() {
           </h1>
           <p>Sign in to open your leads, estimates, dispatch board and crew.</p>
         </div>
-        <div className="contact-card">
+        <div className="contact-form-panel">
           <h2>{mode === "in" ? "Sign in" : "Create your account"}</h2>
           <form onSubmit={submit}>
             <label>
