@@ -1,6 +1,6 @@
 import { defineTool, ToolError } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { DEFAULT_PRICING } from "@shared/crm";
+import { DEFAULT_PRICING } from "../../../shared/crm";
 
 export default defineTool({
   name: "estimate_move_cost",

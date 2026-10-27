@@ -1,5 +1,5 @@
 import { defineTool } from "@lovable.dev/mcp-js";
-import { DEFAULT_PRICING } from "@shared/crm";
+import { DEFAULT_PRICING } from "../../../shared/crm";
 
 export default defineTool({
   name: "get_moving_rates",
