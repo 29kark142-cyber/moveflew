@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useWebMCP } from "use-webmcp-tool";
+import { runWebMCPTool } from "@/lib/webmcp-telemetry";
 import { Link } from "@/lib/wouter";
 import {
   ArrowRight,
