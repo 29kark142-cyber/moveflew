@@ -1,4 +1,3 @@
-import { COOKIE_NAME } from "@shared/const";
 import type {
   CrewMember,
   Customer,
@@ -70,16 +69,11 @@ export function setWorkspaceId(id: number | string | null) {
   }
 }
 
-function sessionAuthorization(): Record<string, string> {
-  try {
-    const raw = sessionStorage.getItem("manus-cookie");
-    const prefix = `${COOKIE_NAME}=`;
-    const pair = raw?.split(";").find(value => value.trim().startsWith(prefix));
-    const token = pair?.trim().slice(prefix.length);
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  } catch {
-    return {};
-  }
+async function sessionAuthorization(): Promise<Record<string, string>> {
+  const { supabase } = await import("@/integrations/supabase/client");
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 export async function crmFetch<T>(
@@ -95,7 +89,7 @@ export async function crmFetch<T>(
     const selected = getWorkspaceId();
     if (selected) headers.set("x-workspace-id", selected);
   }
-  for (const [key, value] of Object.entries(sessionAuthorization()))
+  for (const [key, value] of Object.entries(await sessionAuthorization()))
     headers.set(key, value);
   const response = await fetch(`${API_ROOT}${path}`, {
     ...init,

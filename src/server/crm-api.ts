@@ -249,7 +249,6 @@ export async function handleCrm(request: Request, splat: string) {
         return {};
       }
     });
-    if (wsHeader && !role && parts[0] !== "bootstrap" && parts[0] !== "workspaces") fail(403, "No access to that workspace");
     return Response.json(result ?? null);
   } catch (e) {
     if (e instanceof HttpError) return Response.json({ error: e.message }, { status: e.status });
