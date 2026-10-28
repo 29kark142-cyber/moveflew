@@ -96,11 +96,11 @@ export async function saveLead(credential: string, requestId: string, lead: Lead
     _hash: await sha256(credential), _request_id: requestId, _data: { ...lead, notes },
   });
   if (!error) return 201;
-  if (error.message.includes("credential")) return 401;
-  if (error.message.includes("rate limit")) return 429;
-  if (error.message.includes("Invalid quote")) return 400;
-  console.error("Lead intake failed:", error.message);
-  return 503;
+  const status = error.message.includes("credential") ? 401 : error.message.includes("rate limit") ? 429 : error.message.includes("Invalid quote") ? 400 : 503;
+  if (status === 503) console.error("Lead intake failed:", error.message);
+  const { logPlatformEvent } = await import("./platform-events.server");
+  await logPlatformEvent("lead_intake", status === 503 ? "error" : "warn", `Inbound lead rejected (${status})`, { status, prefix: credential.slice(0, 10), reason: error.message.slice(0, 200) });
+  return status;
 }
 
 // Accepts either a secret API key (server-to-server) or a public widget key.
