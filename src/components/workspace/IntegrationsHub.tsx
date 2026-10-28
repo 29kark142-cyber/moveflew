@@ -24,6 +24,9 @@ export default function IntegrationsHub({ admin }: { admin: boolean }) {
   const [busy, setBusy] = useState(false);
   const [labels, setLabels] = useState({ api: "", widget: "", webhook: "" });
   const [revealed, setRevealed] = useState("");
+  const [look, setLook] = useState({ color: "#1d4ed8", button: "Get Free Estimate", required: ["moveDate"] as string[] });
+  const REQUIRED_OPTIONS = [["moveSize", "Bedrooms"], ["moveDate", "Move date"], ["origin", "Pickup address (for distance)"], ["destination", "Drop-off address (for distance)"], ["phone", "Phone"]] as const;
+  const attr = (v: string) => v.replace(/[^\w !?.,'-]/g, "").slice(0, 40);
   const origin = typeof window !== "undefined" ? window.location.origin : "";
 
   const load = useCallback(() => {
@@ -65,11 +68,25 @@ export default function IntegrationsHub({ admin }: { admin: boolean }) {
       <section className="space-y-3">
         <h2 className="flex items-center gap-2 text-lg font-semibold"><Code2 size={18} /> Embeddable quote widget</h2>
         <p className="text-sm text-muted-foreground">Paste this snippet into WordPress, Wix, Squarespace or Webflow (an "HTML / Embed code" block). Visitors get a quote form, and each submission becomes a new lead in your pipeline.</p>
+        <div className="grid gap-3 rounded-lg border border-border p-3 sm:grid-cols-2">
+          <label className="flex flex-col gap-1 text-sm">Accent color
+            <input type="color" value={look.color} onChange={e => setLook(l => ({ ...l, color: e.target.value }))} className="h-10 w-full rounded-md border border-border bg-background" />
+          </label>
+          <label className="flex flex-col gap-1 text-sm">Button text
+            <Input value={look.button} maxLength={40} onChange={e => setLook(l => ({ ...l, button: e.target.value }))} />
+          </label>
+          <fieldset className="sm:col-span-2"><legend className="mb-1 text-sm">Required fields (name and email are always required)</legend>
+            <div className="flex flex-wrap gap-3">{REQUIRED_OPTIONS.map(([k, label]) => (
+              <label key={k} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={look.required.includes(k)} onChange={e => setLook(l => ({ ...l, required: e.target.checked ? [...l.required, k] : l.required.filter(x => x !== k) }))} />{label}</label>
+            ))}</div>
+          </fieldset>
+          <div className="sm:col-span-2"><span className="text-xs text-muted-foreground">Button preview: </span><span className="inline-block rounded-md px-4 py-2 text-sm font-semibold text-primary-foreground" style={{ background: look.color }}>{attr(look.button) || "Request quote"}</span></div>
+        </div>
         {creator("widget", "Website name (e.g. Main website)", "Create widget")}
         {active("widget").map(k => (
           <div key={k.id} className="space-y-2 rounded-lg border border-border p-3">
             <div className="flex flex-wrap items-center justify-between gap-2"><b>{k.label || "Website widget"}</b>{revokeBtn(k)}</div>
-            <Snippet text={`<script src="${origin}/widget.js" data-workspace-id="${workspaceId}" data-key="${k.publicKey}" async></script>`} />
+            <Snippet text={`<script src="${origin}/widget.js" data-workspace-id="${workspaceId}" data-key="${k.publicKey}" data-color="${look.color}" data-button="${attr(look.button)}" data-required="${look.required.join(",")}" async></script>`} />
             {meta(k)}
           </div>
         ))}
@@ -105,11 +122,21 @@ export default function IntegrationsHub({ admin }: { admin: boolean }) {
             {revokeBtn(k)}
           </div>
         ))}
-        <Snippet text={`curl -X POST ${origin}/api/public/v1/leads \\
-  -H "Authorization: Bearer sk_..." \\
+        <Snippet text={`curl -X POST ${origin}/api/public/v1/quotes \\
+  -H "Authorization: Bearer nw_pub_..." \\
   -H "Idempotency-Key: <unique-submission-id>" \\
   -H "Content-Type: application/json" \\
   -d '{"name":"Jane Doe","email":"jane@example.com","phone":"555-0100","origin":"123 A St","destination":"456 B Ave","moveDate":"2026-12-01","moveSize":"2 bedroom","message":""}'`} />
+        <Snippet text={`// Run on your server (Node 18+), never in the browser
+await fetch("${origin}/api/public/v1/quotes", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer " + process.env.NW_API_KEY,
+    "Idempotency-Key": submissionId,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ name: "Jane Doe", email: "jane@example.com", phone: "555-0100", origin: "123 A St", destination: "456 B Ave", moveDate: "2026-12-01", moveSize: "2 bedrooms" }),
+});`} />
       </section>
     </div>
   );

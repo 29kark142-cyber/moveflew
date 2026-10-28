@@ -3,6 +3,10 @@ import { z } from 'zod';
 
 const origins = new Set(['https://northwestmovingcrew.com','https://www.northwestmovingcrew.com']);
 export async function handleWebsiteQuote(request: Request) {
+  // Workspace API keys from the Integrations hub use the multi-tenant lead intake.
+  const auth = request.headers.get('Authorization') ?? '';
+  if (/^Bearer (nw_pub|sk)_/.test(auth)) return (await import('./lead-intake.server')).handleIntegrationLead(request);
+  if (request.method==='OPTIONS' && /authorization/i.test(request.headers.get('Access-Control-Request-Headers') ?? '') && !origins.has(request.headers.get('Origin') ?? '')) return new Response(null,{ status:204, headers:(await import('./lead-intake.server')).leadCors });
   const origin = request.headers.get('Origin');
   const headers = new Headers({ 'Content-Type':'application/json','Cache-Control':'no-store','Vary':'Origin' });
   if (origin && origins.has(origin)) headers.set('Access-Control-Allow-Origin',origin);

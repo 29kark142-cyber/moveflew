@@ -36,7 +36,7 @@ export const createIntegrationKey = createServerFn({ method: "POST" }).middlewar
   .inputValidator((v: unknown) => ws.extend({ kind: z.enum(["api", "widget", "webhook"]), label: z.string().trim().max(80) }).parse(v))
   .handler(async ({ data, context }) => {
     await requireAdmin(context.supabase, data.workspaceId);
-    const secret = data.kind === "api" ? `sk_${randomHex(24)}` : data.kind === "widget" ? `pk_${randomHex(16)}` : `wh_${randomHex(20)}`;
+    const secret = data.kind === "api" ? `nw_pub_${randomHex(24)}` : data.kind === "widget" ? `pk_${randomHex(16)}` : `wh_${randomHex(20)}`;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("workspace_integration_keys").insert({
       workspace_id: data.workspaceId, kind: data.kind, label: data.label, key_hash: await sha256(secret),
