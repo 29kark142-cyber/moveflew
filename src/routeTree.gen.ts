@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as JoinCrewRouteImport } from './routes/join-crew'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PlatformRouteImport } from './routes/platform'
@@ -27,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinCrewRoute = JoinCrewRouteImport.update({
+  id: '/join-crew',
+  path: '/join-crew',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -69,6 +75,7 @@ const ApiCrmSplatRoute = ApiCrmSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/join-crew': typeof JoinCrewRoute
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/platform': typeof PlatformRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/join-crew': typeof JoinCrewRoute
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/platform': typeof PlatformRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/join-crew': typeof JoinCrewRoute
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/platform': typeof PlatformRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/contact'
+    | '/join-crew'
     | '/login'
     | '/mcp'
     | '/platform'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/contact'
+    | '/join-crew'
     | '/login'
     | '/mcp'
     | '/platform'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/contact'
+    | '/join-crew'
     | '/login'
     | '/mcp'
     | '/platform'
@@ -139,6 +151,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContactRoute: typeof ContactRoute
+  JoinCrewRoute: typeof JoinCrewRoute
   LoginRoute: typeof LoginRoute
   McpRoute: typeof McpRoute
   PlatformRoute: typeof PlatformRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join-crew': {
+      id: '/join-crew'
+      path: '/join-crew'
+      fullPath: '/join-crew'
+      preLoaderRoute: typeof JoinCrewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -219,6 +239,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContactRoute: ContactRoute,
+  JoinCrewRoute: JoinCrewRoute,
   LoginRoute: LoginRoute,
   McpRoute: McpRoute,
   PlatformRoute: PlatformRoute,

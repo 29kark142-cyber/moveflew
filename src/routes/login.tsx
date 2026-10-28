@@ -30,11 +30,18 @@ function LoginPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    const go = () => {
+      const next = sessionStorage.getItem("nwc_next");
+      if (next && next.startsWith("/") && !next.startsWith("//")) {
+        sessionStorage.removeItem("nwc_next");
+        window.location.href = next;
+      } else void navigate({ to: "/app/$", params: { _splat: "dashboard" } });
+    };
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ to: "/app/$", params: { _splat: "dashboard" } });
+      if (data.session) go();
     });
     const { data } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (session) void navigate({ to: "/app/$", params: { _splat: "dashboard" } });
+      if (session) go();
     });
     return () => data.subscription.unsubscribe();
   }, [navigate]);

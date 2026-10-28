@@ -44,6 +44,53 @@ export type Database = {
         }
         Relationships: []
       }
+      crew_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          created_at: string
+          created_by: string
+          crew_role: string
+          email: string
+          expires_at: string
+          id: number
+          token: string
+          workspace_id: number
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          created_by?: string
+          crew_role?: string
+          email?: string
+          expires_at?: string
+          id?: never
+          token?: string
+          workspace_id: number
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          created_by?: string
+          crew_role?: string
+          email?: string
+          expires_at?: string
+          id?: never
+          token?: string
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crew_invites_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspace_members: {
         Row: {
           created_at: string
@@ -146,7 +193,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_crew_invite: {
+        Args: {
+          _crew_role: string
+          _name: string
+          _phone: string
+          _token: string
+        }
+        Returns: number
+      }
       create_workspace: { Args: { _name: string }; Returns: number }
+      crew_invite_info: {
+        Args: { _token: string }
+        Returns: {
+          crew_role: string
+          valid: boolean
+          workspace_name: string
+        }[]
+      }
       workspace_role: { Args: { _ws: number }; Returns: string }
     }
     Enums: {

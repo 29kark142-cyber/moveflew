@@ -186,6 +186,33 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     }
     if (method === "POST") fail(501, "Inviting teammates is coming in the next migration step");
   }
+  if (head === "invites") {
+    const ws = requireWs(ctx);
+    if (!["admin", "office_admin", "dispatcher"].includes(ctx.role ?? "")) fail(403, "Only managers can invite crew");
+    if (method === "GET") {
+      const { data, error } = await ctx.db.from("crew_invites")
+        .select("id,token,email,crew_role,accepted_at,expires_at,created_at")
+        .eq("workspace_id", ws).order("id", { ascending: false }).limit(100);
+      if (error) fail(500, error.message);
+      return data;
+    }
+    if (method === "POST") {
+      const b = (await body()) as { email?: string; crewRole?: string };
+      const email = String(b.email ?? "").trim().slice(0, 200);
+      if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) fail(400, "Enter a valid email");
+      const crewRole = ["driver", "helper", "crew_lead"].includes(String(b.crewRole)) ? String(b.crewRole) : "helper";
+      const { data, error } = await ctx.db.from("crew_invites")
+        .insert({ workspace_id: ws, email, crew_role: crewRole })
+        .select("id,token,email,crew_role,accepted_at,expires_at,created_at").single();
+      if (error) fail(403, error.message);
+      return data;
+    }
+    if (method === "DELETE" && id) {
+      const { error } = await ctx.db.from("crew_invites").delete().eq("id", id).eq("workspace_id", ws);
+      if (error) fail(403, error.message);
+      return { deleted: true };
+    }
+  }
   if (head === "payments" && method === "GET") return [];
   if (head === "outbox" && method === "GET") return [];
 
