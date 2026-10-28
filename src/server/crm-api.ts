@@ -186,6 +186,65 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     }
     if (method === "POST") fail(501, "Inviting teammates is coming in the next migration step");
   }
+  if (head === "invitations") {
+    const ws = requireWs(ctx);
+    if (!["admin", "office_admin"].includes(ctx.role ?? "")) fail(403, "Only Admin and Office admin can manage invitations");
+    const COLS = "id,kind,email,role,hourly_rate,candidate_id,token,status,send_count,last_sent_at,accepted_at,expires_at,created_at";
+    type Inv = { id: number; kind: string; email: string | null; role: string; hourly_rate: number; candidate_id: number | null; token: string; status: string; send_count: number; last_sent_at: string | null; accepted_at: string | null; expires_at: string; created_at: string };
+    const origin = (o: unknown) => {
+      const v = typeof o === "string" ? o : "";
+      return /^https?:\/\/[^/\s]+$/.test(v) ? v : "";
+    };
+    const shape = (r: Inv, o = "") => {
+      const expired = r.status === "pending" && new Date(r.expires_at) < new Date();
+      return {
+        id: r.id, kind: r.kind, email: r.email, role: r.role,
+        hourlyRateCents: Math.round(Number(r.hourly_rate) * 100), workerId: r.candidate_id,
+        status: expired ? "expired" : r.status, expiresAt: r.expires_at, createdAt: r.created_at,
+        acceptedAt: r.accepted_at, acceptedByUserId: null,
+        sendStatus: r.kind === "email" ? (r.send_count ? "opened in email app" : "not sent") : "link",
+        lastSentAt: r.last_sent_at, sendError: null, token: r.token,
+        inviteUrl: `${o}/join-crew?token=${r.token}`,
+      };
+    };
+    if (method === "GET" && !idRaw) {
+      const { data, error } = await ctx.db.from("workspace_invitations").select(COLS)
+        .eq("workspace_id", ws).neq("status", "revoked").order("created_at", { ascending: false }).limit(200);
+      if (error) fail(500, error.message);
+      return (data as Inv[]).map((r) => shape(r));
+    }
+    if (method === "POST" && !idRaw) {
+      const b = (await body()) as Record<string, unknown>;
+      const kind = b["kind"] === "email" ? "email" : "link";
+      const email = kind === "email" ? String(b["email"] ?? "").trim().slice(0, 200) : null;
+      if (kind === "email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email ?? "")) fail(400, "Enter a valid email address");
+      const role = ["crew", "dispatcher", "estimator", "office_admin", "admin"].includes(String(b["role"])) ? String(b["role"]) : "crew";
+      if (role === "admin" && ctx.role !== "admin") fail(403, "Only an Admin can invite another Admin");
+      const cents = Number(b["hourlyRateCents"] ?? 0);
+      if (!Number.isFinite(cents) || cents < 0 || cents > 100000) fail(400, "Enter a valid hourly rate");
+      const cand = b["workerId"] == null || b["workerId"] === "" ? null : Number(b["workerId"]);
+      if (cand !== null) await getOne(ctx, "crew", cand);
+      const { data, error } = await ctx.db.from("workspace_invitations")
+        .insert({ workspace_id: ws, kind, email, role, hourly_rate: cents / 100, candidate_id: cand, send_count: kind === "email" ? 1 : 0, last_sent_at: kind === "email" ? new Date().toISOString() : null })
+        .select(COLS).single();
+      if (error) fail(403, error.message);
+      const inv = shape(data as Inv, origin(b["publicOrigin"]));
+      return { invitation: inv, inviteUrl: inv.inviteUrl };
+    }
+    if (method === "POST" && id && (sub === "resend" || sub === "revoke")) {
+      const b = (await body()) as Record<string, unknown>;
+      const patch = sub === "revoke"
+        ? { status: "revoked" }
+        : { expires_at: new Date(Date.now() + 14 * 864e5).toISOString(), last_sent_at: new Date().toISOString() };
+      const { data, error } = await ctx.db.from("workspace_invitations").update(patch)
+        .eq("id", id).eq("workspace_id", ws).eq("status", "pending").select(COLS).maybeSingle();
+      if (error) fail(403, error.message);
+      if (!data) fail(409, "This invitation is no longer pending");
+      if (sub === "revoke") return { revoked: true };
+      const inv = shape(data as Inv, origin(b["publicOrigin"]));
+      return { invitation: inv, inviteUrl: inv.inviteUrl };
+    }
+  }
   if (head === "invites") {
     const ws = requireWs(ctx);
     if (!["admin", "office_admin", "dispatcher"].includes(ctx.role ?? "")) fail(403, "Only managers can invite crew");
