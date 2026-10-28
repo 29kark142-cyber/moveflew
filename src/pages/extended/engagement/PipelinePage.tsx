@@ -42,7 +42,7 @@ const emptyPreferences: CustomerPreferences = {
 };
 const assignableRoles = ["admin", "office_admin", "estimator", "dispatcher"];
 
-export function PipelinePage({ role }: ModuleProps) {
+export function PipelinePage({ role, navigate }: ModuleProps) {
   const { t } = useI18n();
   const { data, loading, error, refresh, setData } = useRemote(
     () => Promise.all([crm.customers(), crm.members()]),
@@ -55,7 +55,10 @@ export function PipelinePage({ role }: ModuleProps) {
   const [actionError, setActionError] = useState("");
   const allowed = canSales(role);
 
-  const customers = data?.[0] || [];
+  // Website intake stores brand-new leads as "new"; show them in the first stage.
+  const customers = (data?.[0] || []).map(c =>
+    (PIPELINE_STAGES as readonly string[]).includes(c.status) ? c : { ...c, status: "lead" }
+  );
   const visible = useMemo(
     () =>
       customers.filter(customer => {
@@ -190,6 +193,18 @@ export function PipelinePage({ role }: ModuleProps) {
                         {t("Score")} {customer.score}
                       </b>
                     </div>
+                    {allowed && (
+                      <button
+                        className="ws-btn"
+                        style={{ width: "100%", justifyContent: "center" }}
+                        onClick={() => {
+                          sessionStorage.setItem("nwcrewcrm.estimate-lead", String(customer.id));
+                          navigate("/app/estimates/new");
+                        }}
+                      >
+                        {t("Create estimate")}
+                      </button>
+                    )}
                     <label className="eg-card-move">
                       <span className="sr-only">
                         {t("Move stage for {name}", { name: customer.name })}

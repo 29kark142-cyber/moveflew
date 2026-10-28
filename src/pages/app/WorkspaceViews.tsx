@@ -973,16 +973,38 @@ export function EstimateWizardPage({ navigate }: PageProps) {
   const [saveError, setSaveError] = useState("");
   const [inventorySearch, setInventorySearch] = useState("");
   const catalog = useRemote(() => engage.catalog(), []);
+  // One-click conversion from the pipeline: prefill this estimate from the chosen lead.
+  const [leadId, setLeadId] = useState<number | null>(null);
+  useEffect(() => {
+    if (!pricing) return;
+    const id = Number(sessionStorage.getItem("nwcrewcrm.estimate-lead"));
+    sessionStorage.removeItem("nwcrewcrm.estimate-lead");
+    if (!id) return;
+    void crm.customers().then(list => {
+      const lead = list.find(c => c.id === id) as (Customer & Record<string, unknown>) | undefined;
+      if (!lead) return;
+      const text = (k: string) => (typeof lead[k] === "string" ? (lead[k] as string) : "");
+      const date = /^\d{4}-\d{2}-\d{2}$/.test(text("moveDate")) ? text("moveDate") : today();
+      setLeadId(lead.id);
+      setForm(current => ({
+        ...(current || freshQuote(pricing)),
+        name: lead.name, email: lead.email, phone: lead.phone,
+        origin: text("origin"), destination: text("destination"), date,
+        title: `${lead.name} move`, notes: text("message") || lead.notes || "",
+      }));
+    }).catch(() => undefined);
+  }, [pricing]);
   if (loading || catalog.loading)
     return <LoadingBlock label={t("Loading approved pricing…")} />;
-  if (error || !pricing || catalog.error)
+  // The inventory catalog is optional; a missing catalog must not block quoting.
+  if (error || !pricing)
     return (
       <>
         <PageHead
           heading="New estimate"
           caption="Create a customer-ready, saved quote."
         />
-        <ErrorNotice error={error || catalog.error} />
+        <ErrorNotice error={error} />
       </>
     );
   const inventoryChoices = catalogChoices(catalog.data || []);
@@ -1078,12 +1100,9 @@ export function EstimateWizardPage({ navigate }: PageProps) {
     setSaveError("");
     try {
       const job = await crm.createJob({
-        customer: {
-          name: quote.name,
-          email: quote.email,
-          phone: quote.phone,
-          source: "Estimate",
-        },
+        ...(leadId
+          ? { customerId: leadId }
+          : { customer: { name: quote.name, email: quote.email, phone: quote.phone, source: "Estimate" } }),
         title: quote.title || `${quote.name} move`,
         date: quote.date,
         moveDate: quote.date,
@@ -1112,6 +1131,7 @@ export function EstimateWizardPage({ navigate }: PageProps) {
         originNotes: quote.notes,
         notes: quote.notes,
       });
+      if (leadId) await crm.updateCustomer(leadId, { status: "estimate" }).catch(() => undefined);
       navigate(`/app/jobs/${job.id}`);
     } catch (reason) {
       setSaveError(
@@ -1893,6 +1913,19 @@ export function JobDetailPage({ role, navigate, path }: PageProps) {
       )}
       <JobCoreActions jobId={job.id} role={role} navigate={navigate} />
       {["admin", "office_admin", "estimator"].includes(role) && job.status === "estimate" && <ProposalPublisher jobId={job.id} onPublished={() => void refresh()} />}
+      {(() => {
+        const paid = job as unknown as { depositPaidCents?: number; depositPaidAt?: string; depositMode?: string };
+        if (!paid.depositPaidCents) return null;
+        const test = paid.depositMode === "test";
+        return (
+          <div className="ws-alert" role="status">
+            <b>{test ? t("Test deposit received") : t("Deposit received")}:</b>{" "}
+            {money(paid.depositPaidCents / 100)}
+            {paid.depositPaidAt ? ` · ${new Date(paid.depositPaidAt).toLocaleString()}` : ""}
+            {test && job.status === "estimate" ? ` · ${t("test payments on the live site don't book the job")}` : ""}
+          </div>
+        );
+      })()}
       {message && (
         <div className={message === "Status saved." ? "ws-alert" : "ws-error"}>
           {localizedJobMessage(message)}
@@ -2346,6 +2379,10 @@ export function DispatchPage({ role, navigate }: PageProps) {
     setDate(current.toISOString().slice(0, 10));
   };
   const days = calendarDays(view, date);
+  // Booked moves still missing a truck or crew, so new bookings never hide on a future date.
+  const ready = jobs
+    .filter(job => job.status === "booked" && (!job.truckId || !job.crewIds.length))
+    .sort((a, b) => a.moveDate.localeCompare(b.moveDate));
   return (
     <>
       <PageHead
@@ -2357,6 +2394,22 @@ export function DispatchPage({ role, navigate }: PageProps) {
           </button>
         }
       />
+      {ready.length > 0 && (
+        <section className="ws-card ws-card-pad" style={{ marginBottom: 16 }} aria-label={t("Ready to dispatch")}>
+          <div className="ws-card-title"><div><h2>{t("Ready to dispatch")}</h2><p>{t("Booked moves that still need a truck or crew.")}</p></div></div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {ready.map(job => (
+              <div key={job.id} className="ws-inline" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+                <span><b>{title(job)}</b> · {formatDate(job.moveDate)} · {hour(job.startHour)}</span>
+                <span className="ws-inline">
+                  <button className="ws-btn" onClick={() => { setView("day"); setDate(toLocalDateInput(job.moveDate)); }}>{t("Show on calendar")}</button>
+                  <button className="ws-btn primary" onClick={() => navigate(`/app/jobs/${job.id}`)}>{t("Assign truck & crew")}</button>
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
       {conflict && (
         <div className="ws-error">
           <CircleAlert size={16} />
