@@ -19,6 +19,7 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AppSplatRouteImport } from './routes/app.$'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as ApiCrmSplatRouteImport } from './routes/api/crm/$'
 import { Route as ApiPublicV1QuotesRouteImport } from './routes/api/public/v1/quotes'
 import { Route as ApiV1PublicQuotesRouteImport } from './routes/api/v1/public/quotes'
@@ -74,6 +75,11 @@ const InviteTokenRoute = InviteTokenRouteImport.update({
   path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProposalTokenRoute = ProposalTokenRouteImport.update({
+  id: '/proposal/$token',
+  path: '/proposal/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCrmSplatRoute = ApiCrmSplatRouteImport.update({
   id: '/api/crm/$',
   path: '/api/crm/$',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
   '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
   '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
   '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
   '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
   '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
   '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
     | '/invite/$token'
+    | '/proposal/$token'
     | '/api/crm/$'
     | '/api/public/v1/quotes'
     | '/api/v1/public/quotes'
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
     | '/invite/$token'
+    | '/proposal/$token'
     | '/api/crm/$'
     | '/api/public/v1/quotes'
     | '/api/v1/public/quotes'
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
     | '/invite/$token'
+    | '/proposal/$token'
     | '/api/crm/$'
     | '/api/public/v1/quotes'
     | '/api/v1/public/quotes'
@@ -195,6 +207,7 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AppSplatRoute: typeof AppSplatRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  ProposalTokenRoute: typeof ProposalTokenRoute
   ApiCrmSplatRoute: typeof ApiCrmSplatRoute
   ApiPublicV1QuotesRoute: typeof ApiPublicV1QuotesRoute
   ApiV1PublicQuotesRoute: typeof ApiV1PublicQuotesRoute
@@ -272,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/proposal/$token': {
+      id: '/proposal/$token'
+      path: '/proposal/$token'
+      fullPath: '/proposal/$token'
+      preLoaderRoute: typeof ProposalTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/crm/$': {
       id: '/api/crm/$'
       path: '/api/crm/$'
@@ -308,6 +328,7 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AppSplatRoute: AppSplatRoute,
   InviteTokenRoute: InviteTokenRoute,
+  ProposalTokenRoute: ProposalTokenRoute,
   ApiCrmSplatRoute: ApiCrmSplatRoute,
   ApiPublicV1QuotesRoute: ApiPublicV1QuotesRoute,
   ApiV1PublicQuotesRoute: ApiV1PublicQuotesRoute,
