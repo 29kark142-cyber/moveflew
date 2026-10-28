@@ -1,7 +1,7 @@
 # Northwest Moving Crew migration
 
 ## Crew onboarding refresh
-- [ ] Verify safe invitation revocation, toast feedback, and pending-only actions.
+- [x] Verify safe invitation revocation, toast feedback, and pending-only actions.
 - [x] Refresh the branded invitation card, mobile and dark appearance, fields and loading/error states.
 - [x] Support /invite/:token alongside /join-crew and verify registration saves a worker and opens /app/field.
 
