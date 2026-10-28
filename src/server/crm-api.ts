@@ -3,7 +3,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { calculateQuote, DEFAULT_PRICING, type Pricing } from "../shared/crm";
 
-type Ctx = { db: SupabaseClient; userId: string; email: string; wsId: number | null; role: string | null };
+type Ctx = { db: SupabaseClient; userId: string; email: string; wsId: number | null; role: string | null; q?: URLSearchParams };
 type Row = { id: number; data: Record<string, unknown>; created_at: string };
 
 class HttpError extends Error {
@@ -186,6 +186,15 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     }
     if (method === "POST") fail(501, "Inviting teammates is coming in the next migration step");
   }
+  if (head === "workers" && method === "GET" && !idRaw) {
+    const crew = await list(ctx, "crew");
+    const from = ctx.q?.get("from") ?? "";
+    const to = ctx.q?.get("to") ?? "";
+    return {
+      period: { from, to },
+      workers: crew.map((c) => ({ ...c, approvedMinutes: 0, baseEarnedCents: 0, tipsCents: 0, totalEarnedCents: 0, completedJobs: 0, paidCents: 0 })),
+    };
+  }
   if (head === "invitations") {
     const ws = requireWs(ctx);
     if (!["admin", "office_admin"].includes(ctx.role ?? "")) fail(403, "Only Admin and Office admin can manage invitations");
@@ -340,7 +349,7 @@ export async function handleCrm(request: Request, splat: string) {
       role = (data as string | null) ?? null;
     }
     const parts = splat.split("/").filter(Boolean);
-    const result = await route({ db, userId, email, wsId: role ? wsHeader : null, role }, request.method, parts, async () => {
+    const result = await route({ db, userId, email, wsId: role ? wsHeader : null, role, q: new URL(request.url).searchParams }, request.method, parts, async () => {
       try {
         return await request.json();
       } catch {
