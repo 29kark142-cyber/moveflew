@@ -157,7 +157,7 @@ async function assignJob(ctx: Ctx, id: number, body: unknown) {
   if (!parsed.success) return fail(400, "Invalid assignment");
   const a = { ...parsed.data, crewIds: [...new Set(parsed.data.crewIds)] };
   const current = await getOne(ctx, "job", id);
-  const [trucks, crew, jobs] = await Promise.all([list(ctx, "truck"), list(ctx, "crew"), list(ctx, "job")]);
+  const [trucks, crew, jobs] = (await Promise.all([list(ctx, "truck"), list(ctx, "crew"), list(ctx, "job")])) as Record<string, unknown>[][] as ({ id: number } & Record<string, unknown>)[][];
   if (a.truckId) {
     const t = trucks.find(x => x.id === a.truckId);
     if (!t) fail(400, "That truck is not in this workspace");
