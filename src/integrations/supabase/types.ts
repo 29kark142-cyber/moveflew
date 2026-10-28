@@ -394,25 +394,49 @@ export type Database = {
           created_at: string
           created_by: string
           deposit_rule: Json | null
+          dispatch_address: string | null
+          fuel_flat_rate: number
+          fuel_per_mile_rate: number
+          fuel_percentage_rate: number
+          fuel_surcharge_type: string
           id: number
           name: string
           pricing: Json | null
+          travel_flat_rate: number
+          travel_mileage_rate: number
+          travel_pricing_type: string
         }
         Insert: {
           created_at?: string
           created_by: string
           deposit_rule?: Json | null
+          dispatch_address?: string | null
+          fuel_flat_rate?: number
+          fuel_per_mile_rate?: number
+          fuel_percentage_rate?: number
+          fuel_surcharge_type?: string
           id?: never
           name: string
           pricing?: Json | null
+          travel_flat_rate?: number
+          travel_mileage_rate?: number
+          travel_pricing_type?: string
         }
         Update: {
           created_at?: string
           created_by?: string
           deposit_rule?: Json | null
+          dispatch_address?: string | null
+          fuel_flat_rate?: number
+          fuel_per_mile_rate?: number
+          fuel_percentage_rate?: number
+          fuel_surcharge_type?: string
           id?: never
           name?: string
           pricing?: Json | null
+          travel_flat_rate?: number
+          travel_mileage_rate?: number
+          travel_pricing_type?: string
         }
         Relationships: []
       }
