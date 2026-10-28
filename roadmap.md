@@ -24,6 +24,6 @@
 - [x] Public quote intake with credential-scoped workspace delivery, idempotency, validation, and Leads read-back verified; /api/public/v1/quotes is canonical, /api/v1/public/quotes is a compatibility alias
 - [ ] Connect northwestmovingcrew.com production form (blocked: external website access and publishing)
 - [x] Customer-visible proposal snapshots, share links and persisted digital signatures verified
-- [ ] Stripe deposit checkout + webhook → booked (blocked: payment catalog creation declined twice; built-in test payments enabled)
+- [x] Stripe deposit checkout (amount from stored proposal) + webhook → booked (live only); test payment untried
 - [x] Workspace fixed/percentage deposit settings and office proposal-level override with calculation tests
 - [ ] Move storage vaults, timecards, invoices to dedicated tables
