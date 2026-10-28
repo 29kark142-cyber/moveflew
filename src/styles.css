@@ -2951,6 +2951,9 @@ html:lang(ru) .steps-grid p {
 .crew-onboarding .brand-words strong, .crew-onboarding .brand-symbol { color: var(--primary); }
 .crew-onboarding .brand-words strong span { color: var(--foreground); }
 .crew-onboarding .brand-words small { color: var(--color-muted-foreground); }
+.crew-onboarding .text-muted-foreground { color: var(--color-muted-foreground); }
+.crew-onboarding .bg-accent { background-color: var(--color-accent); }
+.crew-onboarding-submit { background-color: oklch(0.55 0.21 260); }
 .dark .crew-onboarding, .dark .crew-onboarding-menu {
   --background: oklch(0.22 0.02 255);
   --card: oklch(0.2 0.018 255);
