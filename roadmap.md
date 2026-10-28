@@ -1,5 +1,9 @@
 # Northwest Moving Crew migration
 
+## Crew onboarding refresh
+- [ ] Refresh the branded invitation card, mobile and dark appearance, fields and loading/error states.
+- [ ] Support /invite/:token alongside /join-crew and verify registration saves a worker and opens /app/field.
+
 - [x] Phase 1a: design, marketing pages, contact form
 - [x] Phase 1b: Cloud login, workspaces + core records API (customers, jobs, trucks, crew, reminders, pricing, members), workspace shell mounted
 - [ ] Phase 2: verify signed-in flow; pipeline, tariffs, dispatch timeline, storage, billing, reports APIs; teammate invites
