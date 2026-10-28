@@ -18,6 +18,7 @@ import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AppSplatRouteImport } from './routes/app.$'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as ApiCrmSplatRouteImport } from './routes/api/crm/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -66,6 +67,11 @@ const AppSplatRoute = AppSplatRouteImport.update({
   path: '/app/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCrmSplatRoute = ApiCrmSplatRouteImport.update({
   id: '/api/crm/$',
   path: '/api/crm/$',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
 }
 export interface FileRoutesByTo {
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
 }
 export interface FileRoutesById {
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
 }
 export interface FileRouteTypes {
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
+    | '/invite/$token'
     | '/api/crm/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
+    | '/invite/$token'
     | '/api/crm/$'
   id:
     | '__root__'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
+    | '/invite/$token'
     | '/api/crm/$'
   fileRoutesById: FileRoutesById
 }
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AppSplatRoute: typeof AppSplatRoute
+  InviteTokenRoute: typeof InviteTokenRoute
   ApiCrmSplatRoute: typeof ApiCrmSplatRoute
 }
 
@@ -226,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/crm/$': {
       id: '/api/crm/$'
       path: '/api/crm/$'
@@ -247,6 +267,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AppSplatRoute: AppSplatRoute,
+  InviteTokenRoute: InviteTokenRoute,
   ApiCrmSplatRoute: ApiCrmSplatRoute,
 }
 export const routeTree = rootRouteImport
