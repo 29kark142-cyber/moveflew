@@ -973,6 +973,27 @@ export function EstimateWizardPage({ navigate }: PageProps) {
   const [saveError, setSaveError] = useState("");
   const [inventorySearch, setInventorySearch] = useState("");
   const catalog = useRemote(() => engage.catalog(), []);
+  // One-click conversion from the pipeline: prefill this estimate from the chosen lead.
+  const [leadId, setLeadId] = useState<number | null>(null);
+  useEffect(() => {
+    if (!pricing) return;
+    const id = Number(sessionStorage.getItem("nwcrewcrm.estimate-lead"));
+    sessionStorage.removeItem("nwcrewcrm.estimate-lead");
+    if (!id) return;
+    void crm.customers().then(list => {
+      const lead = list.find(c => c.id === id) as (Customer & Record<string, unknown>) | undefined;
+      if (!lead) return;
+      const text = (k: string) => (typeof lead[k] === "string" ? (lead[k] as string) : "");
+      const date = /^\d{4}-\d{2}-\d{2}$/.test(text("moveDate")) ? text("moveDate") : today();
+      setLeadId(lead.id);
+      setForm(current => ({
+        ...(current || freshQuote(pricing)),
+        name: lead.name, email: lead.email, phone: lead.phone,
+        origin: text("origin"), destination: text("destination"), date,
+        title: `${lead.name} move`, notes: text("message") || lead.notes || "",
+      }));
+    }).catch(() => undefined);
+  }, [pricing]);
   if (loading || catalog.loading)
     return <LoadingBlock label={t("Loading approved pricing…")} />;
   if (error || !pricing || catalog.error)
@@ -1078,12 +1099,9 @@ export function EstimateWizardPage({ navigate }: PageProps) {
     setSaveError("");
     try {
       const job = await crm.createJob({
-        customer: {
-          name: quote.name,
-          email: quote.email,
-          phone: quote.phone,
-          source: "Estimate",
-        },
+        ...(leadId
+          ? { customerId: leadId }
+          : { customer: { name: quote.name, email: quote.email, phone: quote.phone, source: "Estimate" } }),
         title: quote.title || `${quote.name} move`,
         date: quote.date,
         moveDate: quote.date,
@@ -1112,6 +1130,7 @@ export function EstimateWizardPage({ navigate }: PageProps) {
         originNotes: quote.notes,
         notes: quote.notes,
       });
+      if (leadId) await crm.updateCustomer(leadId, { status: "estimate" }).catch(() => undefined);
       navigate(`/app/jobs/${job.id}`);
     } catch (reason) {
       setSaveError(
