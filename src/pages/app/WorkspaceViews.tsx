@@ -196,7 +196,7 @@ export function DashboardPage({ role, navigate }: PageProps) {
           label={t("Open opportunities")}
           number={String(
             data.customers.filter(
-              c => !/won|closed|inactive|lost|draft|cancelled/i.test(c.status)
+              c => !/won|closed|inactive|lost|draft|cancel|declined/i.test(c.status)
             ).length
           )}
           hint={t("Customer records needing attention")}
