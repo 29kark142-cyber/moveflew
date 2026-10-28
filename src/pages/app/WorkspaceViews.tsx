@@ -1,5 +1,8 @@
 import WorkerDirectory from "@/components/workspace/WorkerDirectory";
 import DepositSettings from "@/components/workspace/DepositSettings";
+import TravelSettings from "@/components/workspace/TravelSettings";
+import { planRoute } from "@/lib/travel.functions";
+import { FUEL_FEE_NAME, fuelCharge, travelCharge } from "@/lib/travel-rules";
 import ProposalPublisher from "@/components/workspace/ProposalPublisher";
 import TextWorker from "@/components/workspace/TextWorker";
 import { eligibleRevenue } from "@shared/revenue";
@@ -1033,8 +1036,19 @@ export function EstimateWizardPage({ navigate }: PageProps) {
   const locate = async () => {
     setDistanceError("");
     try {
-      const distance = await crm.distance(quote.origin, quote.destination);
-      patch(distance);
+      const result = await planRoute({ data: { workspaceId: Number(getWorkspaceId()), pickup: quote.origin, dropoff: quote.destination } });
+      if ("error" in result) throw new Error(result.error);
+      const { route, settings } = result;
+      const otherFees = quote.fees.filter(fee => fee.name !== FUEL_FEE_NAME);
+      const priorFuel = quote.fees.find(fee => fee.name === FUEL_FEE_NAME)?.amount || 0;
+      const travelFee = travelCharge(settings, route, quote.hourlyRate);
+      const fuel = fuelCharge(settings, route, Math.max(0, baseTotal - priorFuel - quote.travelFee + travelFee));
+      patch({
+        distanceMiles: route.move.miles,
+        travelMinutes: route.toPickup.minutes + route.move.minutes + route.returnToBase.minutes,
+        travelFee,
+        fees: fuel > 0 ? [...otherFees, { name: FUEL_FEE_NAME, amount: fuel }] : otherFees,
+      });
     } catch (reason) {
       setDistanceError(
         reason instanceof Error
@@ -4053,7 +4067,7 @@ export function SettingsPage({ role }: PageProps) {
           )}
         </div>
       ) : tab === "pricing" ? (
-        <><DepositSettings admin={role === "admin"} /><PricingSettings /></>
+        <><DepositSettings admin={role === "admin"} /><TravelSettings admin={role === "admin"} /><PricingSettings /></>
       ) : tab === "team" ? (
         <MembershipSettings role={role} />
       ) : (
