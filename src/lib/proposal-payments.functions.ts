@@ -12,7 +12,7 @@ export const createProposalDepositCheckout = createServerFn({ method: 'POST' })
   .inputValidator((v: unknown) => z.object({
     token: proposalTokenSchema,
     environment: z.enum(['sandbox', 'live']),
-    returnUrl: z.string().url().max(500),
+    returnUrl: z.string().max(500).optional(),
   }).parse(v))
   .handler(async ({ data }): Promise<Result> => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
@@ -39,7 +39,8 @@ export const createProposalDepositCheckout = createServerFn({ method: 'POST' })
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         ui_mode: 'embedded_page',
-        return_url: data.returnUrl,
+        // Return address is built server-side from this app's own origin; the browser value is ignored.
+        return_url: `${new URL(getRequest().url).origin}/proposal/${data.token}?session_id={CHECKOUT_SESSION_ID}`,
         line_items: [{
           quantity: 1,
           price_data: {
