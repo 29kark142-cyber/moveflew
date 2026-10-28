@@ -201,6 +201,7 @@ export type Database = {
         Row: {
           amount_cents: number
           created_at: string
+          created_on_preview: boolean
           environment: string
           id: string
           proposal_id: string
@@ -210,6 +211,7 @@ export type Database = {
         Insert: {
           amount_cents: number
           created_at?: string
+          created_on_preview?: boolean
           environment: string
           id?: string
           proposal_id: string
@@ -219,6 +221,7 @@ export type Database = {
         Update: {
           amount_cents?: number
           created_at?: string
+          created_on_preview?: boolean
           environment?: string
           id?: string
           proposal_id?: string
@@ -581,16 +584,28 @@ export type Database = {
         }
         Returns: number
       }
-      settle_proposal_checkout: {
-        Args: {
-          _currency: string
-          _environment: string
-          _paid: number
-          _session: string
-          _subtotal: number
-        }
-        Returns: boolean
-      }
+      settle_proposal_checkout:
+        | {
+            Args: {
+              _currency: string
+              _environment: string
+              _paid: number
+              _session: string
+              _subtotal: number
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              _currency: string
+              _environment: string
+              _livemode: boolean
+              _paid: number
+              _session: string
+              _subtotal: number
+            }
+            Returns: boolean
+          }
       sign_moving_proposal: {
         Args: { _signature: string; _token: string }
         Returns: Json
