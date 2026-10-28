@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/integrations/supabase/types';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { depositRuleSchema, requiredDeposit, proposalTokenSchema, signatureSchema } from './proposal-rules';
@@ -14,7 +15,7 @@ function publicClient() {
   const url = process.env['SUPABASE_URL'];
   const key = process.env['SUPABASE_PUBLISHABLE_KEY'];
   if (!url || !key) throw new Error('Backend unavailable');
-  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false }, global: {
+  return createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false }, global: {
     fetch: (input, init) => {
       const headers = new Headers(init?.headers);
       if (key.startsWith('sb_') && headers.get('Authorization') === `Bearer ${key}`) headers.delete('Authorization');
@@ -23,7 +24,7 @@ function publicClient() {
     },
   } });
 }
-async function manager(db: ReturnType<typeof createClient>, workspaceId: number, adminOnly = false) {
+async function manager(db: SupabaseClient<Database>, workspaceId: number, adminOnly = false) {
   const { data, error } = await db.rpc('workspace_role', { _ws: workspaceId });
   if (error || !(adminOnly ? ['admin'] : ['admin','office_admin','estimator']).includes(String(data))) throw new Error('Only authorized office staff can manage proposals');
 }

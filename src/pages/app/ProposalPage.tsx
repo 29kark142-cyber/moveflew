@@ -1,7 +1,6 @@
 import Brand from "@/components/Brand";
 import SignaturePad from "@/components/workspace/SignaturePad";
 import { formatDate, LoadingBlock } from "@/components/workspace/WorkspaceUI";
-import { crm } from "@/lib/crm";
 import { readProposal, signProposal, type PublicProposal } from "@/lib/proposals.functions";
 import { Button } from "@/components/ui/button";
 import { calculateQuote, money, weight } from "@shared/crm";
@@ -82,7 +81,6 @@ export default function ProposalPage({ token: providedToken }: { token?: string 
     );
   if (!data) return null;
   const { job, company, pricing } = data;
-  const tariff = null;
   const base =
     job.pricingMode === "hourly"
       ? job.hourlyRate * Math.max(pricing.minimumHours, job.estimatedHours)
@@ -201,14 +199,7 @@ export default function ProposalPage({ token: providedToken }: { token?: string 
               </div>
             </div>
             <div className="ws-quote-lines">
-              {tariff ? (
-                tariff.lines.map(line => (
-                  <div key={line.key}>
-                    <span>{line.description}</span>
-                    <strong>{money(line.amountCents / 100)}</strong>
-                  </div>
-                ))
-              ) : (
+              {(
                 <>
                   <div>
                     <span>
