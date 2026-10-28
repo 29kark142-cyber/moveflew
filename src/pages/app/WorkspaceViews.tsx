@@ -996,14 +996,15 @@ export function EstimateWizardPage({ navigate }: PageProps) {
   }, [pricing]);
   if (loading || catalog.loading)
     return <LoadingBlock label={t("Loading approved pricing…")} />;
-  if (error || !pricing || catalog.error)
+  // The inventory catalog is optional; a missing catalog must not block quoting.
+  if (error || !pricing)
     return (
       <>
         <PageHead
           heading="New estimate"
           caption="Create a customer-ready, saved quote."
         />
-        <ErrorNotice error={error || catalog.error} />
+        <ErrorNotice error={error} />
       </>
     );
   const inventoryChoices = catalogChoices(catalog.data || []);
