@@ -14,7 +14,11 @@ import { reportStaleClient } from "@/lib/app-version";
 const API_ROOT = "/api/crm";
 const WORKSPACE_KEY = "nwcrewcrm.workspace-id";
 
-export type Workspace = { id: number; name: string; role: WorkspaceRole };
+export type Workspace = {
+  id: number; name: string; role: WorkspaceRole;
+  planId?: string; subscriptionStatus?: "beta" | "trialing" | "active" | "past_due" | "canceled";
+  onboardingCompleted?: boolean; pricingDefaults?: boolean;
+};
 export type Bootstrap = {
   user: { id: number; name: string; email: string };
   workspaces: Workspace[];

@@ -29,3 +29,10 @@
 - [ ] Move storage vaults, timecards, invoices to dedicated tables
 - [x] Website Integration Hub (/app/settings/integrations): widget, form webhooks, API keys
 - [x] CrewAI Assistant floating copilot on /app/* (help + navigation links, role/workspace-scoped)
+
+## Tenant onboarding & billing (in progress)
+- [x] /register company signup → own workspace, admin role
+- [x] /app/onboarding 3-step wizard + skip ($0 defaults)
+- [x] /app/settings/billing (Beta Access, DB-configured plans)
+- [x] Read-only enforcement when past due / canceled
+- [ ] Paid plans + Stripe portal (waiting: user to define tiers)
