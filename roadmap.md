@@ -20,7 +20,7 @@
 - [x] Direct URLs / reloads under /app work (no 404)
 - [x] Worker invites (/join-crew links + email) with Driver/Helper/Crew Lead roles
 - [ ] Phone SMS login (blocked: needs SMS provider choice)
-- [ ] Google Maps drive time + travel surcharge line item (blocked: Maps connection)
+- [x] Google Maps drive time (base→pickup→drop-off→base) + workspace travel/fuel rules with per-estimate override; onboarding prompt for base address not added
 - [x] Public quote intake with credential-scoped workspace delivery, idempotency, validation, and Leads read-back verified; /api/public/v1/quotes is canonical, /api/v1/public/quotes is a compatibility alias
 - [ ] Connect northwestmovingcrew.com production form (blocked: external website access and publishing)
 - [x] Customer-visible proposal snapshots, share links and persisted digital signatures verified

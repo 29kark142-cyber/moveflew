@@ -50,6 +50,13 @@
       "when": 1793188175061,
       "tag": "0006_protect_workspace_deposit_defaults",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793192978997,
+      "tag": "0007_workspace_travel_fuel_rules",
+      "breakpoints": true
     }
   ]
 }
