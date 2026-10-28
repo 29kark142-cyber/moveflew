@@ -1,6 +1,7 @@
 // Core workspace CRM API on Lovable Cloud. Replaces the Manus Express /api/crm router.
 // Every request runs as the signed-in user, so database row security applies.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
 import { calculateQuote, DEFAULT_PRICING, type Pricing } from "../shared/crm";
 
 type Ctx = { db: SupabaseClient; userId: string; email: string; wsId: number | null; role: string | null; q?: URLSearchParams };
@@ -72,6 +73,12 @@ function clean(input: unknown): Record<string, unknown> {
 }
 
 async function enrichJob(ctx: Ctx, data: Record<string, unknown>, pricing: Pricing) {
+  if (!data["customerId"] && data["customer"]) {
+    const customer = z.object({ name:z.string().trim().min(1).max(180), email:z.string().trim().email().or(z.literal('')).default(''), phone:z.string().max(40).default(''), source:z.string().max(100).default('Estimate') }).parse(data["customer"]);
+    const saved = await create(ctx, "customer", customer);
+    data["customerId"] = saved.id;
+    delete data["customer"];
+  }
   const customerId = Number(data["customerId"]);
   if (customerId) {
     const c = await getOne(ctx, "customer", customerId);
@@ -348,8 +355,10 @@ export async function handleCrm(request: Request, splat: string) {
     });
     const { data: claims, error } = await db.auth.getClaims(token as string);
     if (error || !claims?.claims?.sub) fail(401, "Please sign in");
-    const userId = claims!.claims.sub as string;
-    const email = (claims!.claims["email"] as string | undefined) ?? "";
+    const verifiedClaims = claims?.claims;
+    if (!verifiedClaims?.sub) return fail(401, "Please sign in");
+    const userId = verifiedClaims.sub as string;
+    const email = (verifiedClaims["email"] as string | undefined) ?? "";
     const wsHeader = Number(request.headers.get("x-workspace-id")) || null;
     let role: string | null = null;
     if (wsHeader) {
