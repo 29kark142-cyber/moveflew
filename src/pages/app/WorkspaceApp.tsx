@@ -1,3 +1,4 @@
+import MobileField from "@/components/workspace/MobileField";
 import CopilotAssistant from "@/components/workspace/CopilotAssistant";
 import { useAuth } from "@/_core/hooks/useAuth";
 import WorkspaceShell from "@/components/workspace/WorkspaceShell";
@@ -213,7 +214,7 @@ export default function WorkspaceApp() {
           )}
         </div>
       ) : (
-        <FieldPage {...pageProps} />
+        <MobileField role={bootstrap.workspace.role} />
       );
   else if (location === "/app/invoices") page = <InvoicesPage {...pageProps} />;
   else if (location === "/app/settings") page = <SettingsPage {...pageProps} />;
