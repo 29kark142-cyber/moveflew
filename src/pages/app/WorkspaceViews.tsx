@@ -2379,6 +2379,10 @@ export function DispatchPage({ role, navigate }: PageProps) {
     setDate(current.toISOString().slice(0, 10));
   };
   const days = calendarDays(view, date);
+  // Booked moves still missing a truck or crew, so new bookings never hide on a future date.
+  const ready = jobs
+    .filter(job => job.status === "booked" && (!job.truckId || !job.crewIds.length))
+    .sort((a, b) => a.moveDate.localeCompare(b.moveDate));
   return (
     <>
       <PageHead
@@ -2390,6 +2394,22 @@ export function DispatchPage({ role, navigate }: PageProps) {
           </button>
         }
       />
+      {ready.length > 0 && (
+        <section className="ws-card ws-card-pad" style={{ marginBottom: 16 }} aria-label={t("Ready to dispatch")}>
+          <div className="ws-card-title"><div><h2>{t("Ready to dispatch")}</h2><p>{t("Booked moves that still need a truck or crew.")}</p></div></div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {ready.map(job => (
+              <div key={job.id} className="ws-inline" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+                <span><b>{title(job)}</b> · {formatDate(job.moveDate)} · {hour(job.startHour)}</span>
+                <span className="ws-inline">
+                  <button className="ws-btn" onClick={() => { setView("day"); setDate(toLocalDateInput(job.moveDate)); }}>{t("Show on calendar")}</button>
+                  <button className="ws-btn primary" onClick={() => navigate(`/app/jobs/${job.id}`)}>{t("Assign truck & crew")}</button>
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
       {conflict && (
         <div className="ws-error">
           <CircleAlert size={16} />
