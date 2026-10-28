@@ -303,6 +303,54 @@ export type Database = {
           },
         ]
       }
+      subscription_plans: {
+        Row: {
+          available: boolean
+          billing_interval: string
+          created_at: string
+          description: string
+          features: Json
+          id: string
+          is_default: boolean
+          limits: Json
+          name: string
+          price_cents: number
+          sort_order: number
+          stripe_price_id: string | null
+          trial_days: number
+        }
+        Insert: {
+          available?: boolean
+          billing_interval?: string
+          created_at?: string
+          description?: string
+          features?: Json
+          id: string
+          is_default?: boolean
+          limits?: Json
+          name: string
+          price_cents?: number
+          sort_order?: number
+          stripe_price_id?: string | null
+          trial_days?: number
+        }
+        Update: {
+          available?: boolean
+          billing_interval?: string
+          created_at?: string
+          description?: string
+          features?: Json
+          id?: string
+          is_default?: boolean
+          limits?: Json
+          name?: string
+          price_cents?: number
+          sort_order?: number
+          stripe_price_id?: string | null
+          trial_days?: number
+        }
+        Relationships: []
+      }
       workspace_integration_keys: {
         Row: {
           created_at: string
@@ -493,6 +541,7 @@ export type Database = {
       }
       workspaces: {
         Row: {
+          company_phone: string
           created_at: string
           created_by: string
           deposit_rule: Json | null
@@ -503,12 +552,18 @@ export type Database = {
           fuel_surcharge_type: string
           id: number
           name: string
+          onboarding_completed_at: string | null
+          plan_id: string
           pricing: Json | null
+          stripe_customer_id: string | null
+          subscription_status: string
           travel_flat_rate: number
           travel_mileage_rate: number
           travel_pricing_type: string
+          trial_ends_at: string | null
         }
         Insert: {
+          company_phone?: string
           created_at?: string
           created_by: string
           deposit_rule?: Json | null
@@ -519,12 +574,18 @@ export type Database = {
           fuel_surcharge_type?: string
           id?: never
           name: string
+          onboarding_completed_at?: string | null
+          plan_id?: string
           pricing?: Json | null
+          stripe_customer_id?: string | null
+          subscription_status?: string
           travel_flat_rate?: number
           travel_mileage_rate?: number
           travel_pricing_type?: string
+          trial_ends_at?: string | null
         }
         Update: {
+          company_phone?: string
           created_at?: string
           created_by?: string
           deposit_rule?: Json | null
@@ -535,12 +596,25 @@ export type Database = {
           fuel_surcharge_type?: string
           id?: never
           name?: string
+          onboarding_completed_at?: string | null
+          plan_id?: string
           pricing?: Json | null
+          stripe_customer_id?: string | null
+          subscription_status?: string
           travel_flat_rate?: number
           travel_mileage_rate?: number
           travel_pricing_type?: string
+          trial_ends_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "workspaces_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -560,6 +634,10 @@ export type Database = {
         Args: { _data: Json; _kind: string; _ws: number }
         Returns: boolean
       }
+      complete_workspace_onboarding: {
+        Args: { _ws: number }
+        Returns: undefined
+      }
       create_workspace: { Args: { _name: string }; Returns: number }
       crew_invite_info: {
         Args: { _token: string }
@@ -577,6 +655,10 @@ export type Database = {
       receive_website_quote: {
         Args: { _data: Json; _hash: string; _request_id: string }
         Returns: Json
+      }
+      register_company: {
+        Args: { _company: string; _owner: string; _phone: string }
+        Returns: number
       }
       register_crew_invite: {
         Args: {
@@ -616,6 +698,7 @@ export type Database = {
       }
       view_moving_proposal: { Args: { _token: string }; Returns: Json }
       workspace_role: { Args: { _ws: number }; Returns: string }
+      workspace_writable: { Args: { _ws: number }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
