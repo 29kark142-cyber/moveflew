@@ -206,11 +206,16 @@ async function pricingFor(ctx: Ctx): Promise<Pricing> {
 
 async function workspaces(ctx: Ctx) {
   const { data, error } = await ctx.db
-    .from("workspace_members").select("role, workspace_id, workspaces(id,name)").eq("user_id", ctx.userId);
+    .from("workspace_members").select("role, workspace_id, workspaces(id,name,plan_id,subscription_status,onboarding_completed_at,travel_pricing_type,fuel_surcharge_type,deposit_rule)").eq("user_id", ctx.userId);
   if (error) fail(500, error.message);
   return (data ?? []).map((m) => {
-    const w = m.workspaces as unknown as { id: number; name: string };
-    return { id: w.id, name: w.name, role: m.role };
+    const w = m.workspaces as unknown as { id: number; name: string; plan_id: string; subscription_status: string; onboarding_completed_at: string | null; travel_pricing_type: string; fuel_surcharge_type: string; deposit_rule: { value?: number } | null };
+    return {
+      id: w.id, name: w.name, role: m.role,
+      planId: w.plan_id, subscriptionStatus: w.subscription_status,
+      onboardingCompleted: !!w.onboarding_completed_at,
+      pricingDefaults: w.travel_pricing_type === "none" && w.fuel_surcharge_type === "none" && !Number(w.deposit_rule?.value ?? 0),
+    };
   });
 }
 
@@ -446,6 +451,10 @@ export async function handleCrm(request: Request, splat: string) {
       role = (data as string | null) ?? null;
     }
     const parts = splat.split("/").filter(Boolean);
+    if (role && request.method !== "GET" && parts[0] !== "workspaces") {
+      const { data: writable } = await db.rpc("workspace_writable", { _ws: wsHeader as number });
+      if (!writable) fail(402, "This workspace is read-only until the subscription payment is updated.");
+    }
     const result = await route({ db, userId, email, wsId: role ? wsHeader : null, role, q: new URL(request.url).searchParams, origin: new URL(request.url).origin }, request.method, parts, async () => {
       try {
         return await request.json();
