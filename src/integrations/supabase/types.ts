@@ -91,6 +91,55 @@ export type Database = {
           },
         ]
       }
+      integration_lead_receipts: {
+        Row: {
+          created_at: string
+          customer_id: number
+          id: string
+          key_id: string
+          request_id: string
+          workspace_id: number
+        }
+        Insert: {
+          created_at?: string
+          customer_id: number
+          id?: string
+          key_id: string
+          request_id: string
+          workspace_id: number
+        }
+        Update: {
+          created_at?: string
+          customer_id?: number
+          id?: string
+          key_id?: string
+          request_id?: string
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_lead_receipts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "integration_lead_receipts_key_id_fkey"
+            columns: ["key_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_integration_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "integration_lead_receipts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       moving_proposals: {
         Row: {
           accepted_terms: boolean
@@ -244,6 +293,56 @@ export type Database = {
           },
           {
             foreignKeyName: "quote_intake_receipts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_integration_keys: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          key_hash: string
+          key_prefix: string
+          kind: string
+          label: string
+          last_used_at: string | null
+          public_key: string | null
+          revoked_at: string | null
+          workspace_id: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          key_hash: string
+          key_prefix: string
+          kind: string
+          label?: string
+          last_used_at?: string | null
+          public_key?: string | null
+          revoked_at?: string | null
+          workspace_id: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          kind?: string
+          label?: string
+          last_used_at?: string | null
+          public_key?: string | null
+          revoked_at?: string | null
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_integration_keys_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -464,6 +563,10 @@ export type Database = {
         }[]
       }
       crew_onboarding_info: { Args: { _token: string }; Returns: Json }
+      receive_integration_lead: {
+        Args: { _data: Json; _hash: string; _request_id: string }
+        Returns: Json
+      }
       receive_website_quote: {
         Args: { _data: Json; _hash: string; _request_id: string }
         Returns: Json
