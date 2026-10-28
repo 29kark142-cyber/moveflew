@@ -9,12 +9,14 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import type { WorkerInvitation } from "@shared/access";
 import type { WorkspaceRole } from "@shared/crm";
 import { invitationsApi } from "@/lib/access-api";
 import { crmFetch } from "@/lib/crm";
 import { useI18n } from "@/lib/i18n";
-import { ErrorNotice, LoadingBlock, formatDate } from "./WorkspaceUI";
+import { LoadingBlock, formatDate } from "./WorkspaceUI";
 import "./CrewInvitations.css";
 
 export type CrewInvitationsProps = {
@@ -106,7 +108,8 @@ export default function CrewInvitations({
     null
   );
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
+  const [busyIds, setBusyIds] = useState<Set<number>>(new Set());
+  const pendingActions = useRef(new Set<number>());
   const [kind, setKind] = useState<InviteKind>("link");
   const [email, setEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<WorkspaceRole>("crew");
@@ -141,11 +144,10 @@ export default function CrewInvitations({
 
   const load = async () => {
     setLoading(true);
-    setError(null);
     try {
       setInvitations(await invitationsApi.list());
-    } catch (reason) {
-      setError(reason);
+    } catch {
+      toast.error(tx("Invitations could not be loaded", "Не удалось загрузить приглашения"));
     } finally {
       setLoading(false);
     }
@@ -230,6 +232,9 @@ export default function CrewInvitations({
   };
 
   const resend = async (invitation: WorkerInvitation) => {
+    if (invitation.status !== "pending" || pendingActions.current.has(invitation.id)) return;
+    pendingActions.current.add(invitation.id);
+    setBusyIds(new Set(pendingActions.current));
     try {
       const result = await invitationsApi.resend(
         invitation.id,
@@ -239,11 +244,15 @@ export default function CrewInvitations({
       await navigator.clipboard?.writeText(result.inviteUrl).catch(() => undefined);
       if (invitation.email) openEmail(invitation.email, result.inviteUrl);
       await load();
-    } catch (reason) {
-      setError(reason);
+    } catch {
+      toast.error(tx("Invitation could not be resent", "Не удалось повторно отправить приглашение"));
+    } finally {
+      pendingActions.current.delete(invitation.id);
+      setBusyIds(new Set(pendingActions.current));
     }
   };
   const revoke = async (invitation: WorkerInvitation) => {
+    if (invitation.status !== "pending" || pendingActions.current.has(invitation.id)) return;
     if (
       !window.confirm(
         tx(
@@ -253,11 +262,25 @@ export default function CrewInvitations({
       )
     )
       return;
+    pendingActions.current.add(invitation.id);
+    setBusyIds(new Set(pendingActions.current));
     try {
-      await invitationsApi.revoke(invitation.id);
-      await load();
-    } catch (reason) {
-      setError(reason);
+      const result = await invitationsApi.revoke(invitation.id);
+      setInvitations(rows => rows?.flatMap(row => {
+        if (row.id !== invitation.id) return [row];
+        return result.revoked ? [] : [{ ...row, status: result.status }];
+      }) ?? null);
+      if (result.revoked) {
+        if (freshUrl === rowUrl(invitation)) setFreshUrl("");
+        toast.success(tx("Invitation revoked successfully", "Приглашение отозвано"));
+      } else {
+        toast.error(tx("Invitation could not be revoked: it is no longer pending", "Приглашение уже обработано и не может быть отозвано"));
+      }
+    } catch {
+      toast.error(tx("Invitation could not be revoked", "Не удалось отозвать приглашение"));
+    } finally {
+      pendingActions.current.delete(invitation.id);
+      setBusyIds(new Set(pendingActions.current));
     }
   };
 
@@ -404,12 +427,10 @@ export default function CrewInvitations({
           <RefreshCw size={16} />
         </button>
       </div>
-      {loading ? (
+      {loading && invitations === null ? (
         <LoadingBlock
           label={tx("Loading invitations…", "Загрузка приглашений…")}
         />
-      ) : error ? (
-        <ErrorNotice error={error} retry={() => void load()} />
       ) : invitations?.length ? (
         <div className="ws-table-wrap">
           <table className="ws-table crew-invitations__table">
@@ -454,7 +475,10 @@ export default function CrewInvitations({
                           <Copy size={15} />
                         </button>
                       )}
-                      <button
+                      {invitation.status === "pending" && <Button
+                        variant="ghost"
+                        size="icon"
+                        disabled={busyIds.has(invitation.id) || loading}
                         type="button"
                         className="ws-icon-btn"
                         title={tx(
@@ -468,8 +492,11 @@ export default function CrewInvitations({
                         onClick={() => void resend(invitation)}
                       >
                         <RefreshCw size={15} />
-                      </button>
-                      <button
+                      </Button>}
+                      {invitation.status === "pending" && <Button
+                        variant="ghost"
+                        size="icon"
+                        disabled={busyIds.has(invitation.id) || loading}
                         type="button"
                         className="ws-icon-btn danger"
                         title={tx("Revoke invitation", "Отозвать приглашение")}
@@ -480,7 +507,7 @@ export default function CrewInvitations({
                         onClick={() => void revoke(invitation)}
                       >
                         <Trash2 size={15} />
-                      </button>
+                      </Button>}
                     </div>
                   </td>
                 </tr>
