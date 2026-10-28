@@ -27,3 +27,4 @@
 - [x] Stripe deposit checkout (amount from stored proposal) + webhook → booked (live only); test payment untried
 - [x] Workspace fixed/percentage deposit settings and office proposal-level override with calculation tests
 - [ ] Move storage vaults, timecards, invoices to dedicated tables
+- [x] Website Integration Hub (/app/settings/integrations): widget, form webhooks, API keys
