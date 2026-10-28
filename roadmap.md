@@ -31,8 +31,8 @@
 - [x] CrewAI Assistant floating copilot on /app/* (help + navigation links, role/workspace-scoped)
 
 ## Tenant onboarding & billing (in progress)
-- [ ] /register company signup → own workspace, admin role
-- [ ] /app/onboarding 3-step wizard + skip ($0 defaults)
-- [ ] /app/settings/billing (Beta Access, DB-configured plans)
-- [ ] Read-only enforcement when past due / canceled
+- [x] /register company signup → own workspace, admin role
+- [x] /app/onboarding 3-step wizard + skip ($0 defaults)
+- [x] /app/settings/billing (Beta Access, DB-configured plans)
+- [x] Read-only enforcement when past due / canceled
 - [ ] Paid plans + Stripe portal (waiting: user to define tiers)
