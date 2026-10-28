@@ -4081,6 +4081,8 @@ export function SettingsPage({ role, navigate, integrationsTab }: PageProps & { 
         <><DepositSettings admin={role === "admin"} /><TravelSettings admin={role === "admin"} /><PricingSettings /></>
       ) : tab === "team" ? (
         <MembershipSettings role={role} />
+      ) : tab === "integrations" ? (
+        <IntegrationsHub admin={role === "admin"} />
       ) : (
         <SequenceSettings />
       )}

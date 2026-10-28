@@ -215,7 +215,7 @@ export default function WorkspaceApp() {
   else if (location === "/app/invoices") page = <InvoicesPage {...pageProps} />;
   else if (location === "/app/settings") page = <SettingsPage {...pageProps} />;
   else if (location === "/app/settings/integrations")
-    page = <><SettingsPage {...pageProps} integrationsTab /></>;
+    page = <SettingsPage key="integrations" {...pageProps} integrationsTab />;
   else page = <DashboardPage {...pageProps} />;
 
   return (
