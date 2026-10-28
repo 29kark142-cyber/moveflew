@@ -60,7 +60,6 @@ export const Route = createFileRoute("/api/copilot")({
             model: "openai/gpt-6-astra",
             instructions: instructions(ws?.name ?? "your workspace", String(role), parsed.data.currentPath),
             input: parsed.data.messages.map(m => ({ role: m.role, content: m.content })),
-            stream: true,
           });
           const encoder = new TextEncoder();
           const out = new ReadableStream({
