@@ -2912,3 +2912,8 @@ html:lang(ru) .steps-grid p {
     letter-spacing: 0.1em;
   }
 }
+
+/* Mobile: keep long links and table cells inside the screen */
+.ws-card, .ws-table-wrap { max-width: 100%; min-width: 0; }
+.ws-card code, .ws-card a, .ws-card input[readonly], .ws-card td { overflow-wrap: anywhere; word-break: break-all; }
+@media (max-width: 640px) { .ws-card table { table-layout: fixed; width: 100%; } }

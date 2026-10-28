@@ -7,3 +7,15 @@
 - [ ] Phase 4: messaging (Twilio/SendGrid), Stripe payments, QuickBooks, automation, engagement
 - [ ] Phase 5: public token pages, webhooks, schedules
 - [ ] Phase 6: import records + users, verify (blocked on data export)
+
+## Master update (Oct 28)
+- [x] Cancelled/declined excluded from revenue + open opportunities
+- [x] Admin-only job/estimate delete with confirmation
+- [x] Mobile wrapping for links/table cells
+- [x] Direct URLs / reloads under /app work (no 404)
+- [ ] Worker invites (/join-crew links + email) with Driver/Helper/Crew Lead roles
+- [ ] Phone SMS login (blocked: needs SMS provider choice)
+- [ ] Google Maps drive time + travel surcharge line item (blocked: Maps connection)
+- [ ] Public quote endpoint /api/v1/public/quotes (blocked: shared secret for website)
+- [ ] Proposal page signing + Stripe deposit + webhook → booked (blocked: Stripe setup)
+- [ ] Move storage vaults, timecards, invoices to dedicated tables
