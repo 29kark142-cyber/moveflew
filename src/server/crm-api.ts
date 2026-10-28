@@ -248,8 +248,16 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       const { data, error } = await ctx.db.from("workspace_invitations").update(patch)
         .eq("id", id).eq("workspace_id", ws).eq("status", "pending").select(COLS).maybeSingle();
       if (error) fail(403, error.message);
+      if (sub === "revoke") {
+        if (data) return { revoked: true, status: "revoked" };
+        // A repeated revoke is successful; never overwrite an accepted invitation.
+        const { data: current, error: readError } = await ctx.db.from("workspace_invitations")
+          .select("status").eq("id", id).eq("workspace_id", ws).maybeSingle();
+        if (readError) fail(403, readError.message);
+        if (!current) return fail(404, "Invitation not found");
+        return { revoked: current.status === "revoked", status: current.status };
+      }
       if (!data) fail(409, "This invitation is no longer pending");
-      if (sub === "revoke") return { revoked: true };
       const inv = shape(data as Inv, origin(b["publicOrigin"]));
       return { invitation: inv, inviteUrl: inv.inviteUrl };
     }

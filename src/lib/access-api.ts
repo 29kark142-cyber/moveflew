@@ -162,7 +162,7 @@ export const invitationsApi = {
       json("POST", publicOrigin ? { publicOrigin } : {})
     ),
   revoke: (id: number) =>
-    crmFetch<{ revoked: true }>(`/invitations/${id}/revoke`, json("POST")),
+    crmFetch<{ revoked: boolean; status: WorkerInvitation["status"] }>(`/invitations/${id}/revoke`, json("POST")),
   preview: (token: string) =>
     accessFetch<InvitationPreview>(
       `/api/invitations/preview?${new URLSearchParams({ token })}`
