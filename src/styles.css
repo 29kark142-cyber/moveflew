@@ -2917,3 +2917,73 @@ html:lang(ru) .steps-grid p {
 .ws-card, .ws-table-wrap { max-width: 100%; min-width: 0; }
 .ws-card code, .ws-card a, .ws-card input[readonly], .ws-card td { overflow-wrap: anywhere; word-break: break-all; }
 @media (max-width: 640px) { .ws-card table { table-layout: fixed; width: 100%; } }
+
+/* Invitation surfaces are locally themed so the migrated CRM remains unchanged. */
+.crew-onboarding, .crew-onboarding-menu {
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-border: var(--border);
+  --background: oklch(1 0 0);
+  --card: oklch(1 0 0);
+  --foreground: oklch(0.25 0.025 255);
+  --primary: oklch(0.55 0.21 260);
+  --border: oklch(0.91 0.01 255);
+  --color-primary-foreground: oklch(1 0 0);
+  --color-muted-foreground: oklch(0.51 0.025 255);
+  --color-accent: oklch(0.96 0.02 255);
+  --color-input: oklch(0.84 0.02 255);
+  --color-ring: var(--primary);
+  --color-destructive: oklch(0.53 0.19 25);
+  --onboarding-page-top: oklch(0.96 0.015 250);
+  --onboarding-page-bottom: oklch(0.985 0.003 255);
+  --onboarding-shadow: 0 20px 55px -18px oklch(0.3 0.03 255 / 0.18), 0 3px 10px oklch(0.3 0.03 255 / 0.03);
+  --onboarding-button-shadow: 0 4px 12px oklch(0.55 0.21 260 / 0.2);
+  --onboarding-button: oklch(0.55 0.21 260);
+  color-scheme: light;
+}
+.crew-onboarding { background: linear-gradient(155deg, var(--onboarding-page-top), var(--onboarding-page-bottom)); }
+.crew-onboarding-card { box-shadow: var(--onboarding-shadow); }
+.crew-onboarding-submit { box-shadow: var(--onboarding-button-shadow); }
+.crew-onboarding h1, .crew-onboarding .brand-words strong, .crew-onboarding .brand-words small { letter-spacing: 0; }
+.crew-onboarding .brand-words strong, .crew-onboarding .brand-symbol { color: var(--primary); }
+.crew-onboarding .brand-words strong span { color: var(--foreground); }
+.crew-onboarding .brand-words small { color: var(--color-muted-foreground); }
+.crew-onboarding .text-muted-foreground { color: var(--color-muted-foreground); }
+.crew-onboarding .bg-accent { background-color: var(--color-accent); }
+.crew-onboarding-submit { background-color: var(--onboarding-button); }
+.dark .crew-onboarding, .dark .crew-onboarding-menu {
+  --background: oklch(0.22 0.02 255);
+  --card: oklch(0.2 0.018 255);
+  --foreground: oklch(0.96 0.006 255);
+  --primary: oklch(0.68 0.17 255);
+  --border: oklch(0.32 0.025 255);
+  --color-muted-foreground: oklch(0.74 0.025 255);
+  --color-accent: oklch(0.27 0.045 255);
+  --color-input: oklch(0.38 0.025 255);
+  --color-destructive: oklch(0.76 0.14 25);
+  --onboarding-page-top: oklch(0.16 0.025 255);
+  --onboarding-page-bottom: oklch(0.13 0.014 255);
+  --onboarding-shadow: 0 20px 55px -18px oklch(0.05 0.01 255 / 0.6);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .crew-onboarding, :root:not(.light) .crew-onboarding-menu {
+    --background: oklch(0.22 0.02 255);
+    --card: oklch(0.2 0.018 255);
+    --foreground: oklch(0.96 0.006 255);
+    --primary: oklch(0.68 0.17 255);
+    --border: oklch(0.32 0.025 255);
+    --color-muted-foreground: oklch(0.74 0.025 255);
+    --color-accent: oklch(0.27 0.045 255);
+    --color-input: oklch(0.38 0.025 255);
+    --color-destructive: oklch(0.76 0.14 25);
+    --onboarding-page-top: oklch(0.16 0.025 255);
+    --onboarding-page-bottom: oklch(0.13 0.014 255);
+    --onboarding-shadow: 0 20px 55px -18px oklch(0.05 0.01 255 / 0.6);
+    color-scheme: dark;
+  }
+}

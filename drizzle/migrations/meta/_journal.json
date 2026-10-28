@@ -29,6 +29,13 @@
       "when": 1793147653584,
       "tag": "0003_workspace_invitations",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793148613980,
+      "tag": "0004_crew_onboarding_contact",
+      "breakpoints": true
     }
   ]
 }

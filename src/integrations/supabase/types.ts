@@ -276,6 +276,17 @@ export type Database = {
           workspace_name: string
         }[]
       }
+      crew_onboarding_info: { Args: { _token: string }; Returns: Json }
+      register_crew_invite: {
+        Args: {
+          _crew_role: string
+          _email: string
+          _name: string
+          _phone: string
+          _token: string
+        }
+        Returns: number
+      }
       workspace_role: { Args: { _ws: number }; Returns: string }
     }
     Enums: {

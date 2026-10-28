@@ -11,3 +11,4 @@
 
 - Migrated Manus pages live in src/pages and import navigation from @/lib/wouter, a shim over TanStack Router; keep routes in src/routes so there is one router.
 - Shared domain logic from the source app lives in src/shared (alias @shared/*); server code must be rewritten as server functions, not copied from the old Express server.
+- Both crew invitation routes render one shared onboarding form with locally scoped semantic theme tokens; registration uses an authenticated atomic RPC so the worker is saved before workspace selection and field navigation.
