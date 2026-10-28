@@ -453,7 +453,7 @@ export async function handleCrm(request: Request, splat: string) {
     const parts = splat.split("/").filter(Boolean);
     if (role && request.method !== "GET" && parts[0] !== "workspaces") {
       const { data: writable } = await db.rpc("workspace_writable", { _ws: wsHeader as number });
-      if (!writable) fail(402, "This workspace is read-only until the subscription payment is updated.");
+      if (!writable) fail(402, "This workspace is read-only. Update the subscription or contact support.");
     }
     const result = await route({ db, userId, email, wsId: role ? wsHeader : null, role, q: new URL(request.url).searchParams, origin: new URL(request.url).origin }, request.method, parts, async () => {
       try {

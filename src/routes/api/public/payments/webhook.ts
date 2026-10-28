@@ -28,9 +28,13 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
           if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
             await settle(event.data.object, rawEnv);
           }
+          const { logPlatformEvent } = await import("@/lib/platform-events.server");
+          await logPlatformEvent("stripe_webhook", "info", event.type, { env: rawEnv, session: event.data.object?.id });
           return Response.json({ received: true });
         } catch (e) {
           console.error("Webhook error:", e);
+          const { logPlatformEvent } = await import("@/lib/platform-events.server");
+          await logPlatformEvent("stripe_webhook", "error", "Webhook failed", { env: rawEnv, reason: String((e as Error)?.message ?? e).slice(0, 200) });
           return new Response("Webhook error", { status: 400 });
         }
       },

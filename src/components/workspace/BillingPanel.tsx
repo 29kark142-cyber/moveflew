@@ -6,7 +6,7 @@ import type { Workspace } from "@/lib/crm";
 type Plan = { id: string; name: string; description: string; price_cents: number; billing_interval: string; trial_days: number; features: unknown; available: boolean };
 
 const STATUS: Record<string, string> = {
-  beta: "Free beta", trialing: "Free trial", active: "Active", past_due: "Payment past due", canceled: "Canceled",
+  beta: "Free beta", trialing: "Free trial", active: "Active", past_due: "Payment past due", canceled: "Canceled", suspended: "Suspended by platform",
 };
 
 export default function BillingPanel({ workspace }: { workspace: Workspace }) {

@@ -197,6 +197,51 @@ export type Database = {
           },
         ]
       }
+      platform_admins: {
+        Row: {
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      platform_events: {
+        Row: {
+          created_at: string
+          id: number
+          level: string
+          message: string
+          meta: Json
+          source: string
+          workspace_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          level?: string
+          message: string
+          meta?: Json
+          source: string
+          workspace_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          level?: string
+          message?: string
+          meta?: Json
+          source?: string
+          workspace_id?: number | null
+        }
+        Relationships: []
+      }
       proposal_checkouts: {
         Row: {
           amount_cents: number
@@ -541,16 +586,19 @@ export type Database = {
       }
       workspaces: {
         Row: {
+          beta_ends_at: string | null
           company_phone: string
           created_at: string
           created_by: string
           deposit_rule: Json | null
           dispatch_address: string | null
+          feature_flags: Json
           fuel_flat_rate: number
           fuel_per_mile_rate: number
           fuel_percentage_rate: number
           fuel_surcharge_type: string
           id: number
+          limit_overrides: Json
           name: string
           onboarding_completed_at: string | null
           plan_id: string
@@ -563,16 +611,19 @@ export type Database = {
           trial_ends_at: string | null
         }
         Insert: {
+          beta_ends_at?: string | null
           company_phone?: string
           created_at?: string
           created_by: string
           deposit_rule?: Json | null
           dispatch_address?: string | null
+          feature_flags?: Json
           fuel_flat_rate?: number
           fuel_per_mile_rate?: number
           fuel_percentage_rate?: number
           fuel_surcharge_type?: string
           id?: never
+          limit_overrides?: Json
           name: string
           onboarding_completed_at?: string | null
           plan_id?: string
@@ -585,16 +636,19 @@ export type Database = {
           trial_ends_at?: string | null
         }
         Update: {
+          beta_ends_at?: string | null
           company_phone?: string
           created_at?: string
           created_by?: string
           deposit_rule?: Json | null
           dispatch_address?: string | null
+          feature_flags?: Json
           fuel_flat_rate?: number
           fuel_per_mile_rate?: number
           fuel_percentage_rate?: number
           fuel_surcharge_type?: string
           id?: never
+          limit_overrides?: Json
           name?: string
           onboarding_completed_at?: string | null
           plan_id?: string
@@ -648,6 +702,7 @@ export type Database = {
         }[]
       }
       crew_onboarding_info: { Args: { _token: string }; Returns: Json }
+      is_platform_admin: { Args: never; Returns: boolean }
       receive_integration_lead: {
         Args: { _data: Json; _hash: string; _request_id: string }
         Returns: Json
