@@ -1,4 +1,6 @@
 import WorkerDirectory from "@/components/workspace/WorkerDirectory";
+import DepositSettings from "@/components/workspace/DepositSettings";
+import ProposalPublisher from "@/components/workspace/ProposalPublisher";
 import TextWorker from "@/components/workspace/TextWorker";
 import { eligibleRevenue } from "@shared/revenue";
 import DeleteJobButton from "@/components/workspace/DeleteJobButton";
@@ -1875,6 +1877,7 @@ export function JobDetailPage({ role, navigate, path }: PageProps) {
         <div className="ws-alert">{localizedJobMessage(copyMessage)}</div>
       )}
       <JobCoreActions jobId={job.id} role={role} navigate={navigate} />
+      {["admin", "office_admin", "estimator"].includes(role) && job.status === "estimate" && <ProposalPublisher jobId={job.id} onPublished={() => void refresh()} />}
       {message && (
         <div className={message === "Status saved." ? "ws-alert" : "ws-error"}>
           {localizedJobMessage(message)}
@@ -4050,7 +4053,7 @@ export function SettingsPage({ role }: PageProps) {
           )}
         </div>
       ) : tab === "pricing" ? (
-        <PricingSettings />
+        <><DepositSettings admin={role === "admin"} /><PricingSettings /></>
       ) : tab === "team" ? (
         <MembershipSettings role={role} />
       ) : (

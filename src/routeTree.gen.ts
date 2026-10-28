@@ -20,6 +20,8 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as AppSplatRouteImport } from './routes/app.$'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as ApiCrmSplatRouteImport } from './routes/api/crm/$'
+import { Route as ApiPublicV1QuotesRouteImport } from './routes/api/public/v1/quotes'
+import { Route as ApiV1PublicQuotesRouteImport } from './routes/api/v1/public/quotes'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -77,6 +79,16 @@ const ApiCrmSplatRoute = ApiCrmSplatRouteImport.update({
   path: '/api/crm/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicV1QuotesRoute = ApiPublicV1QuotesRouteImport.update({
+  id: '/api/public/v1/quotes',
+  path: '/api/public/v1/quotes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1PublicQuotesRoute = ApiV1PublicQuotesRouteImport.update({
+  id: '/api/v1/public/quotes',
+  path: '/api/v1/public/quotes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -90,6 +102,8 @@ export interface FileRoutesByFullPath {
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
+  '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
+  '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -103,6 +117,8 @@ export interface FileRoutesByTo {
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
+  '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
+  '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -117,6 +133,8 @@ export interface FileRoutesById {
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
+  '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
+  '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -132,6 +150,8 @@ export interface FileRouteTypes {
     | '/app/$'
     | '/invite/$token'
     | '/api/crm/$'
+    | '/api/public/v1/quotes'
+    | '/api/v1/public/quotes'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -145,6 +165,8 @@ export interface FileRouteTypes {
     | '/app/$'
     | '/invite/$token'
     | '/api/crm/$'
+    | '/api/public/v1/quotes'
+    | '/api/v1/public/quotes'
   id:
     | '__root__'
     | '/'
@@ -158,6 +180,8 @@ export interface FileRouteTypes {
     | '/app/$'
     | '/invite/$token'
     | '/api/crm/$'
+    | '/api/public/v1/quotes'
+    | '/api/v1/public/quotes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -172,6 +196,8 @@ export interface RootRouteChildren {
   AppSplatRoute: typeof AppSplatRoute
   InviteTokenRoute: typeof InviteTokenRoute
   ApiCrmSplatRoute: typeof ApiCrmSplatRoute
+  ApiPublicV1QuotesRoute: typeof ApiPublicV1QuotesRoute
+  ApiV1PublicQuotesRoute: typeof ApiV1PublicQuotesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -253,6 +279,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCrmSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/quotes': {
+      id: '/api/public/v1/quotes'
+      path: '/api/public/v1/quotes'
+      fullPath: '/api/public/v1/quotes'
+      preLoaderRoute: typeof ApiPublicV1QuotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/public/quotes': {
+      id: '/api/v1/public/quotes'
+      path: '/api/v1/public/quotes'
+      fullPath: '/api/v1/public/quotes'
+      preLoaderRoute: typeof ApiV1PublicQuotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -269,6 +309,8 @@ const rootRouteChildren: RootRouteChildren = {
   AppSplatRoute: AppSplatRoute,
   InviteTokenRoute: InviteTokenRoute,
   ApiCrmSplatRoute: ApiCrmSplatRoute,
+  ApiPublicV1QuotesRoute: ApiPublicV1QuotesRoute,
+  ApiV1PublicQuotesRoute: ApiV1PublicQuotesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
