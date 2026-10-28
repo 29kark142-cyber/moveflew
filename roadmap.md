@@ -23,4 +23,5 @@
 - [ ] Google Maps drive time + travel surcharge line item (blocked: Maps connection)
 - [ ] Public quote endpoint /api/v1/public/quotes with authenticated website delivery and persistent leads (in progress)
 - [ ] Proposal page signing + Stripe deposit + webhook → booked (in progress; built-in Stripe approved)
+- [ ] Workspace fixed/percentage deposit settings and office proposal-level override
 - [ ] Move storage vaults, timecards, invoices to dedicated tables
