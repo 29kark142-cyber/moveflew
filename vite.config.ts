@@ -14,4 +14,7 @@ export default defineConfig({
     server: { entry: "server" },
   },
   plugins: [mcpPlugin()],
+  vite: {
+    define: { __APP_BUILD_ID__: JSON.stringify(Date.now().toString(36)) },
+  },
 });
