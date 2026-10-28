@@ -61,16 +61,39 @@ async function getOne(ctx: Ctx, kind: string, id: number) {
   return data as Row;
 }
 
-function clean(input: unknown): Record<string, unknown> {
+// Fields owned by the server (payments, proposals, derived customer info, account links) are never accepted from requests.
+const SERVER_FIELDS = new Set([
+  "id", "tenantId", "createdAt", "updatedAt", "workspaceId", "workspace_id",
+  "depositPaidCents", "depositPaidAt", "depositPaymentSession", "depositMode", "depositOverride",
+  "proposalToken", "customerName", "customerEmail", "customerPhone", "sourceChannel",
+]);
+const FIELD_NAME = /^[A-Za-z][A-Za-z0-9_]{0,63}$/;
+
+function clean(input: unknown, existing?: Record<string, unknown>): Record<string, unknown> {
   if (!input || typeof input !== "object" || Array.isArray(input)) fail(400, "Invalid request body");
   const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(input as Record<string, unknown>)) {
-    if (["id", "tenantId", "createdAt"].includes(k)) continue;
+  const entries = Object.entries(input as Record<string, unknown>);
+  if (entries.length > 120) fail(400, "Too many fields");
+  for (const [k, v] of entries) {
+    if (SERVER_FIELDS.has(k) || !FIELD_NAME.test(k)) continue;
+    // Account links are set by the invitation flow; only allow keeping or clearing them.
+    if (k === "userId" && v !== null && v !== (existing?.["userId"] ?? null)) continue;
     out[k] = v;
   }
   if (JSON.stringify(out).length > 900_000) fail(413, "Request is too large");
   return out;
 }
+
+const pricingSchema = z.object({
+  rates: z.array(z.number().min(0).max(100000)).min(1).max(20),
+  minimumHours: z.number().min(0).max(24),
+  packingRate: z.number().min(0).max(100000),
+  weekendPercent: z.number().min(0).max(100),
+  travelPerMile: z.number().min(0).max(1000),
+  weightRate: z.number().min(0).max(1000),
+  mileRate: z.number().min(0).max(1000),
+  materials: z.array(z.object({ name: z.string().trim().min(1).max(120), price: z.number().min(0).max(100000) }).strip()).max(200),
+}).strip();
 
 async function enrichJob(ctx: Ctx, data: Record<string, unknown>, pricing: Pricing) {
   if (!data["customerId"] && data["customer"]) {
@@ -109,7 +132,7 @@ async function create(ctx: Ctx, kind: string, body: unknown) {
 async function update(ctx: Ctx, kind: string, id: number, body: unknown) {
   const ws = requireWs(ctx);
   const current = await getOne(ctx, kind, id);
-  let data: Record<string, unknown> = { ...current.data, ...clean(body) };
+  let data: Record<string, unknown> = { ...current.data, ...clean(body, current.data) };
   if (kind === "job") data = await enrichJob(ctx, data, await pricingFor(ctx));
   const { data: row, error } = await ctx.db
     .from("workspace_records").update({ data: data as never, updated_at: new Date().toISOString() })
@@ -171,7 +194,9 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
   if (head === "pricing") {
     if (method === "GET") return pricingFor(ctx);
     if (method === "PUT") {
-      const value = clean(await body());
+      const parsed = pricingSchema.safeParse(await body());
+      if (!parsed.success) return fail(400, "Invalid pricing settings");
+      const value = parsed.data;
       const { error } = await ctx.db.from("workspaces").update({ pricing: value as never }).eq("id", requireWs(ctx));
       if (error) fail(403, error.message);
       return value;
