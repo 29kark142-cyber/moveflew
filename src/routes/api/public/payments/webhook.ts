@@ -29,7 +29,7 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
             await settle(event.data.object, rawEnv);
           }
           const { logPlatformEvent } = await import("@/lib/platform-events.server");
-          await logPlatformEvent("stripe_webhook", "info", event.type, { env: rawEnv, id: event.id });
+          await logPlatformEvent("stripe_webhook", "info", event.type, { env: rawEnv, session: event.data.object?.id });
           return Response.json({ received: true });
         } catch (e) {
           console.error("Webhook error:", e);
