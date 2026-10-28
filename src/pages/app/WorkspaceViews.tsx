@@ -54,7 +54,7 @@ import type {
   WorkspaceRole,
 } from "@shared/crm";
 import { calculateQuote, INVENTORY, money, volume, weight } from "@shared/crm";
-import { crm, type Member } from "@/lib/crm";
+import { crm, getWorkspaceId, type Member } from "@/lib/crm";
 import { getLocale, moverCount, useI18n } from "@/lib/i18n";
 import { engage } from "@/lib/engage-api";
 import { catalogChoices, inventoryText } from "@shared/inventory-catalog";
