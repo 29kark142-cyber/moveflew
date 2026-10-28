@@ -20,3 +20,4 @@
 - Third-party lead intake uses per-workspace integration keys (hashed; widget/webhook tokens visible to admins, API keys shown once) via /api/public/v1/leads and /api/public/v1/hooks/$token; the older single-credential /api/public/v1/quotes stays for northwestmovingcrew.com.
 - The in-app CrewAI copilot streams from the /api/copilot server route via the Lovable AI Gateway SDK; it verifies the bearer and workspace role server-side, has no CRM data access, and renders only whitelisted [[go:/app/...|Label]] links from src/lib/copilot-routes.ts.
 - Test-mode deposits book a job only when checkout started on a preview address (host read server-side, stored on the checkout); live-mode deposits always book. Why: preview and production share one database.
+- Dispatch overlap/readiness rules live in src/shared/dispatch.ts and are used by both the board (warnings) and POST /api/crm/jobs/:id/assign (enforcement, 409 on conflict). Why: one rule, no drift between UI and server.

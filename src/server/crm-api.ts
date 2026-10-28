@@ -3,6 +3,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { calculateQuote, DEFAULT_PRICING, type Pricing } from "../shared/crm";
+import { conflictsFor, type ScheduledJob } from "../shared/dispatch";
 
 type Ctx = { db: SupabaseClient; userId: string; email: string; wsId: number | null; role: string | null; q?: URLSearchParams };
 type Row = { id: number; data: Record<string, unknown>; created_at: string };
@@ -139,6 +140,44 @@ async function update(ctx: Ctx, kind: string, id: number, body: unknown) {
     .eq("id", id).eq("workspace_id", ws).select("id,data,created_at").single();
   if (error) fail(403, error.message);
   return toRecord(row as Row, ws);
+}
+
+const assignSchema = z.object({
+  truckId: z.number().int().positive().nullable(),
+  crewIds: z.array(z.number().int().positive()).max(30),
+  moveDate: z.string().regex(/^\d{4}-\d{2}-\d{2}/),
+  startHour: z.number().min(0).max(23.5),
+  duration: z.number().min(0.5).max(24),
+}).strip();
+
+// Only dispatch roles assign; truck/crew must belong to this workspace, be active, and be free at that time.
+async function assignJob(ctx: Ctx, id: number, body: unknown) {
+  if (!["admin", "office_admin", "dispatcher"].includes(ctx.role ?? "")) fail(403, "Only dispatch staff can assign trucks and crew");
+  const parsed = assignSchema.safeParse(body);
+  if (!parsed.success) return fail(400, "Invalid assignment");
+  const a = { ...parsed.data, crewIds: [...new Set(parsed.data.crewIds)] };
+  const current = await getOne(ctx, "job", id);
+  const [trucks, crew, jobs] = (await Promise.all([list(ctx, "truck"), list(ctx, "crew"), list(ctx, "job")])) as Record<string, unknown>[][] as ({ id: number } & Record<string, unknown>)[][];
+  if (a.truckId) {
+    const t = trucks.find(x => x.id === a.truckId);
+    if (!t) fail(400, "That truck is not in this workspace");
+    if (t && t["status"] !== "active" && t["status"] !== "available") fail(409, `${String(t["name"])} is not active`);
+  }
+  for (const cid of a.crewIds) {
+    const p = crew.find(x => x.id === cid);
+    if (!p) fail(400, "A selected crew member is not in this workspace");
+    if (p && p["status"] === "inactive") fail(409, `${String(p["name"])} is inactive`);
+  }
+  const candidate: ScheduledJob = { id, moveDate: a.moveDate, startHour: a.startHour, duration: a.duration, status: String(current.data["status"] ?? ""), truckId: a.truckId, crewIds: a.crewIds };
+  const clash = conflictsFor(candidate, jobs as unknown as ScheduledJob[])[0];
+  if (clash) {
+    const other = jobs.find(j => j.id === clash.otherJobId);
+    const who = clash.resource === "truck"
+      ? String(trucks.find(x => x.id === clash.resourceId)?.["name"] ?? "This truck")
+      : String(crew.find(x => x.id === clash.resourceId)?.["name"] ?? "A crew member");
+    fail(409, `Schedule conflict: ${who} is already on job #${clash.otherJobId}${other?.["title"] ? ` (${String(other["title"])})` : ""} at an overlapping time.`);
+  }
+  return update(ctx, "job", id, a);
 }
 
 function requireWs(ctx: Ctx): number {
@@ -337,7 +376,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     return { deleted: true };
   }
   if (head === "jobs" && id && sub) {
-    if (sub === "assign" && method === "POST") return update(ctx, "job", id, await body());
+    if (sub === "assign" && method === "POST") return assignJob(ctx, id, await body());
     if (sub === "clock" && method === "POST") {
       const { action } = (await body()) as { action?: string };
       const now = new Date().toISOString();
