@@ -76,7 +76,7 @@ export function setWorkspaceId(id: number | string | null) {
   }
 }
 
-async function sessionAuthorization(): Promise<Record<string, string>> {
+export async function sessionAuthorization(): Promise<Record<string, string>> {
   const { supabase } = await import("@/integrations/supabase/client");
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
