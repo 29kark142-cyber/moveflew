@@ -4179,6 +4179,7 @@ export function SettingsPage({ role, navigate, integrationsTab }: PageProps & { 
         >
           {t("Website integrations")}
         </button>
+        <button onClick={() => navigate("/app/settings/billing")}>{t("Billing")}</button>
       </div>
       {!allowed ? (
         <div className="ws-alert">

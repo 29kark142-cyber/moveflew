@@ -195,10 +195,7 @@ export default function WorkspaceApp() {
     return <CreateWorkspace onCreated={createWorkspace} />;
 
   const ws = bootstrap.workspace;
-  if (ws.role === "admin" && !ws.onboardingCompleted && location !== "/app/onboarding") {
-    navigate("/app/onboarding");
-    return null;
-  }
+  const needsSetup = ws.role === "admin" && !ws.onboardingCompleted;
   const pageProps = {
     role: bootstrap.workspace.role,
     navigate,
@@ -207,7 +204,7 @@ export default function WorkspaceApp() {
   let page: React.ReactNode;
   const ExpandedPage = expandedPages[location];
   // The dispatch board shares the calendar's live job list, so booked jobs appear immediately.
-  if (location === "/app/onboarding")
+  if (location === "/app/onboarding" || needsSetup)
     page = <OnboardingWizard workspaceId={ws.id} onDone={async () => { await load(); navigate("/app/dashboard"); }} />;
   else if (location === "/app/settings/billing") page = <BillingPanel workspace={ws} />;
   else if (location === "/app/dispatch") page = <DispatchPage {...pageProps} />;
@@ -257,6 +254,18 @@ export default function WorkspaceApp() {
       onWorkspace={id => void chooseWorkspace(id)}
       onLogout={() => void logout()}
     >
+      {isReadOnly(ws.subscriptionStatus) && (
+        <div className="ws-alert" role="alert">
+          {t("This workspace is read-only because the subscription is past due or canceled. Your records are safe.")}{" "}
+          {ws.role === "admin" && <button className="ws-btn" onClick={() => navigate("/app/settings/billing")}>{t("Update payment details")}</button>}
+        </div>
+      )}
+      {ws.pricingDefaults && !needsSetup && (location === "/app/dashboard" || location === "/app/estimates/new") && (
+        <div className="ws-alert">
+          {t(PRICING_REMINDER)}{" "}
+          {["admin", "office_admin"].includes(ws.role) && <button className="ws-btn" onClick={() => navigate("/app/settings")}>{t("Open pricing settings")}</button>}
+        </div>
+      )}
       <div key={`${bootstrap.workspace.id}-${location}`}>{page}</div>
       <CopilotAssistant key={`copilot-${bootstrap.workspace.id}`} path={location} navigate={navigate} />
     </WorkspaceShell>
