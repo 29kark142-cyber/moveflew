@@ -134,7 +134,7 @@ export async function fieldRoute(ctx: Ctx, method: string, parts: string[], body
       const stripe = createStripeClient(env);
       const session = await stripe.checkout.sessions.create({
         mode: "payment",
-        success_url: `${ctx.origin}/proposal-paid`,
+        success_url: `${ctx.origin}/payment-complete`,
         line_items: [{ quantity: 1, price_data: { currency: "usd", unit_amount: cents, product_data: { name: `Moving services · job #${id}` } } }],
         metadata: { jobId: String(id), workspaceId: String(ctx.wsId), kind: "final_balance" },
       });
