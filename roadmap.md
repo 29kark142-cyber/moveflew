@@ -21,6 +21,6 @@
 - [x] Worker invites (/join-crew links + email) with Driver/Helper/Crew Lead roles
 - [ ] Phone SMS login (blocked: needs SMS provider choice)
 - [ ] Google Maps drive time + travel surcharge line item (blocked: Maps connection)
-- [ ] Public quote endpoint /api/v1/public/quotes (blocked: shared secret for website)
-- [ ] Proposal page signing + Stripe deposit + webhook → booked (blocked: Stripe setup)
+- [ ] Public quote endpoint /api/v1/public/quotes with authenticated website delivery and persistent leads (in progress)
+- [ ] Proposal page signing + Stripe deposit + webhook → booked (in progress; built-in Stripe approved)
 - [ ] Move storage vaults, timecards, invoices to dedicated tables
