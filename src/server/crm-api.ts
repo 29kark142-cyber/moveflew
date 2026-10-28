@@ -4,9 +4,10 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { calculateQuote, DEFAULT_PRICING, type Pricing } from "../shared/crm";
 import { conflictsFor, type ScheduledJob } from "../shared/dispatch";
+import { fieldRoute } from "./field-api";
 
-type Ctx = { db: SupabaseClient; userId: string; email: string; wsId: number | null; role: string | null; q?: URLSearchParams };
-type Row = { id: number; data: Record<string, unknown>; created_at: string };
+export type Ctx = { db: SupabaseClient; userId: string; email: string; wsId: number | null; role: string | null; q?: URLSearchParams; origin?: string };
+export type Row = { id: number; data: Record<string, unknown>; created_at: string };
 
 class HttpError extends Error {
   constructor(public status: number, message: string) {
@@ -67,6 +68,7 @@ const SERVER_FIELDS = new Set([
   "id", "tenantId", "createdAt", "updatedAt", "workspaceId", "workspace_id",
   "depositPaidCents", "depositPaidAt", "depositPaymentSession", "depositMode", "depositOverride",
   "proposalToken", "customerName", "customerEmail", "customerPhone", "sourceChannel",
+  "timeline", "finalPayment", "finalCheckout", "signedOffAt", "billableHours", "finalBill",
 ]);
 const FIELD_NAME = /^[A-Za-z][A-Za-z0-9_]{0,63}$/;
 
@@ -178,6 +180,17 @@ async function assignJob(ctx: Ctx, id: number, body: unknown) {
     fail(409, `Schedule conflict: ${who} is already on job #${clash.otherJobId}${other?.["title"] ? ` (${String(other["title"])})` : ""} at an overlapping time.`);
   }
   return update(ctx, "job", id, a);
+}
+
+// Server-owned writes (timeline, payments) bypass the request field filter on purpose.
+async function saveData(ctx: Ctx, id: number, patch: Record<string, unknown>) {
+  const ws = requireWs(ctx);
+  const current = await getOne(ctx, "job", id);
+  const { data: row, error } = await ctx.db.from("workspace_records")
+    .update({ data: { ...current.data, ...patch } as never, updated_at: new Date().toISOString() })
+    .eq("id", id).eq("workspace_id", ws).select("id,data,created_at").single();
+  if (error) fail(403, error.message);
+  return toRecord(row as Row, ws);
 }
 
 function requireWs(ctx: Ctx): number {
@@ -360,6 +373,9 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       return { deleted: true };
     }
   }
+  if (head === "field") return fieldRoute(ctx, method, parts.slice(1), body, { list, getOne, update, saveData, requireWs, fail, toRecord });
+  // Crew members work through the field endpoints; they cannot edit jobs or customers directly.
+  if (ctx.role === "crew" && method !== "GET" && (head === "jobs" || head === "customers")) fail(403, "Crew members can update jobs only from the field screen");
   if (head === "payments" && method === "GET") return [];
   if (head === "outbox" && method === "GET") return [];
 
@@ -430,7 +446,7 @@ export async function handleCrm(request: Request, splat: string) {
       role = (data as string | null) ?? null;
     }
     const parts = splat.split("/").filter(Boolean);
-    const result = await route({ db, userId, email, wsId: role ? wsHeader : null, role, q: new URL(request.url).searchParams }, request.method, parts, async () => {
+    const result = await route({ db, userId, email, wsId: role ? wsHeader : null, role, q: new URL(request.url).searchParams, origin: new URL(request.url).origin }, request.method, parts, async () => {
       try {
         return await request.json();
       } catch {

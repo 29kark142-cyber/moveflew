@@ -556,6 +556,10 @@ export type Database = {
         }
         Returns: number
       }
+      can_access_record: {
+        Args: { _data: Json; _kind: string; _ws: number }
+        Returns: boolean
+      }
       create_workspace: { Args: { _name: string }; Returns: number }
       crew_invite_info: {
         Args: { _token: string }
