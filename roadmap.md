@@ -28,3 +28,4 @@
 - [x] Workspace fixed/percentage deposit settings and office proposal-level override with calculation tests
 - [ ] Move storage vaults, timecards, invoices to dedicated tables
 - [x] Website Integration Hub (/app/settings/integrations): widget, form webhooks, API keys
+- [x] CrewAI Assistant floating copilot on /app/* (help + navigation links, role/workspace-scoped)

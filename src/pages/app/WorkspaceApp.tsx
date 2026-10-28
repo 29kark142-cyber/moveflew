@@ -1,3 +1,4 @@
+import CopilotAssistant from "@/components/workspace/CopilotAssistant";
 import { useAuth } from "@/_core/hooks/useAuth";
 import WorkspaceShell from "@/components/workspace/WorkspaceShell";
 import { ErrorNotice, LoadingBlock } from "@/components/workspace/WorkspaceUI";
@@ -230,6 +231,7 @@ export default function WorkspaceApp() {
       onLogout={() => void logout()}
     >
       <div key={`${bootstrap.workspace.id}-${location}`}>{page}</div>
+      <CopilotAssistant key={`copilot-${bootstrap.workspace.id}`} path={location} navigate={navigate} />
     </WorkspaceShell>
   );
 }
