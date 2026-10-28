@@ -1,6 +1,7 @@
 import WorkerDirectory from "@/components/workspace/WorkerDirectory";
 import DepositSettings from "@/components/workspace/DepositSettings";
 import TravelSettings from "@/components/workspace/TravelSettings";
+import IntegrationsHub from "@/components/workspace/IntegrationsHub";
 import { planRoute } from "@/lib/travel.functions";
 import { FUEL_FEE_NAME, fuelCharge, travelCharge } from "@/lib/travel-rules";
 import ProposalPublisher from "@/components/workspace/ProposalPublisher";
@@ -4026,9 +4027,13 @@ export function InvoicesPage({ navigate }: PageProps) {
   );
 }
 
-export function SettingsPage({ role }: PageProps) {
+export function SettingsPage({ role, navigate, integrationsTab }: PageProps & { integrationsTab?: boolean }) {
   const { t } = useI18n();
-  const [tab, setTab] = useState<"pricing" | "team" | "sequences">("pricing");
+  const [tab, setTabState] = useState<"pricing" | "team" | "sequences" | "integrations">(integrationsTab ? "integrations" : "pricing");
+  const setTab = (next: "pricing" | "team" | "sequences" | "integrations") => {
+    setTabState(next);
+    navigate(next === "integrations" ? "/app/settings/integrations" : "/app/settings");
+  };
   const allowed = canOffice(role) || (role === "dispatcher" && tab === "team");
   return (
     <>
@@ -4058,6 +4063,12 @@ export function SettingsPage({ role }: PageProps) {
         >
           {t("Sequences")}
         </button>
+        <button
+          className={tab === "integrations" ? "active" : ""}
+          onClick={() => setTab("integrations")}
+        >
+          {t("Website integrations")}
+        </button>
       </div>
       {!allowed ? (
         <div className="ws-alert">
@@ -4070,6 +4081,8 @@ export function SettingsPage({ role }: PageProps) {
         <><DepositSettings admin={role === "admin"} /><TravelSettings admin={role === "admin"} /><PricingSettings /></>
       ) : tab === "team" ? (
         <MembershipSettings role={role} />
+      ) : tab === "integrations" ? (
+        <IntegrationsHub admin={role === "admin"} />
       ) : (
         <SequenceSettings />
       )}

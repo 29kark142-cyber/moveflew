@@ -17,3 +17,4 @@
 - Published proposals store immutable customer-visible snapshots and separate signatures; deposits derive from workspace configuration or explicit office overrides, never client-supplied checkout amounts.
 - Test and live deposit payments remain separate; only verified live payments may book production CRM jobs.
 - Release housekeeping lives in src/lib/app-version.ts: per-build one-time cleanup of nwcrewcrm.* settings (never sign-in/theme/language) and a stale-tab Refresh banner; no service worker or auto-reload, because Lovable already revalidates HTML and reload loops break the preview.
+- Third-party lead intake uses per-workspace integration keys (hashed; widget/webhook tokens visible to admins, API keys shown once) via /api/public/v1/leads and /api/public/v1/hooks/$token; the older single-credential /api/public/v1/quotes stays for northwestmovingcrew.com.
