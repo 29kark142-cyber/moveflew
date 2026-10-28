@@ -2920,6 +2920,13 @@ html:lang(ru) .steps-grid p {
 
 /* Invitation surfaces are locally themed so the migrated CRM remains unchanged. */
 .crew-onboarding, .crew-onboarding-menu {
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-border: var(--border);
   --background: oklch(1 0 0);
   --card: oklch(1 0 0);
   --foreground: oklch(0.25 0.025 255);
