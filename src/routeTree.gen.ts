@@ -20,6 +20,7 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as WidgetDotjsRouteImport } from './routes/widget[.]js'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AdminPlatformRouteImport } from './routes/admin.platform'
 import { Route as ApiCopilotRouteImport } from './routes/api/copilot'
 import { Route as AppSplatRouteImport } from './routes/app.$'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
@@ -87,6 +88,11 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPlatformRoute = AdminPlatformRouteImport.update({
+  id: '/admin/platform',
+  path: '/admin/platform',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCopilotRoute = ApiCopilotRouteImport.update({
   id: '/api/copilot',
   path: '/api/copilot',
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/platform': typeof AdminPlatformRoute
   '/api/copilot': typeof ApiCopilotRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/platform': typeof AdminPlatformRoute
   '/api/copilot': typeof ApiCopilotRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/platform': typeof AdminPlatformRoute
   '/api/copilot': typeof ApiCopilotRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/platform'
     | '/api/copilot'
     | '/app/$'
     | '/invite/$token'
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/platform'
     | '/api/copilot'
     | '/app/$'
     | '/invite/$token'
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/platform'
     | '/api/copilot'
     | '/app/$'
     | '/invite/$token'
@@ -293,6 +305,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   WidgetDotjsRoute: typeof WidgetDotjsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  AdminPlatformRoute: typeof AdminPlatformRoute
   ApiCopilotRoute: typeof ApiCopilotRoute
   AppSplatRoute: typeof AppSplatRoute
   InviteTokenRoute: typeof InviteTokenRoute
@@ -384,6 +397,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/platform': {
+      id: '/admin/platform'
+      path: '/admin/platform'
+      fullPath: '/admin/platform'
+      preLoaderRoute: typeof AdminPlatformRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/copilot': {
       id: '/api/copilot'
       path: '/api/copilot'
@@ -470,6 +490,7 @@ const rootRouteChildren: RootRouteChildren = {
   WidgetDotjsRoute: WidgetDotjsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  AdminPlatformRoute: AdminPlatformRoute,
   ApiCopilotRoute: ApiCopilotRoute,
   AppSplatRoute: AppSplatRoute,
   InviteTokenRoute: InviteTokenRoute,
