@@ -16,14 +16,17 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as WidgetDotjsRouteImport } from './routes/widget[.]js'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AppSplatRouteImport } from './routes/app.$'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as ApiCrmSplatRouteImport } from './routes/api/crm/$'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicV1LeadsRouteImport } from './routes/api/public/v1/leads'
 import { Route as ApiPublicV1QuotesRouteImport } from './routes/api/public/v1/quotes'
 import { Route as ApiV1PublicQuotesRouteImport } from './routes/api/v1/public/quotes'
+import { Route as ApiPublicV1HooksTokenRouteImport } from './routes/api/public/v1/hooks/$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -60,6 +63,11 @@ const PricingRoute = PricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WidgetDotjsRoute = WidgetDotjsRouteImport.update({
+  id: '/widget.js',
+  path: '/widget.js',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
   Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
     id: '/.well-known/oauth-protected-resource',
@@ -92,6 +100,11 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicV1LeadsRoute = ApiPublicV1LeadsRouteImport.update({
+  id: '/api/public/v1/leads',
+  path: '/api/public/v1/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicV1QuotesRoute = ApiPublicV1QuotesRouteImport.update({
   id: '/api/public/v1/quotes',
   path: '/api/public/v1/quotes',
@@ -100,6 +113,11 @@ const ApiPublicV1QuotesRoute = ApiPublicV1QuotesRouteImport.update({
 const ApiV1PublicQuotesRoute = ApiV1PublicQuotesRouteImport.update({
   id: '/api/v1/public/quotes',
   path: '/api/v1/public/quotes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicV1HooksTokenRoute = ApiPublicV1HooksTokenRouteImport.update({
+  id: '/api/public/v1/hooks/$token',
+  path: '/api/public/v1/hooks/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -111,14 +129,17 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
+  '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/v1/leads': typeof ApiPublicV1LeadsRoute
   '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
   '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
+  '/api/public/v1/hooks/$token': typeof ApiPublicV1HooksTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -128,14 +149,17 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
+  '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/v1/leads': typeof ApiPublicV1LeadsRoute
   '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
   '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
+  '/api/public/v1/hooks/$token': typeof ApiPublicV1HooksTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -146,14 +170,17 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
+  '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/v1/leads': typeof ApiPublicV1LeadsRoute
   '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
   '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
+  '/api/public/v1/hooks/$token': typeof ApiPublicV1HooksTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -165,14 +192,17 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/platform'
     | '/pricing'
+    | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
     | '/api/public/payments/webhook'
+    | '/api/public/v1/leads'
     | '/api/public/v1/quotes'
     | '/api/v1/public/quotes'
+    | '/api/public/v1/hooks/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -182,14 +212,17 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/platform'
     | '/pricing'
+    | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
     | '/api/public/payments/webhook'
+    | '/api/public/v1/leads'
     | '/api/public/v1/quotes'
     | '/api/v1/public/quotes'
+    | '/api/public/v1/hooks/$token'
   id:
     | '__root__'
     | '/'
@@ -199,14 +232,17 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/platform'
     | '/pricing'
+    | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
     | '/api/public/payments/webhook'
+    | '/api/public/v1/leads'
     | '/api/public/v1/quotes'
     | '/api/v1/public/quotes'
+    | '/api/public/v1/hooks/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -217,14 +253,17 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   PlatformRoute: typeof PlatformRoute
   PricingRoute: typeof PricingRoute
+  WidgetDotjsRoute: typeof WidgetDotjsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AppSplatRoute: typeof AppSplatRoute
   InviteTokenRoute: typeof InviteTokenRoute
   ProposalTokenRoute: typeof ProposalTokenRoute
   ApiCrmSplatRoute: typeof ApiCrmSplatRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
+  ApiPublicV1LeadsRoute: typeof ApiPublicV1LeadsRoute
   ApiPublicV1QuotesRoute: typeof ApiPublicV1QuotesRoute
   ApiV1PublicQuotesRoute: typeof ApiV1PublicQuotesRoute
+  ApiPublicV1HooksTokenRoute: typeof ApiPublicV1HooksTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -278,6 +317,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/widget.js': {
+      id: '/widget.js'
+      path: '/widget.js'
+      fullPath: '/widget.js'
+      preLoaderRoute: typeof WidgetDotjsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.well-known/oauth-protected-resource': {
       id: '/.well-known/oauth-protected-resource'
       path: '/.well-known/oauth-protected-resource'
@@ -320,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/leads': {
+      id: '/api/public/v1/leads'
+      path: '/api/public/v1/leads'
+      fullPath: '/api/public/v1/leads'
+      preLoaderRoute: typeof ApiPublicV1LeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/v1/quotes': {
       id: '/api/public/v1/quotes'
       path: '/api/public/v1/quotes'
@@ -334,6 +387,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1PublicQuotesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/hooks/$token': {
+      id: '/api/public/v1/hooks/$token'
+      path: '/api/public/v1/hooks/$token'
+      fullPath: '/api/public/v1/hooks/$token'
+      preLoaderRoute: typeof ApiPublicV1HooksTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -345,6 +405,7 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   PlatformRoute: PlatformRoute,
   PricingRoute: PricingRoute,
+  WidgetDotjsRoute: WidgetDotjsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AppSplatRoute: AppSplatRoute,
@@ -352,8 +413,10 @@ const rootRouteChildren: RootRouteChildren = {
   ProposalTokenRoute: ProposalTokenRoute,
   ApiCrmSplatRoute: ApiCrmSplatRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
+  ApiPublicV1LeadsRoute: ApiPublicV1LeadsRoute,
   ApiPublicV1QuotesRoute: ApiPublicV1QuotesRoute,
   ApiV1PublicQuotesRoute: ApiV1PublicQuotesRoute,
+  ApiPublicV1HooksTokenRoute: ApiPublicV1HooksTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
