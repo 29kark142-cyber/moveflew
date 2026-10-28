@@ -1912,6 +1912,19 @@ export function JobDetailPage({ role, navigate, path }: PageProps) {
       )}
       <JobCoreActions jobId={job.id} role={role} navigate={navigate} />
       {["admin", "office_admin", "estimator"].includes(role) && job.status === "estimate" && <ProposalPublisher jobId={job.id} onPublished={() => void refresh()} />}
+      {(() => {
+        const paid = job as unknown as { depositPaidCents?: number; depositPaidAt?: string; depositMode?: string };
+        if (!paid.depositPaidCents) return null;
+        const test = paid.depositMode === "test";
+        return (
+          <div className="ws-alert" role="status">
+            <b>{test ? t("Test deposit received") : t("Deposit received")}:</b>{" "}
+            {money(paid.depositPaidCents / 100)}
+            {paid.depositPaidAt ? ` · ${new Date(paid.depositPaidAt).toLocaleString()}` : ""}
+            {test && job.status === "estimate" ? ` · ${t("test payments on the live site don't book the job")}` : ""}
+          </div>
+        );
+      })()}
       {message && (
         <div className={message === "Status saved." ? "ws-alert" : "ws-error"}>
           {localizedJobMessage(message)}
