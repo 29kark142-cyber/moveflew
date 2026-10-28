@@ -14,7 +14,7 @@ export function eligibleRevenue(
   if (!["estimate", "booked", "completed"].includes(status)) return false;
   if (
     customer &&
-    ["draft", "lost", "cancelled", "inactive", "closed"].includes(
+    ["draft", "lost", "cancelled", "canceled", "declined", "inactive", "closed"].includes(
       customer.status.trim().toLowerCase()
     )
   )

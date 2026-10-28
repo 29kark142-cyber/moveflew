@@ -189,6 +189,18 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
   if (head === "payments" && method === "GET") return [];
   if (head === "outbox" && method === "GET") return [];
 
+  if (head === "jobs" && id && (sub === "deletion-preview" || (!sub && method === "DELETE"))) {
+    if (ctx.role !== "admin" && ctx.role !== "office_admin") fail(403, "Only admins can delete jobs");
+    const job = await getOne(ctx, "job", id);
+    const revision = String(job.data["updatedAt"] ?? job.created_at);
+    if (sub === "deletion-preview")
+      return { jobId: id, title: String(job.data["title"] ?? ""), timecards: 0, inventory: Array.isArray(job.data["inventory"]) ? (job.data["inventory"] as unknown[]).length : 0, invoices: 0, blockers: [], revision };
+    const b = (await body()) as { confirm?: boolean };
+    if (!b.confirm) fail(400, "Please confirm the deletion");
+    const { error } = await ctx.db.from("workspace_records").delete().eq("id", id).eq("workspace_id", requireWs(ctx)).eq("kind", "job");
+    if (error) fail(403, error.message);
+    return { deleted: true };
+  }
   if (head === "jobs" && id && sub) {
     if (sub === "assign" && method === "POST") return update(ctx, "job", id, await body());
     if (sub === "clock" && method === "POST") {
