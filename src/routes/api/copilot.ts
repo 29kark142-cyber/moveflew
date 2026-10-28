@@ -59,7 +59,8 @@ export const Route = createFileRoute("/api/copilot")({
           const stream = await streamResponse({
             model: "openai/gpt-6-astra",
             instructions: instructions(ws?.name ?? "your workspace", String(role), parsed.data.currentPath),
-            input: parsed.data.messages.map(m => ({ role: m.role, content: m.content })),
+            // Only the user's own questions are sent; earlier assistant turns from the browser are not trusted.
+            input: parsed.data.messages.filter(m => m.role === "user").slice(-10).map(m => ({ role: "user" as const, content: m.content })),
           });
           const encoder = new TextEncoder();
           const out = new ReadableStream({
