@@ -22,6 +22,13 @@
       "when": 1793147145059,
       "tag": "0002_crew_invites",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793147653584,
+      "tag": "0003_workspace_invitations",
+      "breakpoints": true
     }
   ]
 }

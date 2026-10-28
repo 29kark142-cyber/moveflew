@@ -1,4 +1,3 @@
-import CrewInvites from "@/components/workspace/CrewInvites";
 import WorkerDirectory from "@/components/workspace/WorkerDirectory";
 import TextWorker from "@/components/workspace/TextWorker";
 import { eligibleRevenue } from "@shared/revenue";
@@ -2688,7 +2687,6 @@ export function FleetPage({ role, navigate }: PageProps) {
           {t("Crew ({count})", { count: crew.length })}
         </button>
       </div>
-      {tab === "crew" && allowed && <CrewInvites />}
       {tab === "fleet" ? (
         <section className="ws-card ws-card-pad">
           <div className="ws-table-wrap">
