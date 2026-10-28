@@ -1,3 +1,7 @@
+import OnboardingWizard from "@/components/workspace/OnboardingWizard";
+import BillingPanel from "@/components/workspace/BillingPanel";
+import { supabase } from "@/integrations/supabase/client";
+import { isReadOnly, PRICING_REMINDER } from "@/lib/onboarding";
 import MobileField from "@/components/workspace/MobileField";
 import CopilotAssistant from "@/components/workspace/CopilotAssistant";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -117,6 +121,19 @@ export default function WorkspaceApp() {
         setWorkspaceId(null);
         data = await crm.bootstrap();
       }
+      if (!data.workspace) {
+        // Company owners who registered on /register get their workspace on first sign-in.
+        const { data: auth } = await supabase.auth.getUser();
+        const meta = auth.user?.user_metadata ?? {};
+        if (typeof meta["company_name"] === "string" && meta["company_name"].trim()) {
+          const { data: wsId, error: regError } = await supabase.rpc("register_company", {
+            _company: meta["company_name"], _owner: String(meta["owner_name"] ?? ""), _phone: String(meta["phone"] ?? ""),
+          });
+          if (regError) throw new Error(regError.message);
+          setWorkspaceId(wsId as number);
+          data = await crm.bootstrap();
+        }
+      }
       setBootstrap(data);
       setWorkspaceId(data.workspace?.id ?? null);
     } catch (reason) {
@@ -177,6 +194,11 @@ export default function WorkspaceApp() {
   if (!bootstrap || !bootstrap.workspace)
     return <CreateWorkspace onCreated={createWorkspace} />;
 
+  const ws = bootstrap.workspace;
+  if (ws.role === "admin" && !ws.onboardingCompleted && location !== "/app/onboarding") {
+    navigate("/app/onboarding");
+    return null;
+  }
   const pageProps = {
     role: bootstrap.workspace.role,
     navigate,
@@ -185,7 +207,10 @@ export default function WorkspaceApp() {
   let page: React.ReactNode;
   const ExpandedPage = expandedPages[location];
   // The dispatch board shares the calendar's live job list, so booked jobs appear immediately.
-  if (location === "/app/dispatch") page = <DispatchPage {...pageProps} />;
+  if (location === "/app/onboarding")
+    page = <OnboardingWizard workspaceId={ws.id} onDone={async () => { await load(); navigate("/app/dashboard"); }} />;
+  else if (location === "/app/settings/billing") page = <BillingPanel workspace={ws} />;
+  else if (location === "/app/dispatch") page = <DispatchPage {...pageProps} />;
   else if (ExpandedPage) page = <ExpandedPage {...pageProps} />;
   else if (/^\/app\/workers\/\d+\/?$/.test(location))
     page = <WorkerDetailPage {...pageProps} />;
