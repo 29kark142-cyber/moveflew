@@ -3,7 +3,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import PublicLayout from "@/components/PublicLayout";
-import { setActiveWorkspaceId } from "@/lib/crm";
+import { setWorkspaceId } from "@/lib/crm";
 
 export const Route = createFileRoute("/join-crew")({
   ssr: false,
@@ -58,7 +58,7 @@ function JoinCrew() {
     });
     setBusy(false);
     if (error) return setMsg(error.message);
-    setActiveWorkspaceId(Number(data));
+    setWorkspaceId(Number(data));
     window.location.href = "/app/field";
   }
 

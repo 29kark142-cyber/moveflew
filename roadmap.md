@@ -13,7 +13,7 @@
 - [x] Admin-only job/estimate delete with confirmation
 - [x] Mobile wrapping for links/table cells
 - [x] Direct URLs / reloads under /app work (no 404)
-- [ ] Worker invites (/join-crew links + email) with Driver/Helper/Crew Lead roles
+- [x] Worker invites (/join-crew links + email) with Driver/Helper/Crew Lead roles
 - [ ] Phone SMS login (blocked: needs SMS provider choice)
 - [ ] Google Maps drive time + travel surcharge line item (blocked: Maps connection)
 - [ ] Public quote endpoint /api/v1/public/quotes (blocked: shared secret for website)
