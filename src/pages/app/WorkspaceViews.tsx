@@ -7,6 +7,7 @@ import { FUEL_FEE_NAME, fuelCharge, travelCharge } from "@/lib/travel-rules";
 import ProposalPublisher from "@/components/workspace/ProposalPublisher";
 import TextWorker from "@/components/workspace/TextWorker";
 import { eligibleRevenue } from "@shared/revenue";
+import { allConflicts, conflictsFor, CREW_ROLES, crewRoleOf, needsDispatch, type CrewRole, type ScheduledJob } from "@shared/dispatch";
 import DeleteJobButton from "@/components/workspace/DeleteJobButton";
 import {
   BarChart3,
@@ -2124,12 +2125,14 @@ function AssignmentModal({
   job,
   trucks,
   crew,
+  jobs = [],
   onClose,
   onSaved,
 }: {
   job: Job;
   trucks: TruckType[];
   crew: CrewMember[];
+  jobs?: Job[];
   onClose: () => void;
   onSaved: () => Promise<void>;
 }) {
@@ -2141,6 +2144,15 @@ function AssignmentModal({
   const [duration, setDuration] = useState(job.duration);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  // Live overlap preview; the server re-checks before saving.
+  const clashes = conflictsFor(
+    { id: job.id, moveDate: date, startHour, duration, status: job.status, truckId: truckId ? Number(truckId) : null, crewIds },
+    jobs as unknown as ScheduledJob[]
+  );
+  const nameOf = (c: (typeof clashes)[number]) =>
+    c.resource === "truck"
+      ? trucks.find(x => x.id === c.resourceId)?.name ?? t("Truck")
+      : crew.find(x => x.id === c.resourceId)?.name ?? t("Crew member");
   const toggle = (id: number) =>
     setCrewIds(ids =>
       ids.includes(id) ? ids.filter(value => value !== id) : [...ids, id]
@@ -2179,6 +2191,15 @@ function AssignmentModal({
               "Driver eligibility, skills, and schedule conflicts are checked on the server before an assignment saves."
             )}
           </div>
+          {clashes.length > 0 && (
+            <div className="ws-error" role="alert" style={{ marginTop: 10 }}>
+              <CircleAlert size={16} />
+              <span>
+                {t("Schedule conflict")}:{" "}
+                {clashes.map(c => `${nameOf(c)} → #${c.otherJobId}`).join(", ")}
+              </span>
+            </div>
+          )}
           <div className="ws-form-grid" style={{ marginTop: 14 }}>
             <Field label={t("Truck")}>
               <select
@@ -2187,7 +2208,7 @@ function AssignmentModal({
                 onChange={event => setTruckId(eventValue(event))}
               >
                 <option value="">{t("No truck selected")}</option>
-                {trucks.map(truck => (
+                {trucks.filter(x => x.status !== "inactive" || x.id === job.truckId).map(truck => (
                   <option value={truck.id} key={truck.id}>
                     {truck.name} · {truck.plate}
                   </option>
@@ -2224,7 +2245,7 @@ function AssignmentModal({
             </Field>
             <Field full label={t("Crew")}>
               <div className="ws-check-list">
-                {crew.map(person => (
+                {crew.filter(p => p.status !== "inactive" || crewIds.includes(p.id)).map(person => (
                   <label key={person.id}>
                     <input
                       type="checkbox"
@@ -2235,7 +2256,7 @@ function AssignmentModal({
                       <b>{person.name}</b>
                       <small>
                         {t("{role} · Skill {level}", {
-                          role: t(person.isDriver ? "Driver" : "Loader"),
+                          role: t(CREW_ROLES.find(r => r.value === crewRoleOf(person))!.label),
                           level: person.skillLevel,
                         })}
                       </small>
@@ -2254,7 +2275,7 @@ function AssignmentModal({
           <button type="button" className="ws-btn" onClick={onClose}>
             {t("Cancel")}
           </button>
-          <button className="ws-btn primary" disabled={saving}>
+          <button className="ws-btn primary" disabled={saving || clashes.length > 0}>
             {saving ? t("Checking…") : t("Save assignment")}
           </button>
         </div>
@@ -2295,6 +2316,7 @@ export function DispatchPage({ role, navigate }: PageProps) {
   const [view, setView] = useState<"day" | "week" | "month">("day");
   const [date, setDate] = useState(today());
   const [conflict, setConflict] = useState("");
+  const [assigning, setAssigning] = useState<Job | null>(null);
   useEffect(() => {
     const refreshWhenVisible = () => {
       if (document.visibilityState === "visible") void refresh();
@@ -2381,10 +2403,26 @@ export function DispatchPage({ role, navigate }: PageProps) {
   const days = calendarDays(view, date);
   // Booked moves still missing a truck or crew, so new bookings never hide on a future date.
   const ready = jobs
-    .filter(job => job.status === "booked" && (!job.truckId || !job.crewIds.length))
+    .filter(job => needsDispatch(job))
     .sort((a, b) => a.moveDate.localeCompare(b.moveDate));
+  const boardConflicts = allConflicts(jobs as unknown as ScheduledJob[]);
+  const jobName = (id: number) => { const j = jobs.find(x => x.id === id); return j ? title(j) : `#${id}`; };
+  const resourceName = (c: (typeof boardConflicts)[number]) =>
+    c.resource === "truck"
+      ? trucks.find(x => x.id === c.resourceId)?.name ?? t("Truck")
+      : crew.find(x => x.id === c.resourceId)?.name ?? t("Crew member");
   return (
     <>
+      {assigning && (
+        <AssignmentModal
+          job={assigning}
+          trucks={trucks}
+          crew={crew}
+          jobs={jobs}
+          onClose={() => setAssigning(null)}
+          onSaved={async () => { setAssigning(null); await refresh(); }}
+        />
+      )}
       <PageHead
         heading="Dispatch"
         caption="Drop on a truck to change vehicles, or on a crew row to add that person. Server validation is final."
@@ -2400,15 +2438,29 @@ export function DispatchPage({ role, navigate }: PageProps) {
           <div style={{ display: "grid", gap: 8 }}>
             {ready.map(job => (
               <div key={job.id} className="ws-inline" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-                <span><b>{title(job)}</b> · {formatDate(job.moveDate)} · {hour(job.startHour)}</span>
+                <span><b>{title(job)}</b> · {formatDate(job.moveDate)} · {hour(job.startHour)}<small style={{ display: "block" }}>{!job.truckId ? t("Needs a truck") : ""}{!job.truckId && job.crewIds.length < Math.max(1, job.crewSize || 1) ? " · " : ""}{job.crewIds.length < Math.max(1, job.crewSize || 1) ? t("Crew {have}/{need}", { have: job.crewIds.length, need: Math.max(1, job.crewSize || 1) }) : ""}</small></span>
                 <span className="ws-inline">
                   <button className="ws-btn" onClick={() => { setView("day"); setDate(toLocalDateInput(job.moveDate)); }}>{t("Show on calendar")}</button>
-                  <button className="ws-btn primary" onClick={() => navigate(`/app/jobs/${job.id}`)}>{t("Assign truck & crew")}</button>
+                  <button className="ws-btn primary" onClick={() => setAssigning(job)}>{t("Assign truck & crew")}</button>
                 </span>
               </div>
             ))}
           </div>
         </section>
+      )}
+      {boardConflicts.length > 0 && (
+        <div className="ws-error" role="alert" style={{ marginBottom: 12, alignItems: "flex-start" }}>
+          <CircleAlert size={16} />
+          <span>
+            <b>{t("Schedule conflicts on the board")}</b>
+            {boardConflicts.map((c, i) => (
+              <small key={i} style={{ display: "block" }}>
+                {resourceName(c)}: {jobName(c.jobId)} ↔ {jobName(c.otherJobId)}{" "}
+                <button className="ws-btn" style={{ padding: "2px 8px", marginLeft: 6 }} onClick={() => { const j = jobs.find(x => x.id === c.jobId); if (j) setAssigning(j); }}>{t("Fix")}</button>
+              </small>
+            ))}
+          </span>
+        </div>
       )}
       {conflict && (
         <div className="ws-error">
@@ -2852,7 +2904,7 @@ export function FleetPage({ role, navigate }: PageProps) {
                         </small>
                       </td>
                       <td>
-                        {t(member.isDriver ? "Driver" : "Loader")}
+                        {t(CREW_ROLES.find(r => r.value === crewRoleOf(member))!.label)}
                         <small>
                           {t("Skill level {level}", {
                             level: member.skillLevel,
@@ -3064,6 +3116,7 @@ function CrewModal({
     initial === "new"
       ? {
           userId: null as number | null,
+          crewRole: "helper" as CrewRole,
           name: "",
           email: "",
           phone: "",
@@ -3181,15 +3234,19 @@ function CrewModal({
                 onChange={e => set("hourlyRate", Number(eventValue(e)))}
               />
             </Field>
-            <Field label={t("Team role")}>
-              <label className="ws-checkbox">
-                <input
-                  type="checkbox"
-                  checked={form.isDriver}
-                  onChange={e => set("isDriver", e.target.checked)}
-                />{" "}
-                {t("Authorized driver")}
-              </label>
+            <Field label={t("Primary role")}>
+              <select
+                className="ws-select"
+                value={crewRoleOf(form)}
+                onChange={e => {
+                  const value = eventValue(e) as CrewRole;
+                  setForm(current => ({ ...current, crewRole: value, isDriver: value === "driver" }));
+                }}
+              >
+                {CREW_ROLES.map(r => (
+                  <option key={r.value} value={r.value}>{t(r.label)}</option>
+                ))}
+              </select>
             </Field>
             <Field label={t("Status")}>
               <select

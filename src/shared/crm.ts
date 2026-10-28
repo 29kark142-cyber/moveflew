@@ -82,6 +82,7 @@ export type CrewMember = {
   email: string;
   phone: string;
   isDriver: boolean;
+  crewRole?: "driver" | "helper" | "crew_lead";
   skillLevel: number;
   hourlyRate: number;
   status: string;
