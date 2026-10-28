@@ -91,6 +91,166 @@ export type Database = {
           },
         ]
       }
+      moving_proposals: {
+        Row: {
+          accepted_terms: boolean
+          created_at: string
+          deposit_cents: number
+          id: string
+          job_id: number
+          revoked_at: string | null
+          signature: string | null
+          signed_at: string | null
+          snapshot: Json
+          token: string
+          workspace_id: number
+        }
+        Insert: {
+          accepted_terms?: boolean
+          created_at?: string
+          deposit_cents?: number
+          id?: string
+          job_id: number
+          revoked_at?: string | null
+          signature?: string | null
+          signed_at?: string | null
+          snapshot: Json
+          token?: string
+          workspace_id: number
+        }
+        Update: {
+          accepted_terms?: boolean
+          created_at?: string
+          deposit_cents?: number
+          id?: string
+          job_id?: number
+          revoked_at?: string | null
+          signature?: string | null
+          signed_at?: string | null
+          snapshot?: Json
+          token?: string
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moving_proposals_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moving_proposals_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_checkouts: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          environment: string
+          id: string
+          proposal_id: string
+          session_id: string | null
+          status: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          environment: string
+          id?: string
+          proposal_id: string
+          session_id?: string | null
+          status?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          environment?: string
+          id?: string
+          proposal_id?: string
+          session_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_checkouts_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "moving_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_intake_connections: {
+        Row: {
+          created_at: string
+          token_hash: string
+          workspace_id: number
+        }
+        Insert: {
+          created_at?: string
+          token_hash: string
+          workspace_id: number
+        }
+        Update: {
+          created_at?: string
+          token_hash?: string
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_intake_connections_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_intake_receipts: {
+        Row: {
+          created_at: string
+          customer_id: number
+          id: string
+          request_id: string
+          workspace_id: number
+        }
+        Insert: {
+          created_at?: string
+          customer_id: number
+          id?: string
+          request_id: string
+          workspace_id: number
+        }
+        Update: {
+          created_at?: string
+          customer_id?: number
+          id?: string
+          request_id?: string
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_intake_receipts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_intake_receipts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspace_invitations: {
         Row: {
           accepted_at: string | null
@@ -233,6 +393,7 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string
+          deposit_rule: Json | null
           id: number
           name: string
           pricing: Json | null
@@ -240,6 +401,7 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by: string
+          deposit_rule?: Json | null
           id?: never
           name: string
           pricing?: Json | null
@@ -247,6 +409,7 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string
+          deposit_rule?: Json | null
           id?: never
           name?: string
           pricing?: Json | null
@@ -277,6 +440,10 @@ export type Database = {
         }[]
       }
       crew_onboarding_info: { Args: { _token: string }; Returns: Json }
+      receive_website_quote: {
+        Args: { _data: Json; _hash: string; _request_id: string }
+        Returns: Json
+      }
       register_crew_invite: {
         Args: {
           _crew_role: string
@@ -287,6 +454,21 @@ export type Database = {
         }
         Returns: number
       }
+      settle_proposal_checkout: {
+        Args: {
+          _currency: string
+          _environment: string
+          _paid: number
+          _session: string
+          _subtotal: number
+        }
+        Returns: boolean
+      }
+      sign_moving_proposal: {
+        Args: { _signature: string; _token: string }
+        Returns: Json
+      }
+      view_moving_proposal: { Args: { _token: string }; Returns: Json }
       workspace_role: { Args: { _ws: number }; Returns: string }
     }
     Enums: {

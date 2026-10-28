@@ -36,6 +36,13 @@
       "when": 1793148613980,
       "tag": "0004_crew_onboarding_contact",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793187808379,
+      "tag": "0005_quotes_proposals_deposit_rules",
+      "breakpoints": true
     }
   ]
 }
