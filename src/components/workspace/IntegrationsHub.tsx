@@ -122,13 +122,13 @@ export default function IntegrationsHub({ admin }: { admin: boolean }) {
             {revokeBtn(k)}
           </div>
         ))}
-        <Snippet text={`curl -X POST ${origin}/api/v1/public/quotes \\
+        <Snippet text={`curl -X POST ${origin}/api/public/v1/quotes \\
   -H "Authorization: Bearer nw_pub_..." \\
   -H "Idempotency-Key: <unique-submission-id>" \\
   -H "Content-Type: application/json" \\
   -d '{"name":"Jane Doe","email":"jane@example.com","phone":"555-0100","origin":"123 A St","destination":"456 B Ave","moveDate":"2026-12-01","moveSize":"2 bedroom","message":""}'`} />
         <Snippet text={`// Run on your server (Node 18+), never in the browser
-await fetch("${origin}/api/v1/public/quotes", {
+await fetch("${origin}/api/public/v1/quotes", {
   method: "POST",
   headers: {
     "Authorization": "Bearer " + process.env.NW_API_KEY,
