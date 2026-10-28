@@ -14,6 +14,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as JoinCrewRouteImport } from './routes/join-crew'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as PaymentCompleteRouteImport } from './routes/payment-complete'
 import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as WidgetDotjsRouteImport } from './routes/widget[.]js'
@@ -52,6 +53,11 @@ const LoginRoute = LoginRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentCompleteRoute = PaymentCompleteRouteImport.update({
+  id: '/payment-complete',
+  path: '/payment-complete',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlatformRoute = PlatformRouteImport.update({
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/join-crew': typeof JoinCrewRoute
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
+  '/payment-complete': typeof PaymentCompleteRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/widget.js': typeof WidgetDotjsRoute
@@ -154,6 +161,7 @@ export interface FileRoutesByTo {
   '/join-crew': typeof JoinCrewRoute
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
+  '/payment-complete': typeof PaymentCompleteRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/widget.js': typeof WidgetDotjsRoute
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/join-crew': typeof JoinCrewRoute
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
+  '/payment-complete': typeof PaymentCompleteRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/widget.js': typeof WidgetDotjsRoute
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/join-crew'
     | '/login'
     | '/mcp'
+    | '/payment-complete'
     | '/platform'
     | '/pricing'
     | '/widget.js'
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/join-crew'
     | '/login'
     | '/mcp'
+    | '/payment-complete'
     | '/platform'
     | '/pricing'
     | '/widget.js'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/join-crew'
     | '/login'
     | '/mcp'
+    | '/payment-complete'
     | '/platform'
     | '/pricing'
     | '/widget.js'
@@ -263,6 +275,7 @@ export interface RootRouteChildren {
   JoinCrewRoute: typeof JoinCrewRoute
   LoginRoute: typeof LoginRoute
   McpRoute: typeof McpRoute
+  PaymentCompleteRoute: typeof PaymentCompleteRoute
   PlatformRoute: typeof PlatformRoute
   PricingRoute: typeof PricingRoute
   WidgetDotjsRoute: typeof WidgetDotjsRoute
@@ -314,6 +327,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment-complete': {
+      id: '/payment-complete'
+      path: '/payment-complete'
+      fullPath: '/payment-complete'
+      preLoaderRoute: typeof PaymentCompleteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/platform': {
@@ -423,6 +443,7 @@ const rootRouteChildren: RootRouteChildren = {
   JoinCrewRoute: JoinCrewRoute,
   LoginRoute: LoginRoute,
   McpRoute: McpRoute,
+  PaymentCompleteRoute: PaymentCompleteRoute,
   PlatformRoute: PlatformRoute,
   PricingRoute: PricingRoute,
   WidgetDotjsRoute: WidgetDotjsRoute,

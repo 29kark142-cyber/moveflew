@@ -26,7 +26,6 @@ import {
   DispatchPage,
   EstimateWizardPage,
   EstimatesPage,
-  FieldPage,
   FleetPage,
   InvoicesPage,
   JobDetailPage,
