@@ -78,6 +78,13 @@
       "when": 1793195035152,
       "tag": "0010_deposit_livemode_booking",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793195654783,
+      "tag": "0011_deposit_settle_compat",
+      "breakpoints": true
     }
   ]
 }
