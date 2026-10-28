@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { getLocale, moverCount, useI18n } from "@/lib/i18n";
 import "@/workspace.css";
+import DepositPayment from "@/components/workspace/DepositPayment";
 
 export default function ProposalPage({ token: providedToken }: { token?: string }) {
   const { t } = useI18n();
@@ -306,7 +307,7 @@ export default function ProposalPage({ token: providedToken }: { token?: string 
           <section className="space-y-3 border-t border-border pt-6 mt-6">
             <h2 className="text-lg font-semibold">Booking deposit</h2>
             <p className="text-xl font-semibold">{money(data.depositCents / 100)}</p>
-            {data.paid ? <p className="text-primary">Deposit received · booking confirmed</p> : <p className="text-sm text-muted-foreground">{data.depositCents === 0 ? "No deposit required on this proposal. Contact the office to confirm your booking." : "Online deposit payment is not available yet. Contact the office to complete your booking."}</p>}
+            <DepositPayment token={token} depositCents={data.depositCents} paid={data.paid} signed={signed || data.signed} />
           </section>
         </main>
       </article>

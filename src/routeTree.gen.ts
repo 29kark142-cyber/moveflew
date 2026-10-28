@@ -21,6 +21,7 @@ import { Route as AppSplatRouteImport } from './routes/app.$'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as ApiCrmSplatRouteImport } from './routes/api/crm/$'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicV1QuotesRouteImport } from './routes/api/public/v1/quotes'
 import { Route as ApiV1PublicQuotesRouteImport } from './routes/api/v1/public/quotes'
 
@@ -85,6 +86,12 @@ const ApiCrmSplatRoute = ApiCrmSplatRouteImport.update({
   path: '/api/crm/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicV1QuotesRoute = ApiPublicV1QuotesRouteImport.update({
   id: '/api/public/v1/quotes',
   path: '/api/public/v1/quotes',
@@ -109,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
   '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
 }
@@ -125,6 +133,7 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
   '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
 }
@@ -142,6 +151,7 @@ export interface FileRoutesById {
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
   '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
 }
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
+    | '/api/public/payments/webhook'
     | '/api/public/v1/quotes'
     | '/api/v1/public/quotes'
   fileRoutesByTo: FileRoutesByTo
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
+    | '/api/public/payments/webhook'
     | '/api/public/v1/quotes'
     | '/api/v1/public/quotes'
   id:
@@ -192,6 +204,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
+    | '/api/public/payments/webhook'
     | '/api/public/v1/quotes'
     | '/api/v1/public/quotes'
   fileRoutesById: FileRoutesById
@@ -209,6 +222,7 @@ export interface RootRouteChildren {
   InviteTokenRoute: typeof InviteTokenRoute
   ProposalTokenRoute: typeof ProposalTokenRoute
   ApiCrmSplatRoute: typeof ApiCrmSplatRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicV1QuotesRoute: typeof ApiPublicV1QuotesRoute
   ApiV1PublicQuotesRoute: typeof ApiV1PublicQuotesRoute
 }
@@ -299,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCrmSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/v1/quotes': {
       id: '/api/public/v1/quotes'
       path: '/api/public/v1/quotes'
@@ -330,6 +351,7 @@ const rootRouteChildren: RootRouteChildren = {
   InviteTokenRoute: InviteTokenRoute,
   ProposalTokenRoute: ProposalTokenRoute,
   ApiCrmSplatRoute: ApiCrmSplatRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicV1QuotesRoute: ApiPublicV1QuotesRoute,
   ApiV1PublicQuotesRoute: ApiV1PublicQuotesRoute,
 }
