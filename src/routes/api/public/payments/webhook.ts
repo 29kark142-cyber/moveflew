@@ -10,6 +10,7 @@ async function settle(session: any, env: StripeEnv) {
     _subtotal: session.amount_subtotal ?? 0,
     _paid: session.amount_total ?? 0,
     _currency: session.currency ?? "",
+    _livemode: session.livemode === true,
   });
   if (error) throw new Error(`Settlement failed: ${error.message}`);
 }

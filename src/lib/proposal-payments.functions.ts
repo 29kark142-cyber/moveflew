@@ -1,4 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
+import { getRequest } from '@tanstack/react-start/server';
+import { isPreviewHost } from './payment-mode';
 import { z } from 'zod';
 import { proposalTokenSchema } from './proposal-rules';
 import { createStripeClient, getStripeErrorMessage } from './stripe.server';
@@ -26,7 +28,7 @@ export const createProposalDepositCheckout = createServerFn({ method: 'POST' })
     if (prior?.length) await supabaseAdmin.from('proposal_checkouts').update({ status: 'replaced' }).in('id', prior.map(c => c.id));
 
     const { data: row, error: insertError } = await supabaseAdmin.from('proposal_checkouts')
-      .insert({ proposal_id: proposal.id, environment: data.environment, amount_cents: proposal.deposit_cents, status: 'creating' })
+      .insert({ proposal_id: proposal.id, environment: data.environment, amount_cents: proposal.deposit_cents, status: 'creating', created_on_preview: isPreviewHost(new URL(getRequest().url).hostname) })
       .select('id').single();
     if (insertError || !row) return { error: 'Could not start the deposit payment. Please try again.' };
 
