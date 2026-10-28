@@ -1,7 +1,8 @@
 import Brand from "@/components/Brand";
 import SignaturePad from "@/components/workspace/SignaturePad";
 import { formatDate, LoadingBlock } from "@/components/workspace/WorkspaceUI";
-import { crm } from "@/lib/crm";
+import { readProposal, signProposal, type PublicProposal } from "@/lib/proposals.functions";
+import { Button } from "@/components/ui/button";
 import { calculateQuote, money, weight } from "@shared/crm";
 import { CheckCircle2, CircleAlert, MapPin, ShieldCheck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -9,15 +10,13 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { getLocale, moverCount, useI18n } from "@/lib/i18n";
 import "@/workspace.css";
 
-export default function ProposalPage() {
+export default function ProposalPage({ token: providedToken }: { token?: string }) {
   const { t } = useI18n();
   const token = useMemo(
-    () => window.location.pathname.split("/").filter(Boolean).pop() || "",
-    []
+    () => providedToken || "",
+    [providedToken]
   );
-  const [data, setData] = useState<Awaited<
-    ReturnType<typeof crm.proposal>
-  > | null>(null);
+  const [data, setData] = useState<PublicProposal | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [signature, setSignature] = useState<string | null>(null);
@@ -30,7 +29,7 @@ export default function ProposalPage() {
       setLoading(true);
       setError("");
       try {
-        setData(await crm.proposal(token));
+        setData(await readProposal({ data: { token } }));
       } catch (reason) {
         setError(
           reason instanceof Error
@@ -49,7 +48,7 @@ export default function ProposalPage() {
     setSaving(true);
     setError("");
     try {
-      await crm.signProposal(token, signature);
+      await signProposal({ data: { token, signature, acceptedTerms: true } });
       setSigned(true);
     } catch (reason) {
       setError(
@@ -81,7 +80,7 @@ export default function ProposalPage() {
       </div>
     );
   if (!data) return null;
-  const { job, company, pricing, tariff } = data;
+  const { job, company, pricing } = data;
   const base =
     job.pricingMode === "hourly"
       ? job.hourlyRate * Math.max(pricing.minimumHours, job.estimatedHours)
@@ -200,14 +199,7 @@ export default function ProposalPage() {
               </div>
             </div>
             <div className="ws-quote-lines">
-              {tariff ? (
-                tariff.lines.map(line => (
-                  <div key={line.key}>
-                    <span>{line.description}</span>
-                    <strong>{money(line.amountCents / 100)}</strong>
-                  </div>
-                ))
-              ) : (
+              {(
                 <>
                   <div>
                     <span>
@@ -264,14 +256,14 @@ export default function ProposalPage() {
               )}
             </p>
           </section>
-          {signed || job.signature ? (
+          {signed || data.signed ? (
             <div className="ws-proposal-signed">
               <CheckCircle2 size={24} />
               <div>
                 <b>{t("Estimate accepted")}</b>
                 <p>
                   {t(
-                    "Thank you. Your signature has been recorded. The office will confirm your booking separately."
+                    "Your signature has been recorded."
                   )}
                 </p>
               </div>
@@ -301,16 +293,21 @@ export default function ProposalPage() {
                 </span>
               </label>
               {error && <div className="ws-error">{t(error)}</div>}
-              <button
+              <Button
                 className="ws-btn primary"
                 disabled={!signature || !accepted || saving}
                 onClick={() => void submit()}
               >
                 <ShieldCheck size={15} />
                 {saving ? t("Saving signature…") : t("Accept & sign estimate")}
-              </button>
+              </Button>
             </section>
           )}
+          <section className="space-y-3 border-t border-border pt-6 mt-6">
+            <h2 className="text-lg font-semibold">Booking deposit</h2>
+            <p className="text-xl font-semibold">{money(data.depositCents / 100)}</p>
+            {data.paid ? <p className="text-primary">Deposit received · booking confirmed</p> : <p className="text-sm text-muted-foreground">{data.depositCents === 0 ? "No deposit required on this proposal. Contact the office to confirm your booking." : "Online deposit payment is not available yet. Contact the office to complete your booking."}</p>}
+          </section>
         </main>
       </article>
     </div>

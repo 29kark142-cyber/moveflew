@@ -19,7 +19,10 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AppSplatRouteImport } from './routes/app.$'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as ApiCrmSplatRouteImport } from './routes/api/crm/$'
+import { Route as ApiPublicV1QuotesRouteImport } from './routes/api/public/v1/quotes'
+import { Route as ApiV1PublicQuotesRouteImport } from './routes/api/v1/public/quotes'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -72,9 +75,24 @@ const InviteTokenRoute = InviteTokenRouteImport.update({
   path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProposalTokenRoute = ProposalTokenRouteImport.update({
+  id: '/proposal/$token',
+  path: '/proposal/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCrmSplatRoute = ApiCrmSplatRouteImport.update({
   id: '/api/crm/$',
   path: '/api/crm/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicV1QuotesRoute = ApiPublicV1QuotesRouteImport.update({
+  id: '/api/public/v1/quotes',
+  path: '/api/public/v1/quotes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1PublicQuotesRoute = ApiV1PublicQuotesRouteImport.update({
+  id: '/api/v1/public/quotes',
+  path: '/api/v1/public/quotes',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -89,7 +107,10 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
+  '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
+  '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,7 +123,10 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
+  '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
+  '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,7 +140,10 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/$': typeof AppSplatRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
+  '/api/public/v1/quotes': typeof ApiPublicV1QuotesRoute
+  '/api/v1/public/quotes': typeof ApiV1PublicQuotesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,7 +158,10 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
     | '/invite/$token'
+    | '/proposal/$token'
     | '/api/crm/$'
+    | '/api/public/v1/quotes'
+    | '/api/v1/public/quotes'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,7 +174,10 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
     | '/invite/$token'
+    | '/proposal/$token'
     | '/api/crm/$'
+    | '/api/public/v1/quotes'
+    | '/api/v1/public/quotes'
   id:
     | '__root__'
     | '/'
@@ -157,7 +190,10 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app/$'
     | '/invite/$token'
+    | '/proposal/$token'
     | '/api/crm/$'
+    | '/api/public/v1/quotes'
+    | '/api/v1/public/quotes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,7 +207,10 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AppSplatRoute: typeof AppSplatRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  ProposalTokenRoute: typeof ProposalTokenRoute
   ApiCrmSplatRoute: typeof ApiCrmSplatRoute
+  ApiPublicV1QuotesRoute: typeof ApiPublicV1QuotesRoute
+  ApiV1PublicQuotesRoute: typeof ApiV1PublicQuotesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -246,11 +285,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/proposal/$token': {
+      id: '/proposal/$token'
+      path: '/proposal/$token'
+      fullPath: '/proposal/$token'
+      preLoaderRoute: typeof ProposalTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/crm/$': {
       id: '/api/crm/$'
       path: '/api/crm/$'
       fullPath: '/api/crm/$'
       preLoaderRoute: typeof ApiCrmSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/quotes': {
+      id: '/api/public/v1/quotes'
+      path: '/api/public/v1/quotes'
+      fullPath: '/api/public/v1/quotes'
+      preLoaderRoute: typeof ApiPublicV1QuotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/public/quotes': {
+      id: '/api/v1/public/quotes'
+      path: '/api/v1/public/quotes'
+      fullPath: '/api/v1/public/quotes'
+      preLoaderRoute: typeof ApiV1PublicQuotesRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -268,7 +328,10 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AppSplatRoute: AppSplatRoute,
   InviteTokenRoute: InviteTokenRoute,
+  ProposalTokenRoute: ProposalTokenRoute,
   ApiCrmSplatRoute: ApiCrmSplatRoute,
+  ApiPublicV1QuotesRoute: ApiPublicV1QuotesRoute,
+  ApiV1PublicQuotesRoute: ApiV1PublicQuotesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
