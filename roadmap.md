@@ -21,7 +21,9 @@
 - [x] Worker invites (/join-crew links + email) with Driver/Helper/Crew Lead roles
 - [ ] Phone SMS login (blocked: needs SMS provider choice)
 - [ ] Google Maps drive time + travel surcharge line item (blocked: Maps connection)
-- [ ] Public quote endpoint /api/v1/public/quotes with authenticated website delivery and persistent leads (in progress)
-- [ ] Proposal page signing + Stripe deposit + webhook → booked (in progress; built-in Stripe approved)
-- [ ] Workspace fixed/percentage deposit settings and office proposal-level override
+- [x] Public quote intake with credential-scoped workspace delivery, idempotency, validation, and Leads read-back verified; /api/public/v1/quotes is canonical, /api/v1/public/quotes is a compatibility alias
+- [ ] Connect northwestmovingcrew.com production form (blocked: external website access and publishing)
+- [x] Customer-visible proposal snapshots, share links and persisted digital signatures verified
+- [ ] Stripe deposit checkout + webhook → booked (blocked: payment catalog creation declined twice; built-in test payments enabled)
+- [x] Workspace fixed/percentage deposit settings and office proposal-level override with calculation tests
 - [ ] Move storage vaults, timecards, invoices to dedicated tables
