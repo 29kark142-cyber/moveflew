@@ -17,6 +17,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PaymentCompleteRouteImport } from './routes/payment-complete'
 import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as WidgetDotjsRouteImport } from './routes/widget[.]js'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as ApiCopilotRouteImport } from './routes/api/copilot'
@@ -68,6 +69,11 @@ const PlatformRoute = PlatformRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WidgetDotjsRoute = WidgetDotjsRouteImport.update({
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/payment-complete': typeof PaymentCompleteRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
+  '/register': typeof RegisterRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/copilot': typeof ApiCopilotRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/payment-complete': typeof PaymentCompleteRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
+  '/register': typeof RegisterRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/copilot': typeof ApiCopilotRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/payment-complete': typeof PaymentCompleteRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
+  '/register': typeof RegisterRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/copilot': typeof ApiCopilotRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/payment-complete'
     | '/platform'
     | '/pricing'
+    | '/register'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/api/copilot'
@@ -233,6 +243,7 @@ export interface FileRouteTypes {
     | '/payment-complete'
     | '/platform'
     | '/pricing'
+    | '/register'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/api/copilot'
@@ -255,6 +266,7 @@ export interface FileRouteTypes {
     | '/payment-complete'
     | '/platform'
     | '/pricing'
+    | '/register'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/api/copilot'
@@ -278,6 +290,7 @@ export interface RootRouteChildren {
   PaymentCompleteRoute: typeof PaymentCompleteRoute
   PlatformRoute: typeof PlatformRoute
   PricingRoute: typeof PricingRoute
+  RegisterRoute: typeof RegisterRoute
   WidgetDotjsRoute: typeof WidgetDotjsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiCopilotRoute: typeof ApiCopilotRoute
@@ -348,6 +361,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/widget.js': {
@@ -446,6 +466,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentCompleteRoute: PaymentCompleteRoute,
   PlatformRoute: PlatformRoute,
   PricingRoute: PricingRoute,
+  RegisterRoute: RegisterRoute,
   WidgetDotjsRoute: WidgetDotjsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
