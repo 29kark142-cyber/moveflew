@@ -16,3 +16,4 @@
 - Quote intake credentials are workspace-scoped, stored only as hashes, and revealed once to an authenticated admin; external forms must relay from their server, never expose credentials in browser code.
 - Published proposals store immutable customer-visible snapshots and separate signatures; deposits derive from workspace configuration or explicit office overrides, never client-supplied checkout amounts.
 - Test and live deposit payments remain separate; only verified live payments may book production CRM jobs.
+- Release housekeeping lives in src/lib/app-version.ts: per-build one-time cleanup of nwcrewcrm.* settings (never sign-in/theme/language) and a stale-tab Refresh banner; no service worker or auto-reload, because Lovable already revalidates HTML and reload loops break the preview.
