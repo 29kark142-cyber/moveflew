@@ -184,7 +184,9 @@ export default function WorkspaceApp() {
   };
   let page: React.ReactNode;
   const ExpandedPage = expandedPages[location];
-  if (ExpandedPage) page = <ExpandedPage {...pageProps} />;
+  // The dispatch board shares the calendar's live job list, so booked jobs appear immediately.
+  if (location === "/app/dispatch") page = <DispatchPage {...pageProps} />;
+  else if (ExpandedPage) page = <ExpandedPage {...pageProps} />;
   else if (/^\/app\/workers\/\d+\/?$/.test(location))
     page = <WorkerDetailPage {...pageProps} />;
   else if (/^\/app\/jobs\/\d+\/bol\/?$/.test(location))
