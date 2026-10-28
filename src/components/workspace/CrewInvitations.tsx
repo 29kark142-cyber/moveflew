@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import type { WorkerInvitation } from "@shared/access";
 import type { WorkspaceRole } from "@shared/crm";
 import { invitationsApi } from "@/lib/access-api";
+import { crmFetch } from "@/lib/crm";
 import { useI18n } from "@/lib/i18n";
 import { ErrorNotice, LoadingBlock, formatDate } from "./WorkspaceUI";
 import "./CrewInvitations.css";
@@ -114,6 +115,27 @@ export default function CrewInvitations({
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
   const [freshUrl, setFreshUrl] = useState("");
+  const [candidates, setCandidates] = useState<{ id: number; name: string; email?: string }[]>([]);
+  useEffect(() => {
+    void crmFetch<{ id: number; name: string; email?: string; userId?: string | null }[]>("/crew")
+      .then(rows => setCandidates(rows.filter(r => !r.userId)))
+      .catch(() => setCandidates([]));
+  }, []);
+  const rowUrl = (invitation: WorkerInvitation) =>
+    `${window.location.origin}/join-crew?token=${(invitation as WorkerInvitation & { token?: string }).token ?? ""}`;
+  const copyRow = async (invitation: WorkerInvitation) => {
+    try {
+      await navigator.clipboard.writeText(rowUrl(invitation));
+      setFreshUrl(rowUrl(invitation));
+    } catch {
+      setFreshUrl(rowUrl(invitation));
+    }
+  };
+  const openEmail = (to: string, url: string) => {
+    const subject = encodeURIComponent("Join our moving crew");
+    const text = encodeURIComponent(`You're invited to join our team workspace.\n\nAccept here: ${url}`);
+    window.location.href = `mailto:${to}?subject=${subject}&body=${text}`;
+  };
   const accepted = useRef(new Set<number>());
   const readyForTransitions = useRef(false);
 
@@ -188,6 +210,8 @@ export default function CrewInvitations({
         publicOrigin: browserOrigin(),
       });
       setFreshUrl(created.inviteUrl);
+      await navigator.clipboard?.writeText(created.inviteUrl).catch(() => undefined);
+      if (kind === "email" && email.trim()) openEmail(email.trim(), created.inviteUrl);
       setEmail("");
       setWorkerId("");
       await load();
@@ -212,6 +236,8 @@ export default function CrewInvitations({
         browserOrigin()
       );
       setFreshUrl(result.inviteUrl);
+      await navigator.clipboard?.writeText(result.inviteUrl).catch(() => undefined);
+      if (invitation.email) openEmail(invitation.email, result.inviteUrl);
       await load();
     } catch (reason) {
       setError(reason);
@@ -325,12 +351,22 @@ export default function CrewInvitations({
               "Связать с существующим кандидатом (необязательно)"
             )}
           </summary>
-          <label>{tx("Worker candidate ID", "ID кандидата")}</label>
-          <input
-            inputMode="numeric"
+          <label htmlFor="crew-invite-candidate">{tx("Worker candidate", "Кандидат")}</label>
+          <select
+            id="crew-invite-candidate"
             value={workerId}
             onChange={event => setWorkerId(event.target.value)}
-          />
+          >
+            <option value="">{tx("No candidate", "Без кандидата")}</option>
+            {candidates.map(c => (
+              <option key={c.id} value={String(c.id)}>
+                {c.name || `#${c.id}`}{c.email ? ` · ${c.email}` : ""}
+              </option>
+            ))}
+          </select>
+          {candidates.length === 0 && (
+            <small>{tx("No unlinked crew records yet. Add one under Fleet & crew.", "Нет свободных записей сотрудников.")}</small>
+          )}
         </details>
         {formError && (
           <p className="ws-error" role="alert">
@@ -407,16 +443,27 @@ export default function CrewInvitations({
                   <td>{formatDate(invitation.expiresAt)}</td>
                   <td>
                     <div className="ws-row-actions">
+                      {invitation.status === "pending" && (
+                        <button
+                          type="button"
+                          className="ws-icon-btn"
+                          title={tx("Copy link", "Копировать ссылку")}
+                          aria-label={tx("Copy link", "Копировать ссылку")}
+                          onClick={() => void copyRow(invitation)}
+                        >
+                          <Copy size={15} />
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="ws-icon-btn"
                         title={tx(
-                          "Resend and rotate link",
-                          "Отправить повторно и обновить ссылку"
+                          "Resend (extends 14 days)",
+                          "Отправить повторно"
                         )}
                         aria-label={tx(
-                          "Resend and rotate link",
-                          "Отправить повторно и обновить ссылку"
+                          "Resend (extends 14 days)",
+                          "Отправить повторно"
                         )}
                         onClick={() => void resend(invitation)}
                       >
