@@ -10,6 +10,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { UpdateBanner } from "@/components/UpdateBanner";
+import { isChunkLoadError, reportStaleClient } from "@/lib/app-version";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -40,6 +42,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
+    if (isChunkLoadError(error)) reportStaleClient("route-chunk");
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
@@ -120,6 +123,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster />
+      <UpdateBanner />
     </QueryClientProvider>
   );
 }

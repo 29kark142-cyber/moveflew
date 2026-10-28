@@ -9,6 +9,7 @@ import type {
   Truck,
   WorkspaceRole,
 } from "@shared/crm";
+import { reportStaleClient } from "@/lib/app-version";
 
 const API_ROOT = "/api/crm";
 const WORKSPACE_KEY = "nwcrewcrm.workspace-id";
@@ -54,7 +55,13 @@ export class CrmApiError extends Error {
 
 export function getWorkspaceId() {
   try {
-    return localStorage.getItem(WORKSPACE_KEY);
+    const raw = localStorage.getItem(WORKSPACE_KEY);
+    if (raw && !/^[1-9]\d*$/.test(raw)) {
+      // Corrupt or outdated value: drop it so the server picks a valid workspace.
+      localStorage.removeItem(WORKSPACE_KEY);
+      return null;
+    }
+    return raw;
   } catch {
     return null;
   }
@@ -102,6 +109,15 @@ export async function crmFetch<T>(
     body = text ? JSON.parse(text) : null;
   } catch {
     body = null;
+  }
+  const isJson = (response.headers.get("content-type") ?? "").includes("application/json");
+  if (!response.ok && !isJson && (response.status === 404 || response.status === 405)) {
+    // The endpoint this open tab expects no longer exists: it is running an old release.
+    reportStaleClient(`endpoint ${path}`);
+  }
+  if (!response.ok && !publicRequest && response.status === 403 && getWorkspaceId()) {
+    // Saved workspace is no longer accessible; forget it so the next load falls back.
+    setWorkspaceId(null);
   }
   if (!response.ok) {
     const message =
