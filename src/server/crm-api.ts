@@ -254,7 +254,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
         const { data: current, error: readError } = await ctx.db.from("workspace_invitations")
           .select("status").eq("id", id).eq("workspace_id", ws).maybeSingle();
         if (readError) fail(403, readError.message);
-        if (!current) fail(404, "Invitation not found");
+        if (!current) return fail(404, "Invitation not found");
         return { revoked: current.status === "revoked", status: current.status };
       }
       if (!data) fail(409, "This invitation is no longer pending");
