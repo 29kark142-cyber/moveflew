@@ -10,7 +10,7 @@ export default function SaasLayout({ children }: { children: ReactNode }) {
     <div className="saas-announcement"><span>Free beta access. Built for moving companies.</span><Link href="/register">Join the beta <ArrowRight size={14} /></Link></div>
     <header className="saas-header">
       <div className="saas-wrap saas-navigation">
-        <Brand />
+        <div className="saas-brand"><Brand compact /><small>MOVING OPERATIONS CRM</small></div>
         <nav aria-label="Main navigation" className={menu ? "saas-menu is-open" : "saas-menu"}>
           <Link href="/" onClick={() => setMenu(false)}>Moving CRM</Link>
           <Link href="/vs-smartmoving" onClick={() => setMenu(false)}>Compare vs. SmartMoving</Link>
@@ -21,6 +21,6 @@ export default function SaasLayout({ children }: { children: ReactNode }) {
       </div>
     </header>
     <main>{children}</main>
-    <footer className="saas-footer"><div className="saas-wrap"><div><Brand /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/login">Log in</Link></nav><small>© {new Date().getFullYear()} Northwest Crew</small></div></footer>
+    <footer className="saas-footer"><div className="saas-wrap"><div><Brand compact /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/login">Log in</Link></nav><small>© {new Date().getFullYear()} Northwest Crew</small></div></footer>
   </div>;
 }
