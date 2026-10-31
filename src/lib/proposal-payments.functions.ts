@@ -20,6 +20,12 @@ export const createProposalDepositCheckout = createServerFn({ method: 'POST' })
       .select('id,job_id,deposit_cents,signed_at,revoked_at,snapshot').eq('token', data.token).maybeSingle();
     if (!proposal || proposal.revoked_at) return { error: 'This proposal is no longer available.' };
     if (!proposal.signed_at) return { error: 'Please sign the estimate before paying the deposit.' };
+    // A withdrawn job (cancelled/declined) or one already past the estimate stage cannot take a deposit.
+    const { data: job } = await supabaseAdmin.from('workspace_records')
+      .select('data').eq('id', proposal.job_id).eq('kind', 'job').maybeSingle();
+    const jobStatus = String((job?.data as Record<string, unknown> | null)?.['status'] ?? '').toLowerCase();
+    if (!job || ['cancelled', 'canceled', 'declined', 'lost', 'archived'].includes(jobStatus))
+      return { error: 'This proposal is no longer available.' };
     if (proposal.deposit_cents < 50) return { error: 'No online deposit is required for this proposal.' };
 
     const { data: prior } = await supabaseAdmin.from('proposal_checkouts')
