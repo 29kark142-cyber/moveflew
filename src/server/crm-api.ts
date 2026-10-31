@@ -80,6 +80,8 @@ const EXTRA_FIELDS: Record<string, string[]> = {
   crew: ["crewRole"],
   reminder: [],
   sequence: [],
+  damage: ["jobId", "phase", "note", "photoUrl"],
+  damageInput: ["phase", "note", "photoData"],
 };
 const allowedFields = (kind: string) => new Set([...Object.keys(DEFAULTS[kind] ?? {}), ...(EXTRA_FIELDS[kind] ?? [])]);
 
@@ -425,7 +427,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       if (method === "GET")
         return (await list(ctx, "damage")).filter((d) => (d as Record<string, unknown>)["jobId"] === id);
       if (method === "POST") {
-        const b = clean(await body());
+        const b = clean("damageInput", await body());
         return create(ctx, "damage", { jobId: id, phase: b["phase"], note: b["note"], photoUrl: b["photoData"] ?? null });
       }
     }
