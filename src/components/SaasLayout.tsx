@@ -1,0 +1,26 @@
+import { useState, type ReactNode } from "react";
+import { Link } from "@/lib/wouter";
+import { ArrowRight, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Brand from "@/components/Brand";
+
+export default function SaasLayout({ children }: { children: ReactNode }) {
+  const [menu, setMenu] = useState(false);
+  return <div className="saas-site">
+    <div className="saas-announcement"><span>Free beta access. Built for moving companies.</span><Link href="/register">Join the beta <ArrowRight size={14} /></Link></div>
+    <header className="saas-header">
+      <div className="saas-wrap saas-navigation">
+        <Brand />
+        <nav aria-label="Main navigation" className={menu ? "saas-menu is-open" : "saas-menu"}>
+          <Link href="/" onClick={() => setMenu(false)}>Moving CRM</Link>
+          <Link href="/vs-smartmoving" onClick={() => setMenu(false)}>Compare vs. SmartMoving</Link>
+          <Link href="/login" onClick={() => setMenu(false)}>Log in</Link>
+        </nav>
+        <Button asChild className="saas-nav-cta"><Link href="/register">Start Free Beta Access <ArrowRight /></Link></Button>
+        <Button variant="ghost" size="icon" className="saas-menu-toggle" aria-label={menu ? "Close navigation" : "Open navigation"} aria-expanded={menu} onClick={() => setMenu(!menu)}>{menu ? <X /> : <Menu />}</Button>
+      </div>
+    </header>
+    <main>{children}</main>
+    <footer className="saas-footer"><div className="saas-wrap"><div><Brand /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/login">Log in</Link></nav><small>© {new Date().getFullYear()} Northwest Crew</small></div></footer>
+  </div>;
+}
