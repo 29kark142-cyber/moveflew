@@ -3138,3 +3138,6 @@ html:lang(ru) .steps-grid p {
   .saas-comparison-row > span svg { display:none; }
 }
 @media (prefers-reduced-motion:reduce) { .saas-site *, .saas-site *::before { transition:none; scroll-behavior:auto; } }
+.saas-site a.bg-primary { color:var(--color-primary-foreground); }
+.saas-brand { display:flex; flex-direction:column; gap:5px; flex-shrink:0; }
+.saas-brand > small { color:var(--saas-muted); font-size:8px; font-weight:600; margin-left:43px; }
