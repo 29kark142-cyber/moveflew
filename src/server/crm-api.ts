@@ -72,13 +72,25 @@ const SERVER_FIELDS = new Set([
 ]);
 const FIELD_NAME = /^[A-Za-z][A-Za-z0-9_]{0,63}$/;
 
-function clean(input: unknown, existing?: Record<string, unknown>): Record<string, unknown> {
+// Request bodies may only set the fields listed for each record kind (defaults plus these extras).
+const EXTRA_FIELDS: Record<string, string[]> = {
+  customer: ["company", "address", "tags", "assignedTo", "lostReason"],
+  job: ["customerId", "customer", "date", "size", "mode", "distance", "notes", "travelMiles", "travelCharge", "fuelCharge"],
+  truck: [],
+  crew: ["crewRole"],
+  reminder: [],
+  sequence: [],
+};
+const allowedFields = (kind: string) => new Set([...Object.keys(DEFAULTS[kind] ?? {}), ...(EXTRA_FIELDS[kind] ?? [])]);
+
+function clean(kind: string, input: unknown, existing?: Record<string, unknown>): Record<string, unknown> {
+  const allowed = allowedFields(kind);
   if (!input || typeof input !== "object" || Array.isArray(input)) fail(400, "Invalid request body");
   const out: Record<string, unknown> = {};
   const entries = Object.entries(input as Record<string, unknown>);
   if (entries.length > 120) fail(400, "Too many fields");
   for (const [k, v] of entries) {
-    if (SERVER_FIELDS.has(k) || !FIELD_NAME.test(k)) continue;
+    if (SERVER_FIELDS.has(k) || !FIELD_NAME.test(k) || !allowed.has(k)) continue;
     // Account links are set by the invitation flow; only allow keeping or clearing them.
     if (k === "userId" && v !== null && v !== (existing?.["userId"] ?? null)) continue;
     out[k] = v;
@@ -123,7 +135,7 @@ async function enrichJob(ctx: Ctx, data: Record<string, unknown>, pricing: Prici
 
 async function create(ctx: Ctx, kind: string, body: unknown) {
   const ws = requireWs(ctx);
-  let data: Record<string, unknown> = { ...DEFAULTS[kind], ...clean(body) };
+  let data: Record<string, unknown> = { ...DEFAULTS[kind], ...clean(kind, body) };
   if (kind === "job") data = await enrichJob(ctx, data, await pricingFor(ctx));
   const { data: row, error } = await ctx.db
     .from("workspace_records").insert({ workspace_id: ws, kind, data: data as never })
@@ -135,7 +147,7 @@ async function create(ctx: Ctx, kind: string, body: unknown) {
 async function update(ctx: Ctx, kind: string, id: number, body: unknown) {
   const ws = requireWs(ctx);
   const current = await getOne(ctx, kind, id);
-  let data: Record<string, unknown> = { ...current.data, ...clean(body, current.data) };
+  let data: Record<string, unknown> = { ...current.data, ...clean(kind, body, current.data) };
   if (kind === "job") data = await enrichJob(ctx, data, await pricingFor(ctx));
   const { data: row, error } = await ctx.db
     .from("workspace_records").update({ data: data as never, updated_at: new Date().toISOString() })
@@ -381,6 +393,8 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
   if (head === "field") return fieldRoute(ctx, method, parts.slice(1), body, { list, getOne, update, saveData, requireWs, fail, toRecord });
   // Crew members work through the field endpoints; they cannot edit jobs or customers directly.
   if (ctx.role === "crew" && method !== "GET" && (head === "jobs" || head === "customers")) fail(403, "Crew members can update jobs only from the field screen");
+  // Crew roster and fleet (roles, driver status, pay) are managed by office staff only.
+  if (ctx.role === "crew" && method !== "GET" && (head === "crew" || head === "trucks")) fail(403, "Only office staff can change the crew roster or fleet");
   if (head === "payments" && method === "GET") return [];
   if (head === "outbox" && method === "GET") return [];
 
