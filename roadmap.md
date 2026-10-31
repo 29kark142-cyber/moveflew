@@ -1,5 +1,10 @@
 # Northwest Moving Crew migration
 
+## SaaS homepage pivot
+- [x] Replace local moving homepage with B2B CRM positioning and five feature cards.
+- [x] Wire beta signup and a working SmartMoving comparison destination.
+- [x] Verify homepage and CTA navigation on desktop and mobile.
+
 ## Crew onboarding refresh
 - [x] Verify safe invitation revocation, toast feedback, and pending-only actions.
 - [x] Refresh the branded invitation card, mobile and dark appearance, fields and loading/error states.

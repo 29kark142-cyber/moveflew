@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Home from "@/pages/Home";
 
-const title = "Northwest Moving Crew — Every move, connected";
-const desc = "One workspace for leads, estimates, dispatch and crew. Careful moves across Chicago and the northwest suburbs.";
+const title = "Northwest Crew — Moving CRM with Free Beta Access";
+const desc = "Moving CRM built for fast operations without the enterprise price tag. Connect web leads, distance pricing, proposal deposits, dispatch and mobile crews.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -13,7 +13,9 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: desc },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:url", content: "https://manus-to-makeover.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://manus-to-makeover.lovable.app/" }],
   }),
   component: Home,
 });
