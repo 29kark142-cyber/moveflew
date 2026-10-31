@@ -15,6 +15,13 @@ const ROLE_NAMES: Record<string, string> = {
   admin: "Admin", office_admin: "Office admin", estimator: "Estimator", dispatcher: "Dispatcher", crew: "Crew (driver/helper)",
 };
 
+// Only known app pages reach the instructions; anything else the browser sends is replaced, never interpolated.
+function safePath(path: string) {
+  const match = [...COPILOT_ROUTES].sort((a, b) => b.path.length - a.path.length)
+    .find(r => path === r.path || path.startsWith(r.path + "/"));
+  return match ? `${match.path} (${match.label})` : "an app page";
+}
+
 function instructions(workspace: string, role: string, path: string, isSuperAdmin: boolean) {
   return `You are CrewAI Assistant, the in-app help copilot for a moving-company CRM.
 The user works in the workspace "${workspace}" with role: ${ROLE_NAMES[role] ?? role}. They are on page ${path}.
@@ -75,7 +82,7 @@ export const Route = createFileRoute("/api/copilot")({
         try {
           const stream = await streamResponse({
             model: "openai/gpt-6-astra",
-            instructions: instructions(ws?.name ?? "your workspace", String(role), parsed.data.currentPath, isSuperAdmin),
+            instructions: instructions(ws?.name ?? "your workspace", String(role), safePath(parsed.data.currentPath), isSuperAdmin),
             // Only the user's own questions are sent; earlier assistant turns from the browser are not trusted.
             input: userMessages.map(m => ({ role: "user" as const, content: m.content })),
           });
