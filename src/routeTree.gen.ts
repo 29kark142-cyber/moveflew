@@ -18,6 +18,7 @@ import { Route as PaymentCompleteRouteImport } from './routes/payment-complete'
 import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as VsSmartmovingRouteImport } from './routes/vs-smartmoving'
 import { Route as WidgetDotjsRouteImport } from './routes/widget[.]js'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AdminPlatformRouteImport } from './routes/admin.platform'
@@ -75,6 +76,11 @@ const PricingRoute = PricingRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VsSmartmovingRoute = VsSmartmovingRouteImport.update({
+  id: '/vs-smartmoving',
+  path: '/vs-smartmoving',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WidgetDotjsRoute = WidgetDotjsRouteImport.update({
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/register': typeof RegisterRoute
+  '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/platform': typeof AdminPlatformRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/register': typeof RegisterRoute
+  '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/platform': typeof AdminPlatformRoute
@@ -204,6 +212,7 @@ export interface FileRoutesById {
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
   '/register': typeof RegisterRoute
+  '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/platform': typeof AdminPlatformRoute
@@ -230,6 +239,7 @@ export interface FileRouteTypes {
     | '/platform'
     | '/pricing'
     | '/register'
+    | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/admin/platform'
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/platform'
     | '/pricing'
     | '/register'
+    | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/admin/platform'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/platform'
     | '/pricing'
     | '/register'
+    | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/admin/platform'
@@ -303,6 +315,7 @@ export interface RootRouteChildren {
   PlatformRoute: typeof PlatformRoute
   PricingRoute: typeof PricingRoute
   RegisterRoute: typeof RegisterRoute
+  VsSmartmovingRoute: typeof VsSmartmovingRoute
   WidgetDotjsRoute: typeof WidgetDotjsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AdminPlatformRoute: typeof AdminPlatformRoute
@@ -381,6 +394,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vs-smartmoving': {
+      id: '/vs-smartmoving'
+      path: '/vs-smartmoving'
+      fullPath: '/vs-smartmoving'
+      preLoaderRoute: typeof VsSmartmovingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/widget.js': {
@@ -487,6 +507,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlatformRoute: PlatformRoute,
   PricingRoute: PricingRoute,
   RegisterRoute: RegisterRoute,
+  VsSmartmovingRoute: VsSmartmovingRoute,
   WidgetDotjsRoute: WidgetDotjsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
