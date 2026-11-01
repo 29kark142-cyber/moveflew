@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import type { WorkspaceRole } from "@shared/crm";
 import { getLocale, useI18n } from "@/lib/i18n";
+import { csvCell, csvContent } from "@/lib/csv-export";
 import "@/operations.css";
 
 export const officeFinanceRoles: WorkspaceRole[] = ["admin", "office_admin"];
@@ -143,13 +144,11 @@ export function EmptyRows({
 }
 
 export function csvValue(value: unknown) {
-  let text = value == null ? "" : String(value);
-  if (/^[=+\-@]/.test(text)) text = `'${text}`;
-  return `"${text.replace(/"/g, '""')}"`;
+  return csvCell(value);
 }
 
 export function downloadCsv(filename: string, rows: unknown[][]) {
-  const content = rows.map(row => row.map(csvValue).join(",")).join("\r\n");
+  const content = csvContent(rows);
   const blob = new Blob(["\ufeff", content], {
     type: "text/csv;charset=utf-8",
   });
