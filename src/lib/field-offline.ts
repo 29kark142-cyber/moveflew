@@ -1,6 +1,6 @@
 import { openDB } from 'idb';
 import { supabase } from '@/integrations/supabase/client';
-import { getWorkspaceId, crmFetch } from './crm';
+import { getWorkspaceId } from './crm';
 
 export type FieldScope = { userId: string; workspaceId: number };
 export type FieldOperation = { id: string; scope: string; jobId: number; action: 'phase'|'photos'|'documents'|'signoff'; body: Record<string, unknown>; at: number; error?: string };
@@ -17,15 +17,17 @@ export async function enqueueField(scope: FieldScope, jobId: number, action: Fie
 }
 async function activeScope(scope: FieldScope) {
   const { data } = await supabase.auth.getSession();
-  return data.session?.user.id === scope.userId && Number(getWorkspaceId()) === scope.workspaceId;
+  return data.session?.user.id === scope.userId && Number(getWorkspaceId()) === scope.workspaceId ? data.session.access_token : null;
 }
 async function replayField(scope: FieldScope) {
   if (!navigator.onLine || !await activeScope(scope)) return;
   const operations = await queuedField(scope);
   for (const op of operations) {
-    if (!navigator.onLine || !await activeScope(scope)) break;
+    const token=await activeScope(scope);
+    if (!navigator.onLine || !token) break;
     try {
-      await crmFetch(`/field/jobs/${op.jobId}/${op.action}`, { method: 'POST', body: JSON.stringify(op.body), headers: { 'x-workspace-id': String(scope.workspaceId) } });
+      const response=await fetch(`/api/crm/field/jobs/${op.jobId}/${op.action}`, {method:'POST',body:JSON.stringify(op.body),headers:{'Authorization':`Bearer ${token}`,'x-workspace-id':String(scope.workspaceId),'Content-Type':'application/json'}});
+      if(!response.ok){const result=await response.json().catch(()=>({}));throw new Error(result.error || `Sync refused (${response.status})`);}
       await (await db()).delete('queue', op.id);
     } catch (e) {
       await (await db()).put('queue', { ...op, error: e instanceof Error ? e.message : 'Sync failed' });
