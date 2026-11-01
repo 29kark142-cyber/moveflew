@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode, type CS
 import { crmFetch } from "@/lib/crm";
 import { appearanceKey, DEFAULT_APPEARANCE, parseAppearance, type WorkspaceAppearance } from "@/lib/workspace-appearance";
 import { supabase } from "@/integrations/supabase/client";
+import { SIGNED_URL_TTL_SECONDS, WALLPAPER_REFRESH_MS } from "@/lib/signed-url";
 import "@/workspace-appearance.css";
 
 type AppearanceResponse = { appearance: WorkspaceAppearance; wallpaperUrl: string | null };
@@ -30,14 +31,14 @@ export default function AppearanceProvider({ userId, workspaceId, initial, child
     const resolve = async () => {
       if (!wallpaper) return;
       let url: string | null = wallpaper.kind === "url" ? wallpaper.value : null;
-      if (wallpaper.kind === "storage") { const { data, error } = await supabase.storage.from("workspace-wallpapers").createSignedUrl(wallpaper.value, 60); if (error) { if (active) setWallpaperError("Wallpaper could not be loaded. Upload it again or choose another image."); return; } url = data.signedUrl; }
+      if (wallpaper.kind === "storage") { const { data, error } = await supabase.storage.from("workspace-wallpapers").createSignedUrl(wallpaper.value, SIGNED_URL_TTL_SECONDS); if (error) { if (active) setWallpaperError("Wallpaper could not be loaded. Upload it again or choose another image."); return; } url = data.signedUrl; }
       if (!url || !active) return;
       const image = new Image(); image.referrerPolicy = "no-referrer";
       image.onload = () => { if (active) { setWallpaperUrl(url); setWallpaperError(""); } };
       image.onerror = () => { if (active) { setWallpaperUrl(null); setWallpaperError("The image link could not be loaded. Use a direct HTTPS image URL."); } };
       image.src = url;
     };
-    void resolve(); if (wallpaper?.kind === "storage") timer = setInterval(() => void resolve(), 45 * 60 * 1000);
+    void resolve(); if (wallpaper?.kind === "storage") timer = setInterval(() => void resolve(), WALLPAPER_REFRESH_MS);
     return () => { active = false; if (timer) clearInterval(timer); };
   }, [value.wallpaper]);
   async function save() { const result = await crmFetch<AppearanceResponse>("/appearance", { method: "PUT", body: JSON.stringify(value) }); setSaved(result.appearance); }
