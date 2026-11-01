@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import ReactMarkdown from "react-markdown";
 import { ArrowRight, Bot, Send, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getWorkspaceId, sessionAuthorization } from "@/lib/crm";
+import { useWorkspaceAppearanceSafe } from "@/components/workspace/AppearanceProvider";
 import { COPILOT_PATHS, COPILOT_ROUTES } from "@/lib/copilot-routes";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -37,9 +39,12 @@ export default function CopilotAssistant({ path, navigate }: { path: string; nav
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
   const field = useRef<HTMLTextAreaElement>(null);
+  const appearance = useWorkspaceAppearanceSafe();
 
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => { scroller.current?.scrollTo({ top: scroller.current.scrollHeight }); }, [messages]);
   useEffect(() => { if (open && !busy) field.current?.focus(); }, [open, busy]);
   useEffect(() => {
@@ -82,14 +87,23 @@ export default function CopilotAssistant({ path, navigate }: { path: string; nav
 
   const go = (p: string) => { navigate(p); if (window.innerWidth < 640) setOpen(false); };
 
-  return (
-    <>
+  // Portaled to <body>: an ancestor with backdrop-filter/transform (the glass shell
+  // behind a workspace wallpaper) would otherwise become the containing block and let
+  // the widget scroll away with the page instead of staying pinned to the viewport.
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      className="ws-appearance-root ws-copilot-portal"
+      data-preset={appearance?.value.preset}
+      data-accent={appearance?.value.accent}
+    >
       <button
         type="button"
         title="Need help? Ask AI"
         aria-label="Need help? Ask AI"
         onClick={() => setOpen(o => !o)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/40 ring-4 ring-primary/20 transition hover:scale-105 hover:shadow-primary/60"
+        className="fixed bottom-[calc(1.5rem_+_env(safe-area-inset-bottom))] right-[calc(1.5rem_+_env(safe-area-inset-right))] z-[100] flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/40 ring-4 ring-primary/20 transition hover:scale-105 hover:shadow-primary/60"
       >
         {open ? <X size={22} /> : <Bot size={24} />}
       </button>
@@ -97,8 +111,9 @@ export default function CopilotAssistant({ path, navigate }: { path: string; nav
       <div
         role="dialog"
         aria-label="CrewAI Assistant"
-        className={`fixed z-50 flex flex-col overflow-hidden border border-border bg-background text-foreground shadow-2xl transition-all duration-200
-          inset-x-0 bottom-0 h-[85vh] rounded-t-2xl sm:inset-x-auto sm:bottom-24 sm:right-6 sm:h-[600px] sm:max-h-[calc(100vh-8rem)] sm:w-[400px] sm:rounded-2xl
+        className={`fixed z-[100] flex flex-col overflow-hidden border border-border bg-background text-foreground shadow-2xl transition-all duration-200
+          inset-x-0 bottom-0 h-[85vh] rounded-t-2xl sm:inset-x-auto sm:h-[600px] sm:max-h-[calc(100vh-8rem)] sm:w-[400px] sm:rounded-2xl
+          sm:bottom-[calc(6rem_+_env(safe-area-inset-bottom))] sm:right-[calc(1.5rem_+_env(safe-area-inset-right))]
           ${open ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0"}`}
       >
         <header className="flex items-center gap-3 border-b border-border px-4 py-3">
@@ -129,7 +144,7 @@ export default function CopilotAssistant({ path, navigate }: { path: string; nav
           ))}
         </div>
 
-        <form className="flex items-end gap-2 border-t border-border p-3" onSubmit={e => { e.preventDefault(); void send(input); }}>
+        <form className="flex items-end gap-2 border-t border-border p-3 pb-[calc(0.75rem_+_env(safe-area-inset-bottom))]" onSubmit={e => { e.preventDefault(); void send(input); }}>
           <textarea
             ref={field}
             rows={1}
@@ -143,7 +158,8 @@ export default function CopilotAssistant({ path, navigate }: { path: string; nav
           <Button type="submit" size="icon" disabled={busy || !input.trim()} aria-label="Send"><Send size={16} /></Button>
         </form>
       </div>
-    </>
+    </div>,
+    document.body
   );
 }
 

@@ -8,6 +8,8 @@ import "@/workspace-appearance.css";
 type AppearanceResponse = { appearance: WorkspaceAppearance; wallpaperUrl: string | null };
 const Context = createContext<{ value: WorkspaceAppearance; saved: WorkspaceAppearance; setValue: (v: WorkspaceAppearance) => void; save: () => Promise<void>; wallpaperError: string; localError: string; ready: boolean } | null>(null);
 export function useWorkspaceAppearance() { const value = useContext(Context); if (!value) throw new Error("Appearance context is missing"); return value; }
+/** Non-throwing variant for widgets that may render with or without a workspace theme scope. */
+export function useWorkspaceAppearanceSafe() { return useContext(Context); }
 export default function AppearanceProvider({ userId, workspaceId, initial, children }: { userId: string; workspaceId: number; initial?: unknown; children: ReactNode }) {
   const [value, update] = useState(() => parseAppearance(initial));
   const [saved, setSaved] = useState(() => parseAppearance(initial));
