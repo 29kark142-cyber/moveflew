@@ -16,6 +16,7 @@ export default function OperationalReports({ workspaceName }: { workspaceName: s
       {!data?.hasJobs && <div className="ws-alert">{tx('Sample data — no workspace moves yet. These figures are illustrative, not actual revenue.', 'Пример данных — в компании пока нет переездов. Это демонстрационные показатели, а не фактическая выручка.')}</div>}
       <div className="ws-stat-grid">
         {[[tx('Total Revenue', 'Общая выручка'), money(report.revenue, locale)], [tx('Completed Moves Count', 'Завершённые переезды'), report.completedMoves], [tx('Average Order Value', 'Средний чек'), money(report.averageOrder, locale)], [tx('Crew Members', 'Сотрудники бригады'), report.crew.length]].map(([label, value]) => <div className="ws-card ws-stat" key={label}><div className="ws-stat__label">{label}</div><div className="ws-stat__number">{value}</div></div>)}
+      </div>
       <p className="text-sm text-muted-foreground my-4">{tx('All time · Completed moves only · Canceled and declined moves excluded', 'За всё время · Только завершённые переезды · Отменённые и отклонённые исключены')}</p>
       <h2 className="text-lg font-semibold mb-3">{tx('Crew Performance', 'Эффективность бригады')}</h2>
       <div className="ws-table-wrap"><table className="ws-table"><thead><tr><th>{tx('Crew member', 'Сотрудник')}</th><th>{tx('Completed moves', 'Завершённые переезды')}</th><th>{tx('Hours', 'Часы')}</th><th>{tx('Attributed revenue', 'Доля выручки')}</th></tr></thead><tbody>

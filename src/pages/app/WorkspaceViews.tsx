@@ -1386,7 +1386,7 @@ export function EstimateWizardPage({ navigate }: PageProps) {
                     patch({
                       crewSize,
                       hourlyRate:
-                        pricing.rates[Math.max(0, crewSize - 1)] ||
+                        pricing.rates[Math.max(0, crewSize - 1)] ??
                         quote.hourlyRate,
                     });
                   }}
