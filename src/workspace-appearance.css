@@ -74,3 +74,8 @@
 .ws-wallpaper-options { display:grid; gap:20px; }.ws-wallpaper-upload { display:flex; align-items:center; gap:15px; padding:18px; border:1px dashed var(--wa-border); border-radius:8px; background:var(--wa-card); }.ws-wallpaper-upload > svg { color:var(--wa-muted); }.ws-wallpaper-upload > div { display:grid; gap:7px; flex:1; }.ws-wallpaper-upload strong { font-size:12px; }.ws-wallpaper-upload small { font-size:11px; color:var(--wa-muted); }.ws-wallpaper-link { max-width:720px; }.ws-wallpaper-link label { display:block; font-size:12px; margin-bottom:8px; }.ws-wallpaper-link > div { display:flex; gap:10px; }.ws-wallpaper-link input { min-width:0; }.ws-wallpaper-remove { justify-self:start; color:var(--wa-danger); }.ws-appearance-notice { font-size:12px; color:var(--wa-accent-ink); }
 @media(max-width:1150px) { .ws-preset-gallery { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 @media(max-width:600px) { .ws-preset-gallery { grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }.ws-appearance-heading { align-items:flex-start; flex-direction:column; }.ws-appearance-heading > button { width:100%; }.ws-accent-palette { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }.ws-accent-option { width:100%; }.ws-wallpaper-upload { flex-wrap:wrap; }.ws-wallpaper-upload > button { width:100%; }.ws-wallpaper-link > div { flex-wrap:wrap; }.ws-wallpaper-link button { width:100%; } }
+
+/* The CrewAI widget is portaled to <body> so page scroll and ancestor effects (the glass
+   shell behind a workspace wallpaper) cannot move it. It keeps the workspace accent tokens
+   through inheritance without painting a second full-height surface. */
+.ws-copilot-portal { display:contents; }
