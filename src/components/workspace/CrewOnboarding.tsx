@@ -105,7 +105,7 @@ export default function CrewOnboarding({ token }: { token: string }) {
             <p className="mb-0 flex items-center justify-center gap-1.5 text-xs text-muted-foreground"><ShieldCheck className="size-3.5" aria-hidden="true" />Secure team registration</p>
           </form>}
         </section>
-        <p className="mt-6 text-center text-xs text-muted-foreground">Northwest Crew · Moving &amp; Delivery</p>
+        <p className="mt-6 text-center text-xs text-muted-foreground">MoveFlew · Moving Operations CRM</p>
       </div>
     </main>
   );

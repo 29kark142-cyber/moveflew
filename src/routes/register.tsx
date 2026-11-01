@@ -4,7 +4,7 @@ import { z } from "zod";
 import PublicLayout from "@/components/PublicLayout";
 import { supabase } from "@/integrations/supabase/client";
 
-const title = "Start your moving company workspace — Northwest Crew CRM";
+const title = "Start your moving company workspace — MoveFlew";
 const desc = "Register your moving company and get a free beta workspace for leads, estimates, dispatch and crews.";
 
 export const Route = createFileRoute("/register")({
@@ -69,20 +69,20 @@ function RegisterPage() {
           <p>Create your company account. Every workspace gets full access free during the beta — no card needed.</p>
         </div>
         {done ? (
-          <div className="contact-form">
+          <div className="contact-form-panel">
             <h2>Check your email</h2>
             <p>We sent a confirmation link to {form.email}. After confirming, sign in and your workspace will be ready.</p>
             <Link to="/login">Go to sign in</Link>
           </div>
         ) : (
-          <form className="contact-form" onSubmit={submit} noValidate>
+          <form className="contact-form-panel" onSubmit={submit} noValidate>
             <label>Company name<input required value={form.company} onChange={set("company")} placeholder="Acme Movers LLC" /></label>
             <label>Owner name<input required value={form.owner} onChange={set("owner")} placeholder="Jane Smith" autoComplete="name" /></label>
             <label>Email<input type="email" required value={form.email} onChange={set("email")} autoComplete="email" /></label>
             <label>Phone number<input type="tel" required value={form.phone} onChange={set("phone")} autoComplete="tel" /></label>
             <label>Password<input type="password" required minLength={8} value={form.password} onChange={set("password")} autoComplete="new-password" /></label>
             {msg && <p role="alert">{msg}</p>}
-            <button className="btn btn-primary" disabled={busy}>{busy ? "Creating…" : "Create company workspace"}</button>
+            <button className="btn btn-blue" disabled={busy}>{busy ? "Creating…" : "Create company workspace"}</button>
             <p style={{ fontSize: 14 }}>Already have an account? <Link to="/login">Sign in</Link></p>
           </form>
         )}

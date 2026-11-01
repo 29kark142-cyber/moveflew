@@ -1,9 +1,7 @@
 import { useState, type FormEvent } from "react";
 import {
   ArrowRight,
-  Phone,
   Mail,
-  MapPin,
   CheckCircle2,
   MessageSquare,
 } from "lucide-react";
@@ -55,40 +53,21 @@ export default function Contact() {
             {t("Moving a home? Planning a busy day for your crew? We’re here to help you put the right plan in place.")}
           </p>
           <div className="contact-methods">
-            <a href="tel:+12243130604">
+            <a href="mailto:support@moveflew.com">
               <span>
-                <Phone />
-              </span>
-              <div>
-                <small>{t("GIVE US A CALL")}</small>
-                <strong>(224) 313-0604</strong>
-              </div>
-              <ArrowRight size={18} />
-            </a>
-            <a href="mailto:booking.movinghelp@gmail.com">
-              <span>
-                <Mail />
+                 <Mail />
               </span>
               <div>
                 <small>{t("SEND US AN EMAIL")}</small>
-                <strong>booking.movinghelp@gmail.com</strong>
+                <strong>support@moveflew.com</strong>
               </div>
               <ArrowRight size={18} />
             </a>
-            <div>
-              <span>
-                <MapPin />
-              </span>
-              <div>
-                <small>{t("YOUR NEIGHBORHOOD CREW")}</small>
-                <strong>Chicago & Northwest Suburbs</strong>
-              </div>
-            </div>
           </div>
           <img
             className="contact-photo"
             src="/assets/northwest-packing.webp"
-            alt={t("Careful packing by the Northwest moving crew")}
+            alt={t("Careful packing by the MoveFlew crew")}
           />
         </div>
         <div className="contact-form-panel">
@@ -97,11 +76,11 @@ export default function Contact() {
               <CheckCircle2 size={46} />
               <h2>{t("Your inquiry is saved.")}</h2>
               <p>
-                {t("Thank you for sharing the details. For a time-sensitive moving request, call or email Northwest Moving Crew directly.")}
+                {t("Thank you for sharing the details. For a time-sensitive moving request, email the MoveFlew team directly.")}
               </p>
-              <a className="btn btn-blue" href="tel:+12243130604">
-                <Phone size={18} />
-                {t("Call the crew")}
+              <a className="btn btn-blue" href="mailto:support@moveflew.com">
+                <Mail size={18} />
+                {t("Email the crew")}
               </a>
               <button className="text-link" onClick={() => setSuccess(false)}>
                 {t("Send another inquiry")} <ArrowRight size={16} />

@@ -28,8 +28,8 @@
   --radius-xl: 16px;
 }
 :root {
-  --blue: #0877eb;
-  --cyan: #31b3ed;
+  --blue: #059669;
+  --cyan: #10b981;
   --navy: #061d31;
   --ink: #0a2137;
   --text: #506071;
@@ -124,7 +124,7 @@ h4 {
   z-index: 2;
 }
 .brand-symbol {
-  color: var(--blue);
+  color: #059669;
   width: 35px;
   height: 35px;
   display: block;
@@ -139,14 +139,14 @@ h4 {
   line-height: 1;
 }
 .brand-words strong {
-  color: var(--blue);
+  color: var(--navy);
   font-family: "Outfit", sans-serif;
   letter-spacing: -0.04em;
   font-size: 23px;
   font-weight: 650;
 }
 .brand-words strong span {
-  color: var(--navy);
+  color: #059669;
   margin-left: 2px;
 }
 .brand-words small {
@@ -161,7 +161,7 @@ h4 {
   color: white;
 }
 .brand-light .brand-symbol {
-  color: var(--cyan);
+  color: #10b981;
 }
 .brand-light .brand-words small {
   color: #b3c7d7;
@@ -200,7 +200,7 @@ h4 {
   color: #fff;
 }
 .btn-blue:hover {
-  background: #0668cf;
+  background: #047857;
 }
 .btn-outline {
   border: 1px solid #d8e4ee;
@@ -1907,7 +1907,7 @@ h4 {
   color: #d9e6f0;
 }
 .login-benefit svg {
-  color: #49bce8;
+  color: #10b981;
 }
 .login-brand-bottom {
   color: #839fb6;
@@ -1938,14 +1938,27 @@ h4 {
   margin: 65px 0;
 }
 .login-icon {
-  display: grid;
-  place-items: center;
-  color: var(--blue);
-  background: #eaf5ff;
-  height: 59px;
-  width: 59px;
-  border-radius: 13px;
+  display: block;
   margin-bottom: 28px;
+}
+.login-icon .movegrid-brand {
+  font-size: 24px;
+  color: var(--navy);
+}
+.login-icon .movegrid-symbol {
+  width: 30px;
+  height: 33px;
+  color: #059669;
+}
+.login-icon .movegrid-word-accent {
+  color: #059669;
+}
+.login-brand-panel .movegrid-brand {
+  color: #fff;
+}
+.login-brand-panel .movegrid-symbol,
+.login-brand-panel .movegrid-word-accent {
+  color: #10b981;
 }
 .login-box .section-kicker {
   font-size: 8px;
@@ -2930,19 +2943,19 @@ html:lang(ru) .steps-grid p {
   --background: oklch(1 0 0);
   --card: oklch(1 0 0);
   --foreground: oklch(0.25 0.025 255);
-  --primary: oklch(0.55 0.21 260);
+  --primary: oklch(0.62 0.13 163);
   --border: oklch(0.91 0.01 255);
   --color-primary-foreground: oklch(1 0 0);
   --color-muted-foreground: oklch(0.51 0.025 255);
-  --color-accent: oklch(0.96 0.02 255);
+  --color-accent: oklch(0.96 0.02 165);
   --color-input: oklch(0.84 0.02 255);
   --color-ring: var(--primary);
   --color-destructive: oklch(0.53 0.19 25);
-  --onboarding-page-top: oklch(0.96 0.015 250);
+  --onboarding-page-top: oklch(0.96 0.015 165);
   --onboarding-page-bottom: oklch(0.985 0.003 255);
   --onboarding-shadow: 0 20px 55px -18px oklch(0.3 0.03 255 / 0.18), 0 3px 10px oklch(0.3 0.03 255 / 0.03);
-  --onboarding-button-shadow: 0 4px 12px oklch(0.55 0.21 260 / 0.2);
-  --onboarding-button: oklch(0.55 0.21 260);
+  --onboarding-button-shadow: 0 4px 12px oklch(0.62 0.13 163 / 0.2);
+  --onboarding-button: oklch(0.62 0.13 163);
   color-scheme: light;
 }
 .crew-onboarding { background: linear-gradient(155deg, var(--onboarding-page-top), var(--onboarding-page-bottom)); }
@@ -2959,7 +2972,7 @@ html:lang(ru) .steps-grid p {
   --background: oklch(0.22 0.02 255);
   --card: oklch(0.2 0.018 255);
   --foreground: oklch(0.96 0.006 255);
-  --primary: oklch(0.68 0.17 255);
+  --primary: oklch(0.72 0.15 165);
   --border: oklch(0.32 0.025 255);
   --color-muted-foreground: oklch(0.74 0.025 255);
   --color-accent: oklch(0.27 0.045 255);
@@ -2975,7 +2988,7 @@ html:lang(ru) .steps-grid p {
     --background: oklch(0.22 0.02 255);
     --card: oklch(0.2 0.018 255);
     --foreground: oklch(0.96 0.006 255);
-    --primary: oklch(0.68 0.17 255);
+    --primary: oklch(0.72 0.15 165);
     --border: oklch(0.32 0.025 255);
     --color-muted-foreground: oklch(0.74 0.025 255);
     --color-accent: oklch(0.27 0.045 255);

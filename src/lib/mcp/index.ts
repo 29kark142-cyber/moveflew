@@ -9,6 +9,6 @@ export default defineMcp({
   title: "Manus Project Migration",
   version: "0.1.0",
   instructions:
-    "Public info for Northwest Moving Crew (Chicago & Northwest Suburbs): hourly moving rates, quick cost estimates, and contact details.",
+    "Public info for MoveFlew: hourly moving rates, quick cost estimates, and contact details.",
   tools: [getMovingRates, estimateMoveCost, getContactInfo],
 });

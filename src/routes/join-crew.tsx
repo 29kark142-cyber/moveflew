@@ -7,9 +7,9 @@ export const Route = createFileRoute("/join-crew")({
   validateSearch: z.object({ token: z.string().optional() }),
   head: () => ({
     meta: [
-      { title: "Join the crew — Northwest Moving Crew" },
-      { name: "description", content: "Accept your invite to join the Northwest Moving Crew team workspace." },
-      { property: "og:title", content: "Join the crew — Northwest Moving Crew" },
+      { title: "Join the crew — MoveFlew" },
+      { name: "description", content: "Accept your invite to join your MoveFlew team workspace." },
+      { property: "og:title", content: "Join the crew — MoveFlew" },
       { property: "og:description", content: "Accept your crew invite and set up your account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

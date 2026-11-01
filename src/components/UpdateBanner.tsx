@@ -58,7 +58,7 @@ export function UpdateBanner() {
       role="status"
       className="fixed inset-x-3 bottom-4 z-[100] mx-auto flex max-w-md items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground shadow-lg"
     >
-      <span className="flex-1">A new version of Northwest Crew CRM is available.</span>
+      <span className="flex-1">A new version of MoveFlew is available.</span>
       <button
         type="button"
         onClick={refresh}

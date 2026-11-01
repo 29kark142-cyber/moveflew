@@ -4,8 +4,8 @@ import PublicLayout from "@/components/PublicLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
-const title = "Team login — Northwest Moving Crew";
-const desc = "Sign in to the Northwest Moving Crew workspace.";
+const title = "Team login — MoveFlew";
+const desc = "Sign in to your MoveFlew workspace.";
 
 export const Route = createFileRoute("/login")({
   head: () => ({

@@ -1,19 +1,18 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 
 const info = {
-  phone: "(224) 313-0604",
-  email: "booking.movinghelp@gmail.com",
-  serviceArea: "Chicago & Northwest Suburbs",
+  email: "support@moveflew.com",
+  product: "MoveFlew — moving operations CRM",
 };
 
 export default defineTool({
   name: "get_contact_info",
   title: "Get contact info",
-  description: "Return Northwest Moving Crew's public phone, email and service area.",
+  description: "Return MoveFlew's public support email and product summary.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: () => ({
-    content: [{ type: "text", text: `Phone: ${info.phone}\nEmail: ${info.email}\nService area: ${info.serviceArea}` }],
+    content: [{ type: "text", text: `Email: ${info.email}\nProduct: ${info.product}` }],
     structuredContent: { ...info },
   }),
 });

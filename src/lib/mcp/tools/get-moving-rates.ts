@@ -4,7 +4,7 @@ import { DEFAULT_PRICING } from "../../../shared/crm";
 export default defineTool({
   name: "get_moving_rates",
   title: "Get moving rates",
-  description: "List Northwest Moving Crew's public hourly rates by crew size, minimum hours, packing rate and box prices.",
+  description: "List MoveFlew's public hourly rates by crew size, minimum hours, packing rate and box prices.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: () => {

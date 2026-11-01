@@ -4,10 +4,10 @@ import Contact from "@/pages/Contact";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact the crew — Northwest Moving Crew" },
-      { name: "description", content: "Call, email or send a request to plan your next move with Northwest Moving Crew." },
-      { property: "og:title", content: "Contact the crew — Northwest Moving Crew" },
-      { property: "og:description", content: "Call, email or send a request to plan your next move with Northwest Moving Crew." },
+      { title: "Contact the crew — MoveFlew" },
+      { name: "description", content: "Email or send a request to plan your next move with MoveFlew." },
+      { property: "og:title", content: "Contact the crew — MoveFlew" },
+      { property: "og:description", content: "Email or send a request to plan your next move with MoveFlew." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

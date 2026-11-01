@@ -47,14 +47,14 @@ export default function ProductPreview() {
   return (
     <div
       className="product-preview"
-      aria-label={t("Illustrative Northwest Crew workspace preview")}
+      aria-label={t("Illustrative MoveFlew workspace preview")}
     >
       <div className="preview-main">
         <div className="browser-chrome">
           <i />
           <i />
           <i />
-          <span>Northwest Crew · {t("Workspace")}</span>
+          <span>MoveFlew · {t("Workspace")}</span>
         </div>
         <div className="preview-screen">
           <div className="preview-rail">

@@ -3,12 +3,10 @@ import { Link, useLocation } from "@/lib/wouter";
 import {
   ArrowRight,
   Menu,
-  Phone,
   UserRound,
   X,
   ChevronDown,
   Mail,
-  MapPin,
 } from "lucide-react";
 import Brand from "./Brand";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -72,9 +70,9 @@ export function PublicHeader({ hero = false }: { hero?: boolean }) {
           </nav>
           <div className="nav-actions">
             <LanguageSwitcher />
-            <a className="nav-phone" href="tel:+12243130604">
-              <Phone size={18} />
-              <span>(224) 313-0604</span>
+            <a className="nav-phone" href="mailto:support@moveflew.com">
+              <Mail size={18} />
+              <span>support@moveflew.com</span>
             </a>
             <Link href="/login" className="nav-login">
               <UserRound size={18} /> {t("Log in")}
@@ -116,29 +114,21 @@ export function PublicFooter() {
           <Link href="/app/dispatch">{t("Plan your day")}</Link>
         </div>
         <div>
-          <h4>Northwest Moving Crew</h4>
+          <h4>MoveFlew</h4>
           <Link href="/pricing">{t("Moving rates")}</Link>
           <Link href="/contact">{t("Contact the crew")}</Link>
           <Link href="/login">{t("Team login")}</Link>
         </div>
         <div>
           <h4>{t("Let’s talk moving")}</h4>
-          <a href="tel:+12243130604">
-            <Phone size={15} />
-            (224) 313-0604
-          </a>
-          <a href="mailto:booking.movinghelp@gmail.com">
+          <a href="mailto:support@moveflew.com">
             <Mail size={15} />
-            booking.movinghelp@gmail.com
+            support@moveflew.com
           </a>
-          <span>
-            <MapPin size={15} />
-            Chicago & Northwest Suburbs
-          </span>
         </div>
       </div>
       <div className="wrap footer-bottom">
-        <span>© {new Date().getFullYear()} Northwest Moving Crew</span>
+        <span>© {new Date().getFullYear()} MoveFlew Technologies Inc. All rights reserved.</span>
         <span>{t("Built around the way you move.")}</span>
       </div>
     </footer>

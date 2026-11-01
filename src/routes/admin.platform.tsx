@@ -5,9 +5,9 @@ export const Route = createFileRoute("/admin/platform")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Platform admin — Northwest Crew CRM" },
+      { title: "Platform admin — MoveFlew" },
       { name: "description", content: "Manage subscriber workspaces, plans and platform health." },
-      { property: "og:title", content: "Platform admin — Northwest Crew CRM" },
+      { property: "og:title", content: "Platform admin — MoveFlew" },
       { property: "og:description", content: "Manage subscriber workspaces, plans and platform health." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
