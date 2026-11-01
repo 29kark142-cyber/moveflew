@@ -257,7 +257,9 @@ export default function ProposalPage({ token: providedToken }: { token?: string 
               )}
             </p>
           </section>
-          {signed || data.signed ? (
+          {data.testApproved ? (
+            <div className="ws-proposal-signed"><CheckCircle2 size={24} /><div><b>Approved / Booked for testing</b><p>Manually approved by the office. No customer signature or deposit payment recorded.</p></div></div>
+          ) : signed || data.signed ? (
             <div className="ws-proposal-signed">
               <CheckCircle2 size={24} />
               <div>
@@ -304,11 +306,11 @@ export default function ProposalPage({ token: providedToken }: { token?: string 
               </Button>
             </section>
           )}
-          <section className="space-y-3 border-t border-border pt-6 mt-6">
+          {!data.testApproved && <section className="space-y-3 border-t border-border pt-6 mt-6">
             <h2 className="text-lg font-semibold">Booking deposit</h2>
             <p className="text-xl font-semibold">{money(data.depositCents / 100)}</p>
             <DepositPayment token={token} depositCents={data.depositCents} paid={data.paid} signed={signed || data.signed} />
-          </section>
+          </section>}
         </main>
       </article>
     </div>

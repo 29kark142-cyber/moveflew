@@ -9,7 +9,7 @@ import { DEFAULT_PRICING } from '@/shared/crm';
 
 export type PublicProposal = {
   job: Job; company: { name: string; phone: string; email: string }; pricing: Pricing;
-  depositCents: number; signed: boolean; paid: boolean; proposalId: string;
+  depositCents: number; signed: boolean; paid: boolean; proposalId: string; testApproved?: boolean;
 };
 function publicClient() {
   const url = process.env['SUPABASE_URL'];
