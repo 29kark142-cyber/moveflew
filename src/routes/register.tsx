@@ -4,7 +4,7 @@ import { z } from "zod";
 import PublicLayout from "@/components/PublicLayout";
 import { supabase } from "@/integrations/supabase/client";
 
-const title = "Start your moving company workspace — Northwest Crew CRM";
+const title = "Start your moving company workspace — MoveFlew";
 const desc = "Register your moving company and get a free beta workspace for leads, estimates, dispatch and crews.";
 
 export const Route = createFileRoute("/register")({

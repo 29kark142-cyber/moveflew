@@ -1,9 +1,7 @@
 import { useState, type FormEvent } from "react";
 import {
   ArrowRight,
-  Phone,
   Mail,
-  MapPin,
   CheckCircle2,
   MessageSquare,
 } from "lucide-react";

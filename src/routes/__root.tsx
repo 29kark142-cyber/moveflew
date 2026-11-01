@@ -84,8 +84,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: 'theme-color', content: '#090D16' },
-      { title: "Northwest Moving Crew" },
-      { name: "description", content: "Moving CRM for Northwest Moving Crew." },
+      { title: "MoveFlew" },
+      { name: "description", content: "MoveFlew — the moving operations CRM for leads, estimates, dispatch and crews." },
     ],
     links: [
       { rel:'manifest',href:'/manifest.webmanifest' },
