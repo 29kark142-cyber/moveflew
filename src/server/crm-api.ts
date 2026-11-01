@@ -5,6 +5,7 @@ import { z } from "zod";
 import { calculateQuote, DEFAULT_PRICING, type Pricing } from "../shared/crm";
 import { conflictsFor, type ScheduledJob } from "../shared/dispatch";
 import { fieldRoute } from "./field-api";
+import { canTestBook } from '../lib/test-booking';
 
 export type Ctx = { db: SupabaseClient; userId: string; email: string; wsId: number | null; role: string | null; q?: URLSearchParams; origin?: string };
 export type Row = { id: number; data: Record<string, unknown>; created_at: string };
@@ -69,6 +70,7 @@ const SERVER_FIELDS = new Set([
   "depositPaidCents", "depositPaidAt", "depositPaymentSession", "depositMode", "depositOverride",
   "proposalToken", "customerName", "customerEmail", "customerPhone", "sourceChannel",
   "timeline", "finalPayment", "finalCheckout", "signedOffAt", "billableHours", "finalBill",
+  "testApproval",
 ]);
 const FIELD_NAME = /^[A-Za-z][A-Za-z0-9_]{0,63}$/;
 
@@ -413,6 +415,18 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     return { deleted: true };
   }
   if (head === "jobs" && id && sub) {
+    if (sub === "test-approve" && method === "POST") {
+      if (!canTestBook(new URL(ctx.origin ?? 'https://invalid.local').hostname, ctx.role)) fail(403, "Manual test booking is available to admins on preview only");
+      const parsed = z.object({ confirm: z.literal(true) }).strict().safeParse(await body());
+      if (!parsed.success) fail(400, "Please confirm the test booking");
+      const ws = requireWs(ctx);
+      const current = await getOne(ctx, "job", id);
+      if (current.data['status'] !== 'estimate' && !(current.data['status'] === 'booked' && current.data['testApproval'])) fail(409, "Only estimates can be approved for testing");
+      const { supabaseAdmin } = await import('../integrations/supabase/client.server');
+      const { error } = await supabaseAdmin.rpc('book_job_for_preview', { _ws: ws, _job: id, _actor: ctx.userId });
+      if (error) fail(409, "Could not approve this estimate for testing");
+      return toRecord(await getOne(ctx, "job", id), ws);
+    }
     if (sub === "assign" && method === "POST") return assignJob(ctx, id, await body());
     if (sub === "clock" && method === "POST") {
       const { action } = (await body()) as { action?: string };

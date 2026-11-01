@@ -5,6 +5,7 @@ import IntegrationsHub from "@/components/workspace/IntegrationsHub";
 import { planRoute } from "@/lib/travel.functions";
 import { FUEL_FEE_NAME, fuelCharge, travelCharge } from "@/lib/travel-rules";
 import ProposalPublisher from "@/components/workspace/ProposalPublisher";
+import TestBookingButton from '@/components/workspace/TestBookingButton';
 import TextWorker from "@/components/workspace/TextWorker";
 import { eligibleRevenue } from "@shared/revenue";
 import { allConflicts, conflictsFor, CREW_ROLES, crewRoleOf, needsDispatch, type CrewRole, type ScheduledJob } from "@shared/dispatch";
@@ -1881,6 +1882,7 @@ export function JobDetailPage({ role, navigate, path }: PageProps) {
               role={role}
               onDeleted={() => navigate("/app/jobs")}
             />
+            {job.status === 'estimate' && <TestBookingButton jobId={job.id} role={role} onBooked={() => refresh()} />}
             <button
               className="ws-btn"
               onClick={async () => {
@@ -1913,6 +1915,7 @@ export function JobDetailPage({ role, navigate, path }: PageProps) {
         <div className="ws-alert">{localizedJobMessage(copyMessage)}</div>
       )}
       <JobCoreActions jobId={job.id} role={role} navigate={navigate} />
+      {(job as unknown as { testApproval?: unknown }).testApproval ? <div className="ws-alert" role="status"><b>Approved / Booked for testing</b> · No deposit collected; preview admin approval.</div> : null}
       {["admin", "office_admin", "estimator"].includes(role) && job.status === "estimate" && <ProposalPublisher jobId={job.id} onPublished={() => void refresh()} />}
       {(() => {
         const paid = job as unknown as { depositPaidCents?: number; depositPaidAt?: string; depositMode?: string };

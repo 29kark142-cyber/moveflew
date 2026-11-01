@@ -1,5 +1,6 @@
 import { quoteSchema } from './proposal-rules';
 import { z } from 'zod';
+import { enforceIntakeLimit } from './intake-limit.server';
 
 const origins = new Set(['https://northwestmovingcrew.com','https://www.northwestmovingcrew.com']);
 export async function handleWebsiteQuote(request: Request) {
@@ -15,6 +16,8 @@ export async function handleWebsiteQuote(request: Request) {
   const reply = (status:number, body:unknown) => Response.json(body,{ status,headers });
   if (origin && !origins.has(origin)) return reply(403,{ error:'Origin not allowed' });
   if (request.method==='OPTIONS') return new Response(null,{ status:204,headers });
+  const limited = await enforceIntakeLimit(request, headers);
+  if (limited) return limited;
   const token = request.headers.get('Authorization')?.replace(/^Bearer /,'');
   if (!token || !/^[a-f0-9]{64}$/.test(token)) return reply(401,{ error:'A website intake credential is required' });
   const requestId = z.string().min(8).max(100).regex(/^[a-zA-Z0-9_-]+$/).safeParse(request.headers.get('Idempotency-Key'));
