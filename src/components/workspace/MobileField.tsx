@@ -5,26 +5,26 @@ import { Banknote, Camera, CheckCircle2, ChevronLeft, CreditCard, MapPin, Messag
 import { crmFetch } from "@/lib/crm";
 import SignaturePad from "@/components/workspace/SignaturePad";
 import { FIELD_PHASES, type FieldPhase, type FieldStatus, type FinalBill, type Timeline } from "@shared/field";
+import { fieldStatus,finalBill } from '@shared/field';
+import { cacheField,readField,queuedField,enqueueField,syncField,type FieldScope,type FieldOperation } from '@/lib/field-offline';
+import FieldDocuments from './FieldDocuments';
+import type { FieldDocument,FieldDocuments as Documents } from '@/shared/field-documents';
+import { Button } from '@/components/ui/button';
 
 type FieldJob = Record<string, unknown> & {
   id: number; title?: string; origin?: string; destination?: string; startHour?: number; customerName?: string; customerPhone?: string;
   timeline?: Timeline; fieldStatus: FieldStatus; nextPhase: FieldPhase | null; bill: FinalBill;
   completedSignature?: string | null; finalPayment?: { method: string; amountCents: number; mode?: string } | null;
+  fieldDocuments?:Documents;fieldPdf?:{url:string;emailStatus:string};fieldDocumentId?:string;
 };
 type Me = { id: number; name: string; crewRole: string } | null;
 type Photo = { id: number; note: string; photoUrl: string; phase: string };
-type Queued = { jobId: number; phase: FieldPhase; at: string };
-
-// Kept outside the "nwcrewcrm." prefix so release cleanup never drops unsent move-day taps.
-const CACHE = "nwc-field-cache";
-const QUEUE = "nwc-field-queue";
 const OFFICE = ["admin", "office_admin", "dispatcher"];
 
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const money = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
 const hourLabel = (h = 8) => { const hh = Math.floor(h); const m = Math.round((h - hh) * 60); return new Date(2000, 0, 1, hh, m).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); };
 const timeOf = (iso?: string) => (iso ? new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "");
-const readQueue = (): Queued[] => { try { return JSON.parse(localStorage.getItem(QUEUE) || "[]"); } catch { return []; } };
 const post = <T,>(path: string, body: unknown = {}) => crmFetch<T>(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 const isOffline = (e: unknown) => !navigator.onLine || (e instanceof TypeError);
 
@@ -40,60 +40,65 @@ async function shrink(file: File): Promise<string> {
   const scale = Math.min(1, 1280 / Math.max(img.width, img.height));
   const c = document.createElement("canvas");
   c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
-  c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
+  const context=c.getContext('2d');if(!context)throw new Error('Photo processing unavailable');
+  context.drawImage(img, 0, 0, c.width, c.height);
+  img.close();
   return c.toDataURL("image/jpeg", 0.7);
 }
 
-export default function MobileField({ role }: { role: string }) {
+export default function MobileField({ role,userId,workspaceId }: { role: string;userId:string;workspaceId:number }) {
+  const scope:FieldScope={userId,workspaceId};
   const [date, setDate] = useState(today);
   const [jobs, setJobs] = useState<FieldJob[] | null>(null);
   const [me, setMe] = useState<Me>(null);
   const [openId, setOpenId] = useState<number | null>(null);
   const [offline, setOffline] = useState(false);
   const [pending, setPending] = useState(0);
+  const [syncError,setSyncError]=useState('');
+  const [officeEmail,setOfficeEmail]=useState('');
+  const [officeSaving,setOfficeSaving]=useState(false);
 
   const load = useCallback(async () => {
     try {
       const r = await crmFetch<{ me: Me; jobs: FieldJob[] }>(`/field/jobs?date=${date}`);
       setJobs(r.jobs); setMe(r.me); setOffline(false);
-      localStorage.setItem(CACHE, JSON.stringify({ date, ...r }));
+      await cacheField({userId,workspaceId},`jobs:${date}`,r);
     } catch (e) {
-      const cached = (() => { try { return JSON.parse(localStorage.getItem(CACHE) || "null"); } catch { return null; } })();
-      if (cached?.date === date) { setJobs(cached.jobs); setMe(cached.me); setOffline(true); }
+      const cached = isOffline(e)?await readField<{jobs:FieldJob[];me:Me}>({userId,workspaceId},`jobs:${date}`):null;
+      if (cached) { setJobs(cached.jobs); setMe(cached.me); setOffline(true); }
       else { setJobs([]); toast.error(e instanceof Error ? e.message : "Could not load jobs"); }
     }
-  }, [date]);
+  }, [date,userId,workspaceId]);
 
   const flush = useCallback(async () => {
-    const q = readQueue();
+    const currentScope={userId,workspaceId};
+    const q = await queuedField(currentScope);
     setPending(q.length);
     if (!q.length || !navigator.onLine) return;
-    const rest: Queued[] = [];
-    for (const item of q) {
-      try { await post(`/field/jobs/${item.jobId}/phase`, { phase: item.phase, at: item.at }); }
-      catch (e) { if (isOffline(e)) rest.push(item); else toast.error(e instanceof Error ? e.message : "A saved stage was refused"); }
-    }
-    localStorage.setItem(QUEUE, JSON.stringify(rest));
+    await syncField(currentScope);
+    const rest=await queuedField(currentScope);
     setPending(rest.length);
+    setSyncError(rest.find(x=>x.error)?.error || '');
     if (rest.length < q.length) { toast.success("Offline updates synced"); void load(); }
-  }, [load]);
+  }, [load,userId,workspaceId]);
 
-  useEffect(() => { void flush().then(load); }, [flush, load]);
+  useEffect(() => { localStorage.removeItem('nwc-field-cache');localStorage.removeItem('nwc-field-queue');void flush().then(load).catch(e=>toast.error(String(e)));crmFetch<{officeEmail:string}>('/field/settings').then(x=>setOfficeEmail(x.officeEmail)).catch(()=>{}); }, [flush, load]);
   useEffect(() => {
-    const on = () => void flush();
+    const on = () => {setOffline(false);void flush().then(load);};
     const off = () => setOffline(true);
     window.addEventListener("online", on); window.addEventListener("offline", off);
     return () => { window.removeEventListener("online", on); window.removeEventListener("offline", off); };
   }, [flush]);
 
-  const replace = (j: FieldJob) => setJobs(list => (list ?? []).map(x => (x.id === j.id ? j : x)));
+  const replace = (j: FieldJob) => setJobs(list => {const updated=(list ?? []).map(x => (x.id === j.id ? j : x));void cacheField(scope,`jobs:${date}`,{jobs:updated,me});return updated;});
   const open = jobs?.find(j => j.id === openId) ?? null;
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-4 pb-24">
+      {(offline || pending>0) && <div role="status" className="space-y-2 rounded-md border border-border bg-muted p-3 text-sm text-foreground"><p><WifiOff className="mr-2 inline h-4 w-4"/>{offline?'Offline. ':''}{pending} saved update(s) pending.</p>{syncError && <p className="text-destructive">{syncError}</p>}<Button variant="outline" size="sm" onClick={()=>void flush()}><RefreshCw/>Retry sync</Button></div>}
       {open ? (
-        <JobSheet job={open} me={me} role={role} onBack={() => setOpenId(null)} onChange={replace}
-          queue={(item) => { const q = [...readQueue(), item]; localStorage.setItem(QUEUE, JSON.stringify(q)); setPending(q.length); }} />
+        <JobSheet key={open.id} job={open} me={me} role={role} scope={scope} onBack={() => setOpenId(null)} onChange={replace}
+          queue={async(jobId,action,body)=>{await enqueueField(scope,jobId,action,body);setPending((await queuedField(scope)).length);setOffline(!navigator.onLine);}} />
       ) : (
         <>
           <header className="flex items-end justify-between gap-3">
@@ -104,12 +109,7 @@ export default function MobileField({ role }: { role: string }) {
             <button onClick={() => void load()} aria-label="Refresh" className="rounded-full border border-border p-3 text-foreground active:scale-95"><RefreshCw className="h-5 w-5" /></button>
           </header>
           <input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-12 w-full rounded-xl border border-input bg-background px-4 text-base text-foreground" />
-          {(offline || pending > 0) && (
-            <div className="flex items-center gap-2 rounded-xl border border-border bg-muted p-3 text-sm text-foreground">
-              <WifiOff className="h-4 w-4 shrink-0" />
-              {offline ? "Offline — showing the last saved list." : ""} {pending > 0 ? `${pending} stage update(s) will sync when you're back online.` : ""}
-            </div>
-          )}
+          {['admin','office_admin'].includes(role) && <form className="space-y-2 border-b border-border pb-4" onSubmit={e=>{e.preventDefault();setOfficeSaving(true);void post('/field/settings',{officeEmail}).then(()=>toast.success('Office email saved')).catch(e=>toast.error(e.message)).finally(()=>setOfficeSaving(false));}}><label className="block text-sm font-medium text-foreground" htmlFor="field-office-email">Company office email</label><div className="flex flex-wrap gap-2"><input id="field-office-email" type="email" value={officeEmail} onChange={e=>setOfficeEmail(e.target.value)} className="h-11 min-w-0 flex-1 rounded-md border border-input bg-background px-3 text-foreground"/><Button disabled={officeSaving} type="submit" variant="outline">Save office email</Button></div></form>}
           {jobs === null ? <p className="text-muted-foreground">Loading…</p> : jobs.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border p-8 text-center text-muted-foreground">No jobs assigned for this day.</div>
           ) : jobs.map(j => <JobCard key={j.id} job={j} onOpen={() => setOpenId(j.id)} />)}
@@ -158,17 +158,18 @@ function JobCard({ job, onOpen }: { job: FieldJob; onOpen: () => void }) {
   );
 }
 
-function JobSheet({ job, me, role, onBack, onChange, queue }: { job: FieldJob; me: Me; role: string; onBack: () => void; onChange: (j: FieldJob) => void; queue: (q: Queued) => void }) {
+function JobSheet({ job, me, role, scope,onBack, onChange, queue }: { job: FieldJob; me: Me; role: string;scope:FieldScope; onBack: () => void; onChange: (j: FieldJob) => void; queue: (jobId:number,action:FieldOperation['action'],body:Record<string,unknown>) => Promise<void> }) {
   const [busy, setBusy] = useState(false);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [note, setNote] = useState("");
   const [sig, setSig] = useState<string | null>(null);
   const [pay, setPay] = useState<{ url: string; qr: string; env: string } | null>(null);
+  const [pdf,setPdf]=useState<{url:string;emailStatus:string}|null>(job.fieldPdf || null);
   const t = job.timeline ?? {};
   const canStage = OFFICE.includes(role) || ["crew_lead", "driver"].includes(me?.crewRole ?? "");
   const done = Boolean(t.complete);
 
-  useEffect(() => { crmFetch<Photo[]>(`/field/jobs/${job.id}/photos`).then(setPhotos).catch(() => {}); }, [job.id]);
+  useEffect(() => { void crmFetch<Photo[]>(`/field/jobs/${job.id}/photos`).then(p=>{setPhotos(p);void cacheField(scope,`photos:${job.id}`,p);}).catch(()=>{void readField<Photo[]>(scope,`photos:${job.id}`).then(p=>{if(p)setPhotos(p);});}); }, [job.id,scope.userId,scope.workspaceId]);
 
   const run = async (fn: () => Promise<void>) => {
     setBusy(true);
@@ -180,20 +181,32 @@ function JobSheet({ job, me, role, onBack, onChange, queue }: { job: FieldJob; m
     try { onChange(await post<FieldJob>(`/field/jobs/${job.id}/phase`, { phase, at })); }
     catch (e) {
       if (!isOffline(e)) throw e;
-      queue({ jobId: job.id, phase, at });
+      await queue(job.id,'phase',{phase,at});
       const tl = { ...t, [phase]: at };
       const idx = FIELD_PHASES.findIndex(p => p.key === phase);
-      onChange({ ...job, timeline: tl, nextPhase: FIELD_PHASES[idx + 1]?.key ?? null });
+      onChange({ ...job, timeline: tl, nextPhase: FIELD_PHASES[idx + 1]?.key ?? null,fieldStatus:fieldStatus(tl),bill:phase==='complete'?finalBill(job,job.bill.hours):job.bill });
       toast("Saved on this phone — it will sync when you're back online.");
     }
   });
 
   const upload = (file?: File) => file && run(async () => {
     const photoData = await shrink(file);
-    await post(`/field/jobs/${job.id}/photos`, { photoData, note, phase: t.start_loading ? "post" : "pre" });
+    const body={photoData,note,phase:t.start_loading?'post':'pre',operationId:crypto.randomUUID()};
+    try {await post(`/field/jobs/${job.id}/photos`,body);setPhotos(await crmFetch<Photo[]>(`/field/jobs/${job.id}/photos`));}
+    catch(e){if(!isOffline(e))throw e;await queue(job.id,'photos',body);const saved=[...photos,{id:-Date.now(),note,phase:body.phase,photoUrl:photoData}];setPhotos(saved);await cacheField(scope,`photos:${job.id}`,saved);}
     setNote("");
-    setPhotos(await crmFetch<Photo[]>(`/field/jobs/${job.id}/photos`));
     toast.success("Photo saved to the job");
+  });
+  const saveDocument=async(document:FieldDocument)=>run(async()=>{
+    const body={document,operationId:crypto.randomUUID()};
+    try{onChange(await post<FieldJob>(`/field/jobs/${job.id}/documents`,body));}
+    catch(e){if(!isOffline(e))throw e;await queue(job.id,'documents',body);onChange({...job,fieldDocuments:{...job.fieldDocuments,[document.kind]:{...document,...(document.signature?{signedAt:new Date().toISOString()}: {})}}});toast('Document saved on this device');}
+  });
+  const signoff=()=>run(async()=>{
+    if(!sig)return;
+    const body={signature:sig,operationId:crypto.randomUUID()};
+    try{const saved=await post<FieldJob>(`/field/jobs/${job.id}/signoff`,body);onChange(saved);setPdf(saved.fieldPdf || null);toast.success('Signed BOL PDF saved');}
+    catch(e){if(!isOffline(e))throw e;await queue(job.id,'signoff',body);onChange({...job,completedSignature:sig});toast('Signature saved on this device; PDF will be generated after sync');}
   });
 
   const startCard = () => run(async () => {
@@ -226,19 +239,21 @@ function JobSheet({ job, me, role, onBack, onChange, queue }: { job: FieldJob; m
           ))}
         </ol>
         {job.nextPhase && (canStage ? (
-          <button disabled={busy} onClick={() => void stage(job.nextPhase!)} className="min-h-14 w-full rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-50 active:scale-[.98]">
+          <button disabled={busy} onClick={() => {const phase=job.nextPhase;if(phase)void stage(phase);}} className="min-h-14 w-full rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-50 active:scale-[.98]">
             {FIELD_PHASES.find(p => p.key === job.nextPhase)?.label}
           </button>
         ) : <p className="text-sm text-muted-foreground">Your crew lead or driver updates the job stage.</p>)}
         {done && <p className="text-sm text-foreground">Billable time: <strong>{job.bill.hours} h</strong> (pickup arrival to completion)</p>}
       </section>
 
+      <FieldDocuments documents={job.fieldDocuments || {}} job={job} locked={Boolean(job.completedSignature)} onSave={saveDocument}/>
+
       <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
         <h2 className="font-semibold text-card-foreground">Inspection photos</h2>
         <input value={note} onChange={e => setNote(e.target.value)} placeholder="Note, e.g. scratch on dresser top" className="h-12 w-full rounded-xl border border-input bg-background px-4 text-base text-foreground" />
         <label className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-background font-medium text-foreground">
           <Camera className="h-5 w-5" />{busy ? "Saving…" : "Take or upload photo"}
-          <input type="file" accept="image/*" capture="environment" className="sr-only" disabled={busy} onChange={e => { void upload(e.target.files?.[0]); e.target.value = ""; }} />
+          <input type="file" accept="image/*" capture="environment" className="sr-only" disabled={busy || Boolean(job.completedSignature)} onChange={e => { void upload(e.target.files?.[0]); e.target.value = ""; }} />
         </label>
         {photos.length > 0 && (
           <div className="grid grid-cols-3 gap-2">
@@ -263,9 +278,10 @@ function JobSheet({ job, me, role, onBack, onChange, queue }: { job: FieldJob; m
             <div className="space-y-2">
               <p className="text-sm text-foreground">Customer: please confirm the work and times above.</p>
               <SignaturePad onChange={setSig} label="Customer signs here" />
-              <button disabled={!sig || busy} onClick={() => void run(async () => onChange(await post<FieldJob>(`/field/jobs/${job.id}/signoff`, { signature: sig })))} className="min-h-12 w-full rounded-xl bg-primary font-semibold text-primary-foreground disabled:opacity-50">Save customer sign-off</button>
+              <Button disabled={!sig || busy} onClick={()=>void signoff()} className="min-h-12 w-full">Save customer sign-off & BOL</Button>
             </div>
           )}
+          {job.completedSignature && <div className="space-y-2 border-t border-border pt-3"><Button variant="outline" disabled={busy || !navigator.onLine} onClick={()=>void run(async()=>setPdf(await crmFetch(`/field/jobs/${job.id}/pdf`)))}>Get signed BOL PDF</Button>{pdf && <a href={pdf.url} target="_blank" rel="noreferrer" className="block text-sm text-primary underline">Download signed Bill of Lading</a>}<p className="text-sm text-muted-foreground">Email delivery awaits sender-domain setup. No emails have been sent.</p></div>}
 
           {job.finalPayment ? (
             <p className="rounded-xl bg-muted p-3 text-sm font-medium text-foreground">
