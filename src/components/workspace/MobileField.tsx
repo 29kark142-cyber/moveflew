@@ -87,7 +87,8 @@ export default function MobileField({ role,userId,workspaceId }: { role: string;
     const on = () => {setOffline(false);void flush().then(load);};
     const off = () => setOffline(true);
     window.addEventListener("online", on); window.addEventListener("offline", off);
-    return () => { window.removeEventListener("online", on); window.removeEventListener("offline", off); };
+    const timer=window.setInterval(()=>{if(navigator.onLine)void flush();},30000);
+    return () => {window.clearInterval(timer); window.removeEventListener("online", on); window.removeEventListener("offline", off); };
   }, [flush]);
 
   const replace = (j: FieldJob) => setJobs(list => {const updated=(list ?? []).map(x => (x.id === j.id ? j : x));void cacheField(scope,`jobs:${date}`,{jobs:updated,me});return updated;});
@@ -170,6 +171,7 @@ function JobSheet({ job, me, role, scope,onBack, onChange, queue }: { job: Field
   const done = Boolean(t.complete);
 
   useEffect(() => { void crmFetch<Photo[]>(`/field/jobs/${job.id}/photos`).then(p=>{setPhotos(p);void cacheField(scope,`photos:${job.id}`,p);}).catch(()=>{void readField<Photo[]>(scope,`photos:${job.id}`).then(p=>{if(p)setPhotos(p);});}); }, [job.id,scope.userId,scope.workspaceId]);
+  useEffect(()=>{void readField<string>(scope,`final-signature:${job.id}`).then(s=>{if(s)setSig(s);});},[job.id,scope.userId,scope.workspaceId]);
 
   const run = async (fn: () => Promise<void>) => {
     setBusy(true);
@@ -246,7 +248,7 @@ function JobSheet({ job, me, role, scope,onBack, onChange, queue }: { job: Field
         {done && <p className="text-sm text-foreground">Billable time: <strong>{job.bill.hours} h</strong> (pickup arrival to completion)</p>}
       </section>
 
-      <FieldDocuments documents={job.fieldDocuments || {}} job={job} locked={Boolean(job.completedSignature)} onSave={saveDocument}/>
+      <FieldDocuments documents={job.fieldDocuments || {}} job={job} scope={scope} locked={Boolean(job.completedSignature)} onSave={saveDocument}/>
 
       <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
         <h2 className="font-semibold text-card-foreground">Inspection photos</h2>
@@ -277,7 +279,8 @@ function JobSheet({ job, me, role, scope,onBack, onChange, queue }: { job: Field
           ) : (
             <div className="space-y-2">
               <p className="text-sm text-foreground">Customer: please confirm the work and times above.</p>
-              <SignaturePad onChange={setSig} label="Customer signs here" />
+              <SignaturePad onChange={s=>{setSig(s);void cacheField(scope,`final-signature:${job.id}`,s);}} label="Customer signs here" />
+              {sig && <img src={sig} alt="Captured final signature" className="h-20 w-full rounded-md border border-border object-contain"/>}
               <Button disabled={!sig || busy} onClick={()=>void signoff()} className="min-h-12 w-full">Save customer sign-off & BOL</Button>
             </div>
           )}

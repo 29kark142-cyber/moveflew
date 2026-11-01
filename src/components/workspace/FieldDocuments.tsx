@@ -1,25 +1,30 @@
-import { useState } from 'react';
+import { useEffect,useState } from 'react';
+import { cacheField,readField,type FieldScope } from '@/lib/field-offline';
 import { Check, FileCheck, Plus, Save, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SignaturePad from './SignaturePad';
 import { BOL_TERMS,DAMAGE_TERMS,DOCUMENT_TITLES,type DocumentKind,type FieldDocument,type FieldDocuments as Documents } from '@/shared/field-documents';
 
-export default function FieldDocuments({documents,job,locked,onSave}:{documents:Documents;job:Record<string,unknown>;locked:boolean;onSave:(d:FieldDocument)=>Promise<void>}) {
+export default function FieldDocuments({documents,job,scope,locked,onSave}:{documents:Documents;job:Record<string,unknown>;scope:FieldScope;locked:boolean;onSave:(d:FieldDocument)=>Promise<void>}) {
   const [kind,setKind]=useState<DocumentKind>('bol');
   return <section className="space-y-4 border-y border-border py-5">
     <h2 className="text-lg font-semibold text-foreground">Move-day documents</h2>
     <div className="flex flex-wrap gap-2" role="tablist" aria-label="Field documents">
       {(Object.keys(DOCUMENT_TITLES) as DocumentKind[]).map(k=><Button key={k} role="tab" aria-selected={kind===k} variant={kind===k?'default':'outline'} size="sm" onClick={()=>setKind(k)}>{documents[k]?.signature?<Check/>:<FileCheck/>}{k==='bol'?'BOL':k==='damage'?'Damage waiver':'Inspection'}</Button>)}
     </div>
-    <DocumentEditor key={`${kind}-${documents[kind]?.signedAt || ''}`} kind={kind} doc={documents[kind]} job={job} locked={locked} onSave={onSave}/>
+    <DocumentEditor key={`${kind}-${documents[kind]?.signedAt || ''}`} scope={scope} kind={kind} doc={documents[kind]} job={job} locked={locked} onSave={onSave}/>
   </section>;
 }
-function DocumentEditor({kind,doc,job,locked,onSave}:{kind:DocumentKind;doc?:FieldDocument;job:Record<string,unknown>;locked:boolean;onSave:(d:FieldDocument)=>Promise<void>}) {
+function DocumentEditor({kind,doc,job,scope,locked,onSave}:{kind:DocumentKind;doc?:FieldDocument;job:Record<string,unknown>;scope:FieldScope;locked:boolean;onSave:(d:FieldDocument)=>Promise<void>}) {
   const [notes,setNotes]=useState(doc?.notes || '');
   const [items,setItems]=useState(doc?.items || []);
   const [sig,setSig]=useState<string|null>(null);
   const [busy,setBusy]=useState(false);
+  const [restored,setRestored]=useState(false);
   const signed=Boolean(doc?.signature); const readonly=locked || signed;
+  const draftKey=`document-draft:${job['id']}:${kind}`;
+  useEffect(()=>{let active=true;void readField<FieldDocument>(scope,draftKey).then(d=>{if(!active)return;if(d && !readonly){setNotes(d.notes);setItems(d.items);setSig(d.signature);}setRestored(true);});return()=>{active=false;};},[scope.userId,scope.workspaceId,draftKey]);
+  useEffect(()=>{if(restored && !readonly)void cacheField(scope,draftKey,{kind,notes,items,signature:sig});},[restored,readonly,notes,items,sig]);
   const save=async(sign:boolean)=>{setBusy(true);try{await onSave({kind,notes,items,signature:sign?sig:null});}finally{setBusy(false);}};
   return <div className="space-y-3 text-foreground">
     <h3 className="font-semibold">{DOCUMENT_TITLES[kind]}</h3>
@@ -36,6 +41,7 @@ function DocumentEditor({kind,doc,job,locked,onSave}:{kind:DocumentKind;doc?:Fie
     </>}
     {signed?<div className="space-y-1"><p className="text-sm font-medium">Signed {doc?.signedAt?new Date(doc.signedAt).toLocaleString():'on this device'}</p><img src={doc?.signature || ''} alt={`${DOCUMENT_TITLES[kind]} customer signature`} className="max-h-32 w-full rounded-md border border-border object-contain"/></div>:readonly?<p className="text-sm text-muted-foreground">Document locked at final sign-off.</p>:<>
       <SignaturePad onChange={setSig} label={`Sign ${DOCUMENT_TITLES[kind]}`}/>
+      {sig && <img src={sig} alt="Captured document signature" className="h-20 w-full rounded-md border border-border object-contain"/>}
       <div className="flex flex-wrap gap-2"><Button variant="outline" disabled={busy || items.some(x=>!x.item.trim())} onClick={()=>void save(false)}><Save/>Save draft</Button><Button disabled={!sig || busy || items.some(x=>!x.item.trim())} onClick={()=>void save(true)}><Check/>Complete & sign document</Button></div>
     </>}
   </div>;
