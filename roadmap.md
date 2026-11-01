@@ -1,8 +1,8 @@
 # Northwest Moving Crew migration
 
 ## Internal testing readiness
-- [ ] Add shared database-backed 10/minute/IP quote and lead intake limit.
-- [ ] Add preview-only admin manual approval/booking from job dashboard and verify safeguards.
+- [x] Add shared database-backed 10/minute/IP quote and lead intake limit; verified request 11 returns 429, aliases share budget, and preflight stays available.
+- [x] Add preview-only admin manual approval/booking from job dashboard; verified saved booking, active proposal approval, no payment receipt, and 18 targeted tests.
 
 ## SaaS homepage pivot
 - [x] Polish hero grid/beta badge, dark feature previews and CTA glow; verify homepage navigation and layout.
