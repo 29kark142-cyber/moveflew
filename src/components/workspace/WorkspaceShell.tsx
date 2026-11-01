@@ -1,4 +1,4 @@
-import Brand from "@/components/Brand";
+import MoveGridBrand from "@/components/MoveGridBrand";
 import type { WorkspaceRole } from "@shared/crm";
 import {
   BarChart3,
@@ -332,7 +332,7 @@ export default function WorkspaceShell({
         aria-label={t("Workspace navigation")}
       >
         <div className="ws-sidebrand">
-          <Brand compact />
+          <MoveGridBrand />
           <button
             className="ws-mobile-close"
             aria-label={t("Close navigation")}
@@ -425,7 +425,7 @@ export default function WorkspaceShell({
             <Menu size={20} />
           </button>
           <div className="ws-topbar__crumb">
-            <span>Northwest Moving Crew</span>
+            <span>MoveFlew</span>
             <strong>{workspace.name}</strong>
           </div>
           <div className="ws-topbar__user">
