@@ -1,7 +1,7 @@
 # Northwest Moving Crew migration
 
 ## SaaS homepage pivot
-- [ ] Polish hero grid/beta badge, dark feature previews and CTA glow; verify homepage navigation and layout.
+- [x] Polish hero grid/beta badge, dark feature previews and CTA glow; verify homepage navigation and layout.
 - [x] Apply MoveGrid branding, cube logo, new hero copy and verify public navigation.
 - [x] Replace local moving homepage with B2B CRM positioning and five feature cards.
 - [x] Wire beta signup and a working SmartMoving comparison destination.
