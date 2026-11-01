@@ -10,9 +10,12 @@ export async function cacheField(scope: FieldScope, key: string, value: unknown)
 export async function readField<T>(scope: FieldScope, key: string): Promise<T | undefined> { return (await db()).get('cache', `${scopeKey(scope)}:${key}`); }
 export async function queuedField(scope: FieldScope): Promise<FieldOperation[]> { return ((await (await db()).getAll('queue')) as FieldOperation[]).filter(x => x.scope === scopeKey(scope)).sort((a,b) => a.at-b.at); }
 export async function enqueueField(scope: FieldScope, jobId: number, action: FieldOperation['action'], body: Record<string, unknown>) {
-  const op: FieldOperation = { id: String(body.operationId || crypto.randomUUID()), scope: scopeKey(scope), jobId, action, body, at: Date.now() };
+  const d=await db();const tx=d.transaction('queue','readwrite');
+  const existing=(await tx.store.getAll()) as FieldOperation[];
+  const last=existing.filter(x=>x.scope===scopeKey(scope)).reduce((max,x)=>Math.max(max,x.at),0);
+  const op: FieldOperation = { id: String(body.operationId || crypto.randomUUID()), scope: scopeKey(scope), jobId, action, body, at: Math.max(Date.now(),last+1) };
   op.body.operationId = op.id;
-  await (await db()).put('queue', op);
+  await tx.store.put(op);await tx.done;
   return op;
 }
 async function activeScope(scope: FieldScope) {
