@@ -134,6 +134,13 @@
       "when": 1793509793200,
       "tag": "0018_show_preview_proposal_approval",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1793510393022,
+      "tag": "0019_field_document_snapshots",
+      "breakpoints": true
     }
   ]
 }
