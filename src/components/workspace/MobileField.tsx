@@ -7,6 +7,7 @@ import SignaturePad from "@/components/workspace/SignaturePad";
 import { FIELD_PHASES, type FieldPhase, type FieldStatus, type FinalBill, type Timeline } from "@shared/field";
 import { fieldStatus,finalBill,billableHours } from '@shared/field';
 import { cacheField,readField,queuedField,enqueueField,syncField,type FieldScope,type FieldOperation } from '@/lib/field-offline';
+import { PDF_LINK_REFRESH_MS } from '@/lib/signed-url';
 import FieldDocuments from './FieldDocuments';
 import type { FieldDocument,FieldDocuments as Documents } from '@/shared/field-documents';
 import { Button } from '@/components/ui/button';
@@ -172,6 +173,16 @@ function JobSheet({ job, me, role, scope,onBack, onChange, queue }: { job: Field
 
   useEffect(() => { void crmFetch<Photo[]>(`/field/jobs/${job.id}/photos`).then(p=>{setPhotos(p);void cacheField(scope,`photos:${job.id}`,p);}).catch(()=>{void readField<Photo[]>(scope,`photos:${job.id}`).then(p=>{if(p)setPhotos(p);});}); }, [job.id,scope.userId,scope.workspaceId]);
   useEffect(()=>{void readField<string>(scope,`final-signature:${job.id}`).then(s=>{if(s)setSig(s);});},[job.id,scope.userId,scope.workspaceId]);
+  // Slow move-day connections must not strand a worker on an expired link: re-sign
+  // the Bill of Lading download while the job sheet stays open.
+  useEffect(()=>{
+    if(!pdf || !job.completedSignature) return;
+    const timer = setInterval(()=>{
+      if(!navigator.onLine) return;
+      void crmFetch<{url:string;emailStatus:string}>(`/field/jobs/${job.id}/pdf`).then(setPdf).catch(()=>{});
+    }, PDF_LINK_REFRESH_MS);
+    return ()=>clearInterval(timer);
+  },[job.id,job.completedSignature,Boolean(pdf)]);
 
   const run = async (fn: () => Promise<void>) => {
     setBusy(true);
