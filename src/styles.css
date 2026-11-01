@@ -1938,14 +1938,27 @@ h4 {
   margin: 65px 0;
 }
 .login-icon {
-  display: grid;
-  place-items: center;
-  color: var(--blue);
-  background: #eaf5ff;
-  height: 59px;
-  width: 59px;
-  border-radius: 13px;
+  display: block;
   margin-bottom: 28px;
+}
+.login-icon .movegrid-brand {
+  font-size: 24px;
+  color: var(--navy);
+}
+.login-icon .movegrid-symbol {
+  width: 30px;
+  height: 33px;
+  color: #059669;
+}
+.login-icon .movegrid-word-accent {
+  color: #059669;
+}
+.login-brand-panel .movegrid-brand {
+  color: #fff;
+}
+.login-brand-panel .movegrid-symbol,
+.login-brand-panel .movegrid-word-accent {
+  color: #10b981;
 }
 .login-box .section-kicker {
   font-size: 8px;

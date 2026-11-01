@@ -14,9 +14,9 @@
   font-weight: 650;
 }
 .access-tabs button[aria-selected="true"] {
-  border-color: #8fc9f5;
-  background: #eaf5ff;
-  color: var(--blue);
+  border-color: #a7d9c4;
+  background: #e8f7f1;
+  color: #059669;
 }
 .access-form {
   display: grid;
@@ -40,9 +40,9 @@
   font-size: 13px;
 }
 .access-form input:focus {
-  border-color: var(--blue);
+  border-color: #059669;
   outline: 0;
-  box-shadow: 0 0 0 3px #31b3ed22;
+  box-shadow: 0 0 0 3px #05966922;
 }
 .access-actions {
   display: grid;
@@ -103,8 +103,8 @@
   flex: 1;
 }
 .access-invite-note {
-  color: #3577a8;
-  background: #edf7ff;
+  color: #047857;
+  background: #e8f7f1;
   border-radius: 7px;
   padding: 8px 10px;
   font-size: 11px;
@@ -114,9 +114,17 @@
   display: flex;
   justify-content: space-between;
   gap: 14px;
-  color: var(--blue);
+  color: #059669;
   font-size: 11px;
   font-weight: 650;
+}
+.login-box .btn-blue,
+.access-card .btn-blue {
+  background: #059669;
+}
+.login-box .btn-blue:hover,
+.access-card .btn-blue:hover {
+  background: #047857;
 }
 .access-page {
   min-height: 100vh;
