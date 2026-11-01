@@ -24,7 +24,7 @@ export async function prepareFieldPdf(ctx: Ctx, id: string) {
     const { error: saveError }=await supabaseAdmin.from('field_document_snapshots').update({storage_path:path,pdf_hash:hash}).eq('id',id);
     if(saveError)throw new Error('Could not save PDF download details');
   }
-  const { data: link,error: linkError }=await supabaseAdmin.storage.from('field-documents').createSignedUrl(path,900,{download:`BOL-job-${row.job_id}.pdf`});
+  const { data: link,error: linkError }=await supabaseAdmin.storage.from('field-documents').createSignedUrl(path,60,{download:`BOL-job-${row.job_id}.pdf`});
   if(linkError || !link)throw new Error('Could not create secure PDF download');
   return { id,url:link.signedUrl,emailStatus:'sender_domain_required' as const };
 }

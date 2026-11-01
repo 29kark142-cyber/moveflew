@@ -30,7 +30,7 @@ export default function AppearanceProvider({ userId, workspaceId, initial, child
     const resolve = async () => {
       if (!wallpaper) return;
       let url: string | null = wallpaper.kind === "url" ? wallpaper.value : null;
-      if (wallpaper.kind === "storage") { const { data, error } = await supabase.storage.from("workspace-wallpapers").createSignedUrl(wallpaper.value, 3600); if (error) { if (active) setWallpaperError("Wallpaper could not be loaded. Upload it again or choose another image."); return; } url = data.signedUrl; }
+      if (wallpaper.kind === "storage") { const { data, error } = await supabase.storage.from("workspace-wallpapers").createSignedUrl(wallpaper.value, 60); if (error) { if (active) setWallpaperError("Wallpaper could not be loaded. Upload it again or choose another image."); return; } url = data.signedUrl; }
       if (!url || !active) return;
       const image = new Image(); image.referrerPolicy = "no-referrer";
       image.onload = () => { if (active) { setWallpaperUrl(url); setWallpaperError(""); } };
