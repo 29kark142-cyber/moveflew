@@ -3141,7 +3141,7 @@ html:lang(ru) .steps-grid p {
   .saas-comparison-row { grid-template-columns:1fr; padding:12px; }
   .saas-comparison-row > * { padding:8px; }
   .saas-comparison-head { display:none; }
-  .saas-comparison-row > span:nth-child(2)::before { content:"MoveGrid:"; font-weight:600; color:var(--foreground); }
+  .saas-comparison-row > span:nth-child(2)::before { content:"MoveFlew:"; font-weight:600; color:var(--foreground); }
   .saas-comparison-row > span:nth-child(3)::before { content:"SmartMoving:"; font-weight:600; color:var(--foreground); }
   .saas-comparison-row > span { display:block; }
   .saas-comparison-row > span svg { display:none; }

@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Home from "@/pages/Home";
 
-const title = "MoveGrid — Precision Moving CRM & Conflict-Free Dispatch";
-const desc = "MoveGrid connects lead capture, automated distance pricing, proposal deposits, visual dispatch and mobile crews—without the enterprise price tag. Start free beta access.";
+const title = "MoveFlew — Precision Moving CRM & Conflict-Free Dispatch";
+const desc = "MoveFlew connects lead capture, automated distance pricing, proposal deposits, visual dispatch and mobile crews—without the enterprise price tag. Start free beta access.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
