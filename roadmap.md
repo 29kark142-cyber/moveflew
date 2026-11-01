@@ -11,7 +11,7 @@
 - [x] Add preview-only admin manual approval/booking from job dashboard; verified saved booking, active proposal approval, no payment receipt, and 18 targeted tests.
 
 ## SaaS homepage pivot
-- [ ] Redesign homepage with light palette, email signup handoff, interactive dispatch and signature previews, and bento showcase; verify desktop/mobile navigation.
+- [x] Redesign homepage with light palette, email signup handoff, interactive dispatch/signature previews and bento showcase; verified desktop/mobile navigation, signup email prefill, no overflow or runtime errors.
 - [x] Polish hero grid/beta badge, dark feature previews and CTA glow; verify homepage navigation and layout.
 - [x] Apply MoveGrid branding, cube logo, new hero copy and verify public navigation.
 - [x] Replace local moving homepage with B2B CRM positioning and five feature cards.
