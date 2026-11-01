@@ -1,4 +1,6 @@
 import OnboardingWizard from "@/components/workspace/OnboardingWizard";
+import OperationalReports from '@/components/workspace/OperationalReports';
+import WorkspaceTariffs from '@/components/workspace/WorkspaceTariffs';
 import BillingPanel from "@/components/workspace/BillingPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { isReadOnly, PRICING_REMINDER } from "@/lib/onboarding";
@@ -213,6 +215,8 @@ export default function WorkspaceApp() {
     page = <OnboardingWizard workspaceId={ws.id} onDone={async () => { await load(); navigate("/app/dashboard"); }} />;
   else if (location === "/app/settings/billing") page = <BillingPanel workspace={ws} />;
   else if (location === "/app/dispatch") page = <DispatchPage {...pageProps} />;
+  else if (location === '/app/reports') page = <OperationalReports workspaceName={ws.name} />;
+  else if (location === '/app/tariffs') page = <WorkspaceTariffs workspaceName={ws.name} role={ws.role} readOnly={isReadOnly(ws.subscriptionStatus)} />;
   else if (ExpandedPage) page = <ExpandedPage {...pageProps} />;
   else if (/^\/app\/workers\/\d+\/?$/.test(location))
     page = <WorkerDetailPage {...pageProps} />;

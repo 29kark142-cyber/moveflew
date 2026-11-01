@@ -954,7 +954,7 @@ function freshQuote(pricing: Pricing): QuoteForm {
     mode: "hourly",
     crewSize: 2,
     estimatedHours: 3,
-    hourlyRate: pricing.rates[1] || 130,
+    hourlyRate: pricing.rates[1] ?? pricing.rates[0] ?? 130,
     weightRate: pricing.weightRate,
     mileRate: pricing.mileRate,
     travelFee: 0,
@@ -1016,6 +1016,7 @@ export function EstimateWizardPage({ navigate }: PageProps) {
   const patch = (changes: Partial<QuoteForm>) =>
     setForm(current => ({ ...(current || freshQuote(pricing)), ...changes }));
   const configuredFees: Fee[] = [
+    ...((pricing.truckFee ?? 0) > 0 ? [{ name: 'Truck fee', amount: pricing.truckFee ?? 0 }] : []),
     ...(quote.packingHours > 0
       ? [
           {
@@ -1385,7 +1386,7 @@ export function EstimateWizardPage({ navigate }: PageProps) {
                     patch({
                       crewSize,
                       hourlyRate:
-                        pricing.rates[Math.max(0, crewSize - 1)] ||
+                        pricing.rates[Math.max(0, crewSize - 1)] ??
                         quote.hourlyRate,
                     });
                   }}
