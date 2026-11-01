@@ -15,7 +15,7 @@
       {
         "name": "get_moving_rates",
         "title": "Get moving rates",
-        "description": "List Northwest Moving Crew's public hourly rates by crew size, minimum hours, packing rate and box prices.",
+        "description": "List MoveFlew's public hourly rates by crew size, minimum hours, packing rate and box prices.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -70,7 +70,7 @@
       {
         "name": "get_contact_info",
         "title": "Get contact info",
-        "description": "Return Northwest Moving Crew's public phone, email and service area.",
+        "description": "Return MoveFlew's public support email and product summary.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
