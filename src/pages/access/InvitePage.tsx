@@ -126,10 +126,10 @@ export default function InvitePage() {
   return (
     <main className="access-page">
       <section className="access-card">
-        <Link href="/" className="brand" aria-label="Northwest Crew home">
+        <Link href="/" className="brand" aria-label="MoveFlew home">
           <span className="brand-words">
             <strong>
-              Northwest<span>Crew</span>
+              Move<span>Flew</span>
             </strong>
           </span>
         </Link>
@@ -149,8 +149,8 @@ export default function InvitePage() {
           <>
             <p>
               {tx(
-                "You have been invited to a Northwest Crew workspace.",
-                "Вас пригласили в рабочее пространство Northwest Crew."
+                "You have been invited to a MoveFlew workspace.",
+                "Вас пригласили в рабочее пространство MoveFlew."
               )}
             </p>
             <div className="access-preview">

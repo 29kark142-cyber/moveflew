@@ -13,29 +13,26 @@ export default function Brand({
     <Link
       href="/"
       className={`brand ${light ? "brand-light" : ""}`}
-      aria-label={`${t("Home")} — Northwest Moving Crew`}
+      aria-label={`${t("Home")} — MoveFlew`}
     >
       <span className="brand-symbol">
-        <svg viewBox="0 0 44 44" aria-hidden="true">
+        <svg viewBox="0 0 64 68" fill="none" aria-hidden="true">
           <path
-            d="M5 21.8 22 7l17 14.8v14.7c0 1.4-1.1 2.5-2.5 2.5h-8.7V27.3H16.2V39H7.5A2.5 2.5 0 0 1 5 36.5V21.8Z"
-            fill="currentColor"
-          />
-          <path
-            d="M14 19.5h16m-4.4-4.9 4.9 4.9-4.9 4.9"
-            fill="none"
-            stroke="white"
-            strokeWidth="3"
-            strokeLinecap="round"
+            d="M32 3 60 19v30L32 65 4 49V19L32 3Z M4 19l28 16 28-16 M32 35v30"
+            stroke="currentColor"
+            strokeWidth="3.4"
             strokeLinejoin="round"
           />
+          <g stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
+            <path d="m13.33 13.67 28 16 M22.67 8.33l28 16 M13.33 24.33l28-16 M22.67 29.67l28-16 M13.33 24.33v30 M22.67 29.67v30 M41.33 29.67v30 M50.67 24.33v30 M4 29l28 16 28-16 M4 39l28 16 28-16" />
+          </g>
         </svg>
       </span>
       <span className="brand-words">
         <strong>
-          Northwest<span>Crew</span>
+          Move<span>Flew</span>
         </strong>
-        {!compact && <small>{t("MOVING & DELIVERY")}</small>}
+        {!compact && <small>{t("MOVING OPERATIONS CRM")}</small>}
       </span>
     </Link>
   );

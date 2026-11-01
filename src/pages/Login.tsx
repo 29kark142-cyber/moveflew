@@ -7,11 +7,10 @@ import {
   Mail,
   Phone,
   Send,
-  ShieldCheck,
   Truck,
   ArrowLeft,
 } from "lucide-react";
-import Brand from "@/components/Brand";
+import MoveGridBrand from "@/components/MoveGridBrand";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { startLogin } from "@/const";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -332,7 +331,7 @@ export default function Login() {
   return (
     <main className="login-page">
       <section className="login-brand-panel">
-        <Brand light />
+        <MoveGridBrand />
         <div>
           <span className="section-kicker">
             {tx("YOUR CREW. CONNECTED.", "ВАША КОМАНДА. НА СВЯЗИ.")}
@@ -369,7 +368,7 @@ export default function Login() {
         </div>
         <span className="login-brand-bottom">
           <Truck size={18} />
-          Northwest Moving Crew · Chicago & Northwest Suburbs
+          MoveFlew · Moving Operations CRM
         </span>
       </section>
       <section className="login-form-panel">
@@ -382,12 +381,12 @@ export default function Login() {
         </div>
         <div className="login-box">
           <span className="login-icon">
-            <ShieldCheck size={29} />
+            <MoveGridBrand />
           </span>
           <small className="section-kicker">
             {tx(
-              "NORTHWEST CREW WORKSPACE",
-              "РАБОЧЕЕ ПРОСТРАНСТВО NORTHWEST CREW"
+              "MOVEFLEW WORKSPACE",
+              "РАБОЧЕЕ ПРОСТРАНСТВО MOVEFLEW"
             )}
           </small>
           <h2>
