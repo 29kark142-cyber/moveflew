@@ -235,7 +235,7 @@ export default function WorkspaceApp() {
           )}
         </div>
       ) : (
-        <MobileField role={bootstrap.workspace.role} />
+        <MobileField role={bootstrap.workspace.role} userId={user.id} workspaceId={ws.id} />
       );
   else if (location === "/app/invoices") page = <InvoicesPage {...pageProps} />;
   else if (location === "/app/settings") page = <SettingsPage {...pageProps} />;
