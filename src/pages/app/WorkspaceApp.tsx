@@ -7,6 +7,7 @@ import { cacheField,readField } from '@/lib/field-offline';
 import CopilotAssistant from "@/components/workspace/CopilotAssistant";
 import { useAuth } from "@/_core/hooks/useAuth";
 import WorkspaceShell from "@/components/workspace/WorkspaceShell";
+import AppearanceProvider from "@/components/workspace/AppearanceProvider";
 import { ErrorNotice, LoadingBlock } from "@/components/workspace/WorkspaceUI";
 import {
   crm,
@@ -242,13 +243,13 @@ export default function WorkspaceApp() {
         <MobileField role={bootstrap.workspace.role} userId={user.id} workspaceId={ws.id} />
       );
   else if (location === "/app/invoices") page = <InvoicesPage {...pageProps} />;
-  else if (location === "/app/settings") page = <SettingsPage {...pageProps} />;
+  else if (location === "/app/settings") page = <SettingsPage {...pageProps} workspaceId={ws.id} appearanceWritable={!isReadOnly(ws.subscriptionStatus)} />;
   else if (location === "/app/settings/integrations")
-    page = <SettingsPage key="integrations" {...pageProps} integrationsTab />;
+    page = <SettingsPage key="integrations" {...pageProps} integrationsTab workspaceId={ws.id} appearanceWritable={!isReadOnly(ws.subscriptionStatus)} />;
   else page = <DashboardPage {...pageProps} />;
 
   return (
-    <WorkspaceShell
+    <AppearanceProvider key={`${user.id}-${ws.id}`} userId={user.id} workspaceId={ws.id} initial={ws.appearance}><WorkspaceShell
       path={location}
       navigate={navigate}
       user={user}
@@ -272,6 +273,6 @@ export default function WorkspaceApp() {
       )}
       <div key={`${bootstrap.workspace.id}-${location}`}>{page}</div>
       <CopilotAssistant key={`copilot-${bootstrap.workspace.id}`} path={location} navigate={navigate} />
-    </WorkspaceShell>
+    </WorkspaceShell></AppearanceProvider>
   );
 }

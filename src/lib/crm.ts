@@ -10,6 +10,7 @@ import type {
   WorkspaceRole,
 } from "@shared/crm";
 import { reportStaleClient } from "@/lib/app-version";
+import type { WorkspaceAppearance } from "@/lib/workspace-appearance";
 
 const API_ROOT = "/api/crm";
 const WORKSPACE_KEY = "nwcrewcrm.workspace-id";
@@ -18,6 +19,7 @@ export type Workspace = {
   id: number; name: string; role: WorkspaceRole;
   planId?: string; subscriptionStatus?: "beta" | "trialing" | "active" | "past_due" | "canceled";
   onboardingCompleted?: boolean; pricingDefaults?: boolean;
+  appearance?: WorkspaceAppearance;
 };
 export type Bootstrap = {
   user: { id: number; name: string; email: string };

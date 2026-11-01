@@ -6,6 +6,7 @@ import { calculateQuote, DEFAULT_PRICING, type Pricing } from "../shared/crm";
 import { conflictsFor, type ScheduledJob } from "../shared/dispatch";
 import { fieldRoute } from "./field-api";
 import { canTestBook } from '../lib/test-booking';
+import { appearanceSchema, parseAppearance, validWallpaperScope } from '../lib/workspace-appearance';
 
 export type Ctx = { db: SupabaseClient; userId: string; email: string; wsId: number | null; role: string | null; q?: URLSearchParams; origin?: string };
 export type Row = { id: number; data: Record<string, unknown>; created_at: string };
@@ -223,12 +224,13 @@ async function pricingFor(ctx: Ctx): Promise<Pricing> {
 
 async function workspaces(ctx: Ctx) {
   const { data, error } = await ctx.db
-    .from("workspace_members").select("role, workspace_id, workspaces(id,name,plan_id,subscription_status,onboarding_completed_at,travel_pricing_type,fuel_surcharge_type,deposit_rule)").eq("user_id", ctx.userId);
+    .from("workspace_members").select("role, workspace_id, workspaces(id,name,plan_id,subscription_status,onboarding_completed_at,travel_pricing_type,fuel_surcharge_type,deposit_rule,appearance)").eq("user_id", ctx.userId);
   if (error) fail(500, error.message);
   return (data ?? []).map((m) => {
-    const w = m.workspaces as unknown as { id: number; name: string; plan_id: string; subscription_status: string; onboarding_completed_at: string | null; travel_pricing_type: string; fuel_surcharge_type: string; deposit_rule: { value?: number } | null };
+    const w = m.workspaces as unknown as { id: number; name: string; plan_id: string; subscription_status: string; onboarding_completed_at: string | null; travel_pricing_type: string; fuel_surcharge_type: string; deposit_rule: { value?: number } | null; appearance: unknown };
     return {
       id: w.id, name: w.name, role: m.role,
+      appearance: parseAppearance(w.appearance),
       planId: w.plan_id, subscriptionStatus: w.subscription_status,
       onboardingCompleted: !!w.onboarding_completed_at,
       pricingDefaults: w.travel_pricing_type === "none" && w.fuel_surcharge_type === "none" && !Number(w.deposit_rule?.value ?? 0),
@@ -239,6 +241,29 @@ async function workspaces(ctx: Ctx) {
 async function route(ctx: Ctx, method: string, parts: string[], body: () => Promise<unknown>) {
   const [head, idRaw, sub] = parts;
   const id = idRaw ? Number(idRaw) : NaN;
+
+  if (head === "appearance" && (method === "GET" || method === "PUT")) {
+    const ws = requireWs(ctx);
+    let appearance;
+    if (method === "PUT") {
+      if (!["admin", "office_admin"].includes(ctx.role ?? "")) fail(403, "Only workspace managers can save appearance");
+      const parsed = appearanceSchema.safeParse(await body());
+      if (!parsed.success) return fail(400, "Invalid appearance preferences");
+      appearance = parsed.data;
+      if (!validWallpaperScope(appearance, ws)) fail(403, "Wallpaper belongs to another workspace");
+      if (appearance.wallpaper?.kind === "storage") {
+        const { data, error } = await ctx.db.storage.from("workspace-wallpapers").createSignedUrl(appearance.wallpaper.value, 60);
+        if (error || !data) fail(400, "Upload the wallpaper before saving");
+      }
+      const { data, error } = await ctx.db.from("workspaces").update({ appearance }).eq("id", ws).select("appearance").single();
+      if (error || !data) fail(403, error?.message ?? "Could not save appearance");
+    } else {
+      const { data, error } = await ctx.db.from("workspaces").select("appearance").eq("id", ws).single();
+      if (error || !data) fail(403, "Could not read appearance");
+      appearance = parseAppearance(data?.appearance);
+    }
+    return { appearance, wallpaperUrl: null };
+  }
 
   if (head === "bootstrap" && method === "GET") {
     const all = await workspaces(ctx);
