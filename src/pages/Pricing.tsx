@@ -105,7 +105,7 @@ export default function Pricing() {
           <span>{t("Before we arrive.")}</span>
         </h1>
         <p>
-          {t("Choose the help that fits your move. Straightforward hourly pricing for Chicago and the Northwest Suburbs.")}
+          {t("Choose the help that fits your move. Straightforward hourly pricing for every job.")}
         </p>
         <span className="minimum-tag">
           <Clock3 size={16} />
