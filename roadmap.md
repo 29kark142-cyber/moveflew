@@ -1,5 +1,10 @@
 # Northwest Moving Crew migration
 
+## Reports and tariffs readiness
+- [ ] Replace legacy Reports with workspace operational metrics and clearly labeled sample data when empty.
+- [ ] Replace legacy Tariffs with persisted admin pricing controls and current workspace branding.
+- [ ] Verify English/Russian labels, permissions and save/readback flows.
+
 ## Workspace appearance
 - [x] Add five-preset gallery, eight accents and masked glass wallpapers with opaque tables, charts and inputs; verified 40 palette combinations with minimum 5.36:1 body/muted/button contrast.
 - [x] Persist scoped local preferences and manager-controlled workspace settings; verified saved theme/accent and private wallpaper after reload, phone layout, invalid-image fallback and 403/400/401 rejection paths. Nine targeted tests pass.
