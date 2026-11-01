@@ -3150,3 +3150,90 @@ html:lang(ru) .steps-grid p {
 .saas-site a.bg-primary { color:var(--color-primary-foreground); }
 .saas-brand { display:flex; flex-direction:column; gap:5px; flex-shrink:0; }
 .saas-brand > small { color:var(--saas-muted); font-size:8px; font-weight:600; margin-left:49px; }
+
+/* MoveGrid homepage product surfaces; isolated from comparison and workspace pages. */
+.movegrid-home {
+  --mg-surface: oklch(0.208 0.042 265 / 0.6);
+  --mg-border: oklch(0.279 0.041 260);
+  --mg-text: oklch(0.96 0.007 255);
+  --mg-muted: oklch(0.73 0.022 255);
+  --mg-grid: oklch(0.45 0.025 255 / 0.16);
+  --mg-hero-shade: oklch(0.14 0.02 265 / 0.9);
+  --mg-preview-line: oklch(0.5 0.028 255 / 0.24);
+  --mg-success-bg: oklch(0.7 0.16 163 / 0.12);
+  --mg-success-text: oklch(0.82 0.13 164);
+  --mg-sky: oklch(0.8 0.1 235);
+  --mg-sky-bg: oklch(0.7 0.1 235 / 0.13);
+  --mg-glow: 0 0 24px -3px oklch(0.7 0.16 163 / 0.2);
+  --foreground: var(--mg-text);
+  --saas-muted: var(--mg-muted);
+  --saas-accent-ink: var(--mg-success-text);
+  --border: var(--mg-border);
+  background:var(--saas-midnight); color:var(--mg-text);
+}
+.saas-site a.bg-primary { transition:background-color .2s, box-shadow .2s; }
+.saas-site a.bg-primary:hover { box-shadow:0 0 24px -3px color-mix(in oklab, var(--primary) 20%, transparent); }
+.movegrid-home .saas-hero { min-height:570px; }
+.movegrid-home .saas-hero::before { width:100%; background:var(--mg-hero-shade); }
+.movegrid-home .saas-hero::after { content:""; position:absolute; inset:0; z-index:-1; pointer-events:none; background-image:linear-gradient(var(--mg-grid) 1px, transparent 1px),linear-gradient(90deg,var(--mg-grid) 1px, transparent 1px); background-size:48px 48px; }
+.movegrid-home .saas-hero h1 { max-width:760px; }
+.movegrid-home .saas-hero-content > p { max-width:650px; }
+.movegrid-home .saas-hero-actions > a:not(.bg-primary) { background:var(--mg-surface); border-color:var(--mg-border); color:var(--mg-text); }
+.movegrid-home .saas-hero-actions > a:not(.bg-primary):hover { border-color:var(--primary); }
+.mg-beta-badge { display:inline-flex; align-items:center; gap:7px; max-width:100%; padding:8px 12px; border:1px solid var(--mg-border); border-radius:999px; background:var(--mg-surface); color:var(--mg-text); font-size:11px; margin-bottom:24px; }
+.mg-beta-badge > span:first-child { font-size:9px; }
+.movegrid-home .saas-hero-caption { background:var(--mg-surface); color:var(--mg-muted); border:1px solid var(--mg-border); }
+.movegrid-home .saas-workflow { background:var(--mg-surface); }
+.movegrid-home .saas-feature { background:var(--mg-surface); border:1px solid var(--mg-border); padding:0; overflow:hidden; display:flex; flex-direction:column; }
+.mg-feature-copy { padding:24px; }
+.mg-feature-number { display:block; color:var(--mg-success-text); font-size:10px; margin-bottom:14px; }
+.movegrid-home .saas-feature h3 { font-size:21px; }
+.movegrid-home .saas-closing { background:var(--mg-surface); }
+.mg-preview { height:228px; flex-shrink:0; border-bottom:1px solid var(--mg-border); font-size:11px; color:var(--mg-muted); }
+.mg-preview-bar { display:flex; gap:10px; align-items:center; padding:12px 16px; border-bottom:1px solid var(--mg-preview-line); font-size:10px; }
+.mg-preview-bar > small { margin-left:auto; font-size:8px; opacity:.7; }
+.mg-preview-lights { display:flex; gap:4px; }
+.mg-preview-lights i { width:4px; height:4px; border-radius:50%; background:var(--mg-muted); opacity:.5; }
+.mg-preview-body { padding:18px; }
+.mg-preview-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.mg-preview strong { color:var(--mg-text); font-weight:500; }
+.mg-preview-label { font-size:9px; }
+.mg-tag { display:inline-flex; align-items:center; gap:4px; border-radius:4px; padding:3px 6px; background:var(--mg-success-bg); color:var(--mg-success-text); font-size:9px; white-space:nowrap; }
+.mg-customer { display:flex; gap:10px; align-items:center; margin:25px 0; }
+.mg-customer > div { flex:1; }
+.mg-customer strong { display:block; font-size:14px; margin-bottom:4px; }
+.mg-customer > svg { color:var(--mg-success-text); }
+.mg-avatar { width:34px; height:34px; display:grid; place-items:center; background:var(--mg-sky-bg); color:var(--mg-sky); border-radius:50%; }
+.mg-preview-foot { display:flex; align-items:center; justify-content:space-between; gap:6px; border-top:1px solid var(--mg-preview-line); padding-top:10px; margin-top:12px; font-size:9px; }
+.mg-preview-foot > span { display:inline-flex; align-items:center; gap:4px; }
+.mg-preview-foot > svg, .mg-success { color:var(--mg-success-text); }
+.mg-route { display:flex; align-items:center; gap:6px; font-size:9px; }
+.mg-route i, .mg-progress i { height:1px; flex:1; background:var(--mg-preview-line); }
+.mg-route-summary { margin:12px 0; }
+.mg-route-summary > strong { font-size:23px; }
+.mg-route-summary small { font-size:12px; color:var(--mg-muted); }
+.mg-fee-row { display:flex; justify-content:space-between; margin-top:5px; }
+.mg-signature { font-family:Georgia, serif; font-style:italic; font-size:24px; color:var(--mg-text); display:flex; justify-content:space-between; align-items:center; padding:15px 0 12px; }
+.mg-signature svg { color:var(--mg-muted); }
+.mg-deposit > div { display:flex; flex-direction:column; }
+.mg-deposit strong { font-size:20px; }
+.mg-paid { display:flex; gap:5px; align-items:center; color:var(--mg-success-text); }
+.mg-timeline { display:flex; justify-content:space-between; padding:12px 0 5px 85px; font-size:8px; }
+.mg-dispatch-row { display:flex; align-items:center; gap:6px; margin-top:6px; }
+.mg-dispatch-row > span { width:48px; font-size:9px; flex-shrink:0; }
+.mg-dispatch-row > div { flex:1; padding:6px 9px; background:var(--mg-success-bg); border-left:2px solid var(--primary); color:var(--mg-success-text); border-radius:2px; }
+.mg-dispatch-later > div { margin-left:24px; background:var(--mg-sky-bg); border-color:var(--mg-sky); color:var(--mg-sky); }
+.mg-progress { display:flex; align-items:center; gap:6px; font-size:9px; margin:17px 0; }
+.mg-progress span { display:flex; align-items:center; gap:3px; }
+.mg-progress svg { color:var(--mg-success-text); }
+.mg-field-row { display:flex; align-items:center; gap:10px; margin:10px 0; }
+.mg-field-row > svg { color:var(--mg-success-text); }
+.mg-field-row strong, .mg-field-row span { display:block; }
+.mg-field-row span { font-size:9px; }
+@media (max-width:1100px) and (min-width:761px) { .movegrid-home .saas-feature-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:760px) {
+  .movegrid-home .saas-hero { min-height:0; }
+  .mg-beta-badge { font-size:9px; gap:5px; padding:7px 9px; margin-bottom:20px; }
+  .movegrid-home .saas-hero-content { padding-block:32px; }
+  .mg-feature-copy { padding:22px; }
+}

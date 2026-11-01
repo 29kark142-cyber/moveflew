@@ -11,6 +11,7 @@
 
 - Migrated Manus pages live in src/pages and import navigation from @/lib/wouter, a shim over TanStack Router; keep routes in src/routes so there is one router.
 - SaaS marketing routes use SaasLayout, a separate MoveGridBrand component and locally scoped .saas-site tokens; legacy public pages retain PublicLayout and Brand so SaaS branding does not change moving-service pages or CRM styling.
+- Homepage feature previews are static illustrative UI in MoveGridFeaturePreview, themed under .movegrid-home; never read real tenant records for public marketing examples. Why: public product previews must not expose customer data or change workspace settings.
 - Shared domain logic from the source app lives in src/shared (alias @shared/*); server code must be rewritten as server functions, not copied from the old Express server.
 - Both crew invitation routes render one shared onboarding form with locally scoped semantic theme tokens; registration uses an authenticated atomic RPC so the worker is saved before workspace selection and field navigation.
 - External website quote delivery uses /api/public/v1/quotes; /api/v1/public/quotes is a compatibility alias because only /api/public/* bypasses hosted site authentication.
