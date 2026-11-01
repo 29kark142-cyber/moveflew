@@ -1,5 +1,5 @@
 import { Filter, GripVertical, Plus, Search, UserRound } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Customer } from "@shared/crm";
 import { PIPELINE_STAGES, type ModuleProps } from "@shared/expansion";
 import { crm, type Member } from "@/lib/crm";
@@ -9,7 +9,6 @@ import {
   Modal,
   useRemote,
 } from "@/components/workspace/WorkspaceUI";
-import { engage, type CustomerPreferences } from "@/lib/engage-api";
 import {
   PageFailure,
   PageHead,
@@ -32,15 +31,6 @@ const newLead: LeadForm = {
   status: "lead",
   notes: "",
 };
-const emptyPreferences: CustomerPreferences = {
-  emailConsent: false,
-  smsConsent: false,
-  optedOut: false,
-  tags: [],
-  assignedUserId: null,
-  utm: {},
-};
-const assignableRoles = ["admin", "office_admin", "estimator", "dispatcher"];
 
 export function PipelinePage({ role, navigate }: ModuleProps) {
   const { t } = useI18n();
@@ -291,44 +281,10 @@ function LeadEditor({
         }
       : newLead
   );
-  const [preferences, setPreferences] =
-    useState<CustomerPreferences>(emptyPreferences);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  useEffect(() => {
-    if (!customer) return;
-    let active = true;
-    void engage
-      .preferences(customer.id)
-      .then(
-        value =>
-          active &&
-          setPreferences({
-            ...emptyPreferences,
-            ...value,
-            utm: value.utm || {},
-          })
-      )
-      .catch(
-        reason =>
-          active &&
-          setError(
-            reason instanceof Error
-              ? reason.message
-              : "Could not load consent preferences."
-          )
-      );
-    return () => {
-      active = false;
-    };
-  }, [customer]);
   const field = (key: keyof LeadForm, value: string | number) =>
     setForm(current => ({ ...current, [key]: value }));
-  const preference = (key: keyof CustomerPreferences, value: unknown) =>
-    setPreferences(current => ({ ...current, [key]: value }));
-  const eligibleMembers = members.filter(member =>
-    assignableRoles.includes(member.role)
-  );
   return (
     <Modal
       title={customer ? "Lead details" : "Add lead"}
@@ -341,10 +297,8 @@ function LeadEditor({
           setSaving(true);
           setError("");
           try {
-            const saved = customer
-              ? await crm.updateCustomer(customer.id, form)
-              : await crm.createCustomer(form);
-            await engage.updatePreferences(saved.id, preferences);
+            if (customer) await crm.updateCustomer(customer.id, form);
+            else await crm.createCustomer(form);
             await onSaved();
           } catch (reason) {
             setError(
