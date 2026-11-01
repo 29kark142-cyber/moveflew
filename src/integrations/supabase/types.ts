@@ -91,6 +91,99 @@ export type Database = {
           },
         ]
       }
+      field_document_snapshots: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          job_id: number
+          operation_id: string
+          pdf_hash: string | null
+          snapshot: Json
+          storage_path: string | null
+          workspace_id: number
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          job_id: number
+          operation_id: string
+          pdf_hash?: string | null
+          snapshot: Json
+          storage_path?: string | null
+          workspace_id: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          job_id?: number
+          operation_id?: string
+          pdf_hash?: string | null
+          snapshot?: Json
+          storage_path?: string | null
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "field_document_snapshots_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "field_document_snapshots_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      field_operation_receipts: {
+        Row: {
+          created_at: string
+          job_id: number
+          kind: string
+          operation_id: string
+          result: Json
+          workspace_id: number
+        }
+        Insert: {
+          created_at?: string
+          job_id: number
+          kind: string
+          operation_id: string
+          result?: Json
+          workspace_id: number
+        }
+        Update: {
+          created_at?: string
+          job_id?: number
+          kind?: string
+          operation_id?: string
+          result?: Json
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "field_operation_receipts_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "field_operation_receipts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intake_ip_limits: {
         Row: {
           ip_hash: string
@@ -624,6 +717,7 @@ export type Database = {
           id: number
           limit_overrides: Json
           name: string
+          office_email: string
           onboarding_completed_at: string | null
           plan_id: string
           pricing: Json | null
@@ -649,6 +743,7 @@ export type Database = {
           id?: never
           limit_overrides?: Json
           name: string
+          office_email?: string
           onboarding_completed_at?: string | null
           plan_id?: string
           pricing?: Json | null
@@ -674,6 +769,7 @@ export type Database = {
           id?: never
           limit_overrides?: Json
           name?: string
+          office_email?: string
           onboarding_completed_at?: string | null
           plan_id?: string
           pricing?: Json | null
@@ -715,6 +811,17 @@ export type Database = {
       can_access_record: {
         Args: { _data: Json; _kind: string; _ws: number }
         Returns: boolean
+      }
+      commit_field_signoff: {
+        Args: {
+          _actor: string
+          _job: number
+          _operation: string
+          _signature: string
+          _snapshot: Json
+          _ws: number
+        }
+        Returns: string
       }
       complete_workspace_onboarding: {
         Args: { _ws: number }

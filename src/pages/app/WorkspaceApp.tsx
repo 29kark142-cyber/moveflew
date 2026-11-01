@@ -3,6 +3,7 @@ import BillingPanel from "@/components/workspace/BillingPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { isReadOnly, PRICING_REMINDER } from "@/lib/onboarding";
 import MobileField from "@/components/workspace/MobileField";
+import { cacheField,readField } from '@/lib/field-offline';
 import CopilotAssistant from "@/components/workspace/CopilotAssistant";
 import { useAuth } from "@/_core/hooks/useAuth";
 import WorkspaceShell from "@/components/workspace/WorkspaceShell";
@@ -136,12 +137,15 @@ export default function WorkspaceApp() {
       }
       setBootstrap(data);
       setWorkspaceId(data.workspace?.id ?? null);
+      if(user && data.workspace)await cacheField({userId:user.id,workspaceId:data.workspace.id},'bootstrap',data);
     } catch (reason) {
-      setError(reason);
+      const wsId=Number(localStorage.getItem('nwcrewcrm.workspace-id'));
+      const cached=user && wsId && (!navigator.onLine || reason instanceof TypeError)?await readField<Bootstrap>({userId:user.id,workspaceId:wsId},'bootstrap'):null;
+      if(cached)setBootstrap(cached);else setError(reason);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -235,7 +239,7 @@ export default function WorkspaceApp() {
           )}
         </div>
       ) : (
-        <MobileField role={bootstrap.workspace.role} />
+        <MobileField role={bootstrap.workspace.role} userId={user.id} workspaceId={ws.id} />
       );
   else if (location === "/app/invoices") page = <InvoicesPage {...pageProps} />;
   else if (location === "/app/settings") page = <SettingsPage {...pageProps} />;

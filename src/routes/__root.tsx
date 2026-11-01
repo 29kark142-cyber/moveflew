@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { UpdateBanner } from "@/components/UpdateBanner";
 import { isChunkLoadError, reportStaleClient } from "@/lib/app-version";
+import { registerFieldWorker } from '@/lib/field-pwa';
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -82,10 +83,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: 'theme-color', content: '#090D16' },
       { title: "Northwest Moving Crew" },
       { name: "description", content: "Moving CRM for Northwest Moving Crew." },
     ],
     links: [
+      { rel:'manifest',href:'/manifest.webmanifest' },
+      { rel:'apple-touch-icon',href:'/field-icon-180.png' },
       {
         rel: "stylesheet",
         href: appCss,
@@ -117,6 +121,8 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router=useRouter();
+  useEffect(() => { void registerFieldWorker().catch(() => {}); return router.subscribe('onResolved',() => { void registerFieldWorker().catch(() => {}); }); },[router]);
 
   return (
     <QueryClientProvider client={queryClient}>

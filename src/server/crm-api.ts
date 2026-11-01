@@ -71,6 +71,7 @@ const SERVER_FIELDS = new Set([
   "proposalToken", "customerName", "customerEmail", "customerPhone", "sourceChannel",
   "timeline", "finalPayment", "finalCheckout", "signedOffAt", "billableHours", "finalBill",
   "testApproval",
+  "fieldDocuments", "fieldDocumentId", "fieldPdf",
 ]);
 const FIELD_NAME = /^[A-Za-z][A-Za-z0-9_]{0,63}$/;
 
