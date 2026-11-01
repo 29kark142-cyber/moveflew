@@ -263,7 +263,7 @@ export default function HelpPage({ role, navigate }: ModuleProps) {
       <header className="help-header">
         <span className="help-eyebrow">
           <BookOpen size={15} aria-hidden="true" />
-          {tx("NW CREW KNOWLEDGE CENTER", "БАЗА ЗНАНИЙ NW CREW")}
+          {tx("MOVEFLEW KNOWLEDGE CENTER", "БАЗА ЗНАНИЙ MOVEFLEW")}
         </span>
         <h1>
           {tx(

@@ -335,7 +335,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       if (error) fail(403, error.message);
       return { ...data, userId: 0 };
     }
-    if (method === "POST") fail(501, "Inviting teammates is coming in the next migration step");
+    if (method === "POST") fail(405, "Use workspace invitations to add a teammate.");
   }
   if (head === "workers" && method === "GET" && !idRaw) {
     const crew = await list(ctx, "crew");
@@ -500,7 +500,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     if (method === "POST" && !idRaw) return create(ctx, kind, await body());
     if (method === "PATCH" && id) return update(ctx, kind, id, await body());
   }
-  return fail(404, "This workspace feature is not available yet");
+  return fail(404, "This request could not be found. Refresh the page and try again.");
 }
 
 export async function handleCrm(request: Request, splat: string) {

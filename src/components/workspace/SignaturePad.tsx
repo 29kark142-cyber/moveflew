@@ -1,6 +1,7 @@
 import { Eraser } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { hasSignatureStroke } from '@/lib/signature-stroke';
 
 type SignaturePadProps = {
   onChange: (png: string | null) => void;
@@ -17,6 +18,8 @@ export default function SignaturePad({
   const visibleLabel = t(label || "Sign in the box");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
+  const strokeDistance = useRef(0);
+  const previousPoint = useRef<{ x: number; y: number } | null>(null);
   const signedRef = useRef(false);
   const [signed, setSigned] = useState(false);
 
@@ -58,6 +61,8 @@ export default function SignaturePad({
     event.currentTarget.setPointerCapture(event.pointerId);
     const p = point(event);
     drawing.current = true;
+    strokeDistance.current = 0;
+    previousPoint.current = p;
     context.beginPath();
     context.moveTo(p.x, p.y);
   };
@@ -66,12 +71,15 @@ export default function SignaturePad({
     const context = canvasRef.current?.getContext("2d");
     if (!context) return;
     const p = point(event);
+    if (previousPoint.current) strokeDistance.current += Math.hypot(p.x - previousPoint.current.x, p.y - previousPoint.current.y);
+    previousPoint.current = p;
     context.lineTo(p.x, p.y);
     context.stroke();
   };
   const finish = () => {
     if (!drawing.current) return;
     drawing.current = false;
+    if (!signedRef.current && !hasSignatureStroke(strokeDistance.current)) return;
     const data = canvasRef.current?.toDataURL("image/png") ?? null;
     signedRef.current = Boolean(data);
     setSigned(Boolean(data));

@@ -32,7 +32,7 @@ export default function PaymentsPage({ role }: ModuleProps) {
   const [consentId, setConsentId] = useState("");
   const [methodType, setMethodType] = useState("card");
   const [consentText, setConsentText] = useState(
-    "I authorize Northwest Moving Crew to save this payment method and place a card authorization before my scheduled move, including the agreed estimate buffer. A hold is not a charge. Final collection requires the recorded invoice amount."
+    "I authorize my moving company to save this payment method and place a card authorization before my scheduled move, including the agreed estimate buffer. A hold is not a charge. Final collection requires the recorded invoice amount."
   );
   const [link, setLink] = useState("");
   const [error, setError] = useState("");

@@ -52,8 +52,8 @@ export default function PaymentMethodPage() {
           <>
             <p>
               {tx(
-                "Your payment details are handled only by Stripe. NW Crew CRM stores only a provider token and your agreement. A card hold is not a completed payment; bank ACH does not support card-style holds.",
-                "Платёжные реквизиты обрабатывает только Stripe. NW Crew CRM хранит лишь токен сервиса и ваше согласие. Удержание по карте не является завершённым платежом; ACH не поддерживает такие удержания."
+                "Your payment details are handled only by Stripe. MoveFlew stores only a provider token and your agreement. A card hold is not a completed payment; bank ACH does not support card-style holds.",
+                "Платёжные реквизиты обрабатывает только Stripe. MoveFlew хранит лишь токен сервиса и ваше согласие. Удержание по карте не является завершённым платежом; ACH не поддерживает такие удержания."
               )}
             </p>
             <blockquote style={{ whiteSpace: "pre-wrap" }}>

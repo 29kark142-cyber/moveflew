@@ -1,15 +1,14 @@
 import { Filter, GripVertical, Plus, Search, UserRound } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Customer } from "@shared/crm";
 import { PIPELINE_STAGES, type ModuleProps } from "@shared/expansion";
-import { crm, type Member } from "@/lib/crm";
+import { crm } from "@/lib/crm";
 import { useI18n } from "@/lib/i18n";
 import {
   EmptyState,
   Modal,
   useRemote,
 } from "@/components/workspace/WorkspaceUI";
-import { engage, type CustomerPreferences } from "@/lib/engage-api";
 import {
   PageFailure,
   PageHead,
@@ -32,15 +31,6 @@ const newLead: LeadForm = {
   status: "lead",
   notes: "",
 };
-const emptyPreferences: CustomerPreferences = {
-  emailConsent: false,
-  smsConsent: false,
-  optedOut: false,
-  tags: [],
-  assignedUserId: null,
-  utm: {},
-};
-const assignableRoles = ["admin", "office_admin", "estimator", "dispatcher"];
 
 export function PipelinePage({ role, navigate }: ModuleProps) {
   const { t } = useI18n();
@@ -254,7 +244,6 @@ export function PipelinePage({ role, navigate }: ModuleProps) {
       {editor && (
         <LeadEditor
           customer={editor === "new" ? null : editor}
-          members={data[1]}
           onClose={() => setEditor(null)}
           onSaved={async () => {
             setEditor(null);
@@ -268,12 +257,10 @@ export function PipelinePage({ role, navigate }: ModuleProps) {
 
 function LeadEditor({
   customer,
-  members,
   onClose,
   onSaved,
 }: {
   customer: Customer | null;
-  members: Member[];
   onClose: () => void;
   onSaved: () => Promise<void>;
 }) {
@@ -291,44 +278,10 @@ function LeadEditor({
         }
       : newLead
   );
-  const [preferences, setPreferences] =
-    useState<CustomerPreferences>(emptyPreferences);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  useEffect(() => {
-    if (!customer) return;
-    let active = true;
-    void engage
-      .preferences(customer.id)
-      .then(
-        value =>
-          active &&
-          setPreferences({
-            ...emptyPreferences,
-            ...value,
-            utm: value.utm || {},
-          })
-      )
-      .catch(
-        reason =>
-          active &&
-          setError(
-            reason instanceof Error
-              ? reason.message
-              : "Could not load consent preferences."
-          )
-      );
-    return () => {
-      active = false;
-    };
-  }, [customer]);
   const field = (key: keyof LeadForm, value: string | number) =>
     setForm(current => ({ ...current, [key]: value }));
-  const preference = (key: keyof CustomerPreferences, value: unknown) =>
-    setPreferences(current => ({ ...current, [key]: value }));
-  const eligibleMembers = members.filter(member =>
-    assignableRoles.includes(member.role)
-  );
   return (
     <Modal
       title={customer ? "Lead details" : "Add lead"}
@@ -341,10 +294,8 @@ function LeadEditor({
           setSaving(true);
           setError("");
           try {
-            const saved = customer
-              ? await crm.updateCustomer(customer.id, form)
-              : await crm.createCustomer(form);
-            await engage.updatePreferences(saved.id, preferences);
+            if (customer) await crm.updateCustomer(customer.id, form);
+            else await crm.createCustomer(form);
             await onSaved();
           } catch (reason) {
             setError(
@@ -435,109 +386,7 @@ function LeadEditor({
               />
             </label>
           </div>
-          <fieldset className="eg-preferences">
-            <legend>{t("Contact preferences and attribution")}</legend>
-            <div className="eg-check-grid">
-              <label className="ws-checkbox">
-                <input
-                  type="checkbox"
-                  checked={preferences.emailConsent}
-                  onChange={event =>
-                    preference("emailConsent", event.target.checked)
-                  }
-                />
-                {t("Email consent")}
-              </label>
-              <label className="ws-checkbox">
-                <input
-                  type="checkbox"
-                  checked={preferences.smsConsent}
-                  onChange={event =>
-                    preference("smsConsent", event.target.checked)
-                  }
-                />
-                {t("SMS consent")}
-              </label>
-              <label className="ws-checkbox">
-                <input
-                  type="checkbox"
-                  checked={preferences.optedOut}
-                  onChange={event =>
-                    preference("optedOut", event.target.checked)
-                  }
-                />
-                {t("Opted out")}
-              </label>
-            </div>
-            <div className="ws-form-grid three">
-              <label>
-                {t("Assigned team member")}
-                <select
-                  className="ws-select"
-                  value={preferences.assignedUserId || ""}
-                  onChange={event =>
-                    preference(
-                      "assignedUserId",
-                      event.target.value ? Number(event.target.value) : null
-                    )
-                  }
-                >
-                  <option value="">{t("Unassigned")}</option>
-                  {eligibleMembers.map(member => (
-                    <option key={member.id} value={member.userId}>
-                      {member.name} — {member.role}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                {t("Tags (comma separated)")}
-                <input
-                  className="ws-input"
-                  value={preferences.tags.join(", ")}
-                  onChange={event =>
-                    preference(
-                      "tags",
-                      event.target.value
-                        .split(",")
-                        .map(tag => tag.trim())
-                        .filter(Boolean)
-                    )
-                  }
-                />
-              </label>
-            </div>
-            <details>
-              <summary>{t("UTM and custom tracking")}</summary>
-              <div className="ws-form-grid three eg-details-grid">
-                {(
-                  [
-                    "source",
-                    "medium",
-                    "campaign",
-                    "content",
-                    "keyword",
-                    "adGroup",
-                    "customTracking",
-                  ] as const
-                ).map(key => (
-                  <label key={key}>
-                    {key}
-                    <input
-                      className="ws-input"
-                      value={preferences.utm?.[key] || ""}
-                      onChange={event =>
-                        setPreferences(current => ({
-                          ...current,
-                          utm: { ...current.utm, [key]: event.target.value },
-                        }))
-                      }
-                    />
-                  </label>
-                ))}
-              </div>
-            </details>
-          </fieldset>
+
           {error && <div className="ws-error">{t(error)}</div>}
         </div>
         <footer className="ws-modal__foot">

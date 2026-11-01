@@ -16,7 +16,7 @@ export function CorePage({
     <section className="core-page">
       <header className="ws-page-head">
         <div>
-          <span className="ws-eyebrow">NW Crew CRM</span>
+          <span className="ws-eyebrow">MoveFlew</span>
           <h1>{title}</h1>
           <p>{description}</p>
         </div>

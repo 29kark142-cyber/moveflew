@@ -16,9 +16,10 @@ export type HelpChunk = {
   instructions: string[];
   notes: string[];
 };
-export const HELP_CHUNKS = manual.chunks as HelpChunk[];
-export const HELP_MANUAL_MARKDOWN = manual.markdown;
-export const HELP_REFERENCES = manual.references;
+const currentBrand = (text: string) => text.replace(/NW Crew CRM|NW CREW CRM|NW CREW KNOWLEDGE CENTER/g, 'MoveFlew');
+export const HELP_CHUNKS = (manual.chunks as HelpChunk[]).map(chunk => ({ ...chunk, heading: currentBrand(chunk.heading), markdown: currentBrand(chunk.markdown), text: currentBrand(chunk.text) }));
+export const HELP_MANUAL_MARKDOWN = currentBrand(manual.markdown);
+export const HELP_REFERENCES = currentBrand(manual.references);
 export const HELP_VERSION = manual.version;
 export const HELP_TERMS = manual.terms;
 export const HELP_QUICK_TASKS = reference.quickTasks as Array<{

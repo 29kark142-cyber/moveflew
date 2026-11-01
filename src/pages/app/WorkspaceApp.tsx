@@ -1,4 +1,5 @@
 import OnboardingWizard from "@/components/workspace/OnboardingWizard";
+import WorkspaceModules, { isNativeModule } from '@/components/workspace/modules/WorkspaceModules';
 import OperationalReports from '@/components/workspace/OperationalReports';
 import WorkspaceTariffs from '@/components/workspace/WorkspaceTariffs';
 import BillingPanel from "@/components/workspace/BillingPanel";
@@ -88,7 +89,7 @@ function CreateWorkspace({
               autoFocus
               required
               minLength={2}
-              placeholder={t("e.g. Northwest Moving Crew")}
+              placeholder={t("Company name")}
               value={name}
               onChange={event => setName(event.target.value)}
             />
@@ -217,6 +218,7 @@ export default function WorkspaceApp() {
   else if (location === "/app/dispatch") page = <DispatchPage {...pageProps} />;
   else if (location === '/app/reports') page = <OperationalReports workspaceName={ws.name} />;
   else if (location === '/app/tariffs') page = <WorkspaceTariffs workspaceName={ws.name} role={ws.role} readOnly={isReadOnly(ws.subscriptionStatus)} />;
+  else if (isNativeModule(location)) page = <WorkspaceModules path={location} workspaceName={ws.name} navigate={navigate} />;
   else if (ExpandedPage) page = <ExpandedPage {...pageProps} />;
   else if (/^\/app\/workers\/\d+\/?$/.test(location))
     page = <WorkerDetailPage {...pageProps} />;
