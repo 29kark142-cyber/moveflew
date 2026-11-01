@@ -335,7 +335,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       if (error) fail(403, error.message);
       return { ...data, userId: 0 };
     }
-    if (method === "POST") fail(501, "Inviting teammates is coming in the next migration step");
+    if (method === "POST") fail(405, "Use workspace invitations to add a teammate.");
   }
   if (head === "workers" && method === "GET" && !idRaw) {
     const crew = await list(ctx, "crew");
