@@ -7,6 +7,7 @@ import { conflictsFor, type ScheduledJob } from "../shared/dispatch";
 import { fieldRoute } from "./field-api";
 import { canTestBook } from '../lib/test-booking';
 import { appearanceSchema, parseAppearance, validWallpaperScope } from '../lib/workspace-appearance';
+import { SIGNED_URL_TTL_SECONDS } from '../lib/signed-url';
 import { pricingSchema, canEditTariffs } from '../shared/workspace-tariffs';
 import { operationalReport } from '../shared/workspace-reports';
 import { travelSettingsSchema } from '../lib/travel-rules';
@@ -258,7 +259,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       appearance = parsed.data;
       if (!validWallpaperScope(appearance, ws)) fail(403, "Wallpaper belongs to another workspace");
       if (appearance.wallpaper?.kind === "storage") {
-        const { data, error } = await ctx.db.storage.from("workspace-wallpapers").createSignedUrl(appearance.wallpaper.value, 60);
+        const { data, error } = await ctx.db.storage.from("workspace-wallpapers").createSignedUrl(appearance.wallpaper.value, SIGNED_URL_TTL_SECONDS);
         if (error || !data) fail(400, "Upload the wallpaper before saving");
       }
       const { data, error } = await ctx.db.from("workspaces").update({ appearance }).eq("id", ws).select("appearance").single();
