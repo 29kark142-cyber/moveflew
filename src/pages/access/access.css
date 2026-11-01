@@ -128,7 +128,7 @@
 }
 .access-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #eff8ff 0%, #fff 57%);
+  background: linear-gradient(135deg, #ecf7f2 0%, #fff 57%);
   display: grid;
   place-items: center;
   padding: 28px;
