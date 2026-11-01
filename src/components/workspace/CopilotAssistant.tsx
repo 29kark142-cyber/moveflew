@@ -158,7 +158,7 @@ export default function CopilotAssistant({ path, navigate }: { path: string; nav
           <Button type="submit" size="icon" disabled={busy || !input.trim()} aria-label="Send"><Send size={16} /></Button>
         </form>
       </div>
-    </>,
+    </div>,
     document.body
   );
 }
