@@ -8,7 +8,6 @@ import {
   X,
   ChevronDown,
   Mail,
-  MapPin,
 } from "lucide-react";
 import Brand from "./Brand";
 import LanguageSwitcher from "./LanguageSwitcher";
