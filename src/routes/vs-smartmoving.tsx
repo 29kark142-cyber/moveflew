@@ -7,7 +7,7 @@ import SaasLayout from "@/components/SaasLayout";
 const title = "MoveFlew vs. SmartMoving — Explore a Free Beta CRM";
 const description = "Considering a SmartMoving alternative? Explore MoveFlew’s free beta, moving-specific workflows and questions to ask before choosing your CRM.";
 export const Route = createFileRoute("/vs-smartmoving")({
-  head: () => ({ meta: [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { property: "og:url", content: "https://manus-to-makeover.lovable.app/vs-smartmoving" }], links: [{ rel: "canonical", href: "https://manus-to-makeover.lovable.app/vs-smartmoving" }] }),
+  head: () => ({ meta: [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { property: "og:url", content: "https://moveflew.lovable.app/vs-smartmoving" }], links: [{ rel: "canonical", href: "https://moveflew.lovable.app/vs-smartmoving" }] }),
   component: ComparisonPage,
 });
 function ComparisonPage() {
