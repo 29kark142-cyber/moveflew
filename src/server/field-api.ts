@@ -142,6 +142,7 @@ export async function fieldRoute(ctx: Ctx, method: string, parts: string[], body
     const {data:company}=await ctx.db.from('workspaces').select('name,office_email,company_phone').eq('id',Number(ctx.wsId)).single();
     const photos=((await h.list(ctx,'damage')) as Rec[]).filter(p=>p['jobId']===id).map(p=>({note:String(p['note']||''),phase:String(p['phase']||''),photoUrl:String(p['photoUrl']||'')}));
     const snapshot:FieldSnapshot={company:{name:company?.name || '',officeEmail:company?.office_email || '',phone:company?.company_phone || ''},job:view(job),documents:(job['fieldDocuments'] || {}) as FieldDocuments,photos,signature:b.signature,signedAt:new Date().toISOString(),by:ctx.userId};
+    if(!snapshot.documents.bol?.signature)snapshot.documents={...snapshot.documents,bol:{kind:'bol',notes:snapshot.documents.bol?.notes || '',items:snapshot.documents.bol?.items || [],signature:b.signature,signedAt:snapshot.signedAt,by:ctx.userId}};
     const pdf=await finalizeFieldSnapshot(ctx,id,b.operationId,snapshot);
     return {...view(await loadJob(ctx,h,id)),fieldPdf:pdf};
   }

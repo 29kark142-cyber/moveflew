@@ -248,7 +248,7 @@ function JobSheet({ job, me, role, scope,onBack, onChange, queue }: { job: Field
         {done && <p className="text-sm text-foreground">Billable time: <strong>{job.bill.hours} h</strong> (pickup arrival to completion)</p>}
       </section>
 
-      <FieldDocuments documents={job.fieldDocuments || {}} job={job} scope={scope} locked={Boolean(job.completedSignature)} onSave={saveDocument}/>
+      <FieldDocuments documents={{...job.fieldDocuments,...(job.completedSignature && !job.fieldDocuments?.bol?.signature?{bol:{kind:'bol' as const,notes:job.fieldDocuments?.bol?.notes || '',items:job.fieldDocuments?.bol?.items || [],signature:job.completedSignature,signedAt:String(job['signedOffAt'] || '')}}:{})}} job={job} scope={scope} locked={Boolean(job.completedSignature)} onSave={saveDocument}/>
 
       <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
         <h2 className="font-semibold text-card-foreground">Inspection photos</h2>
