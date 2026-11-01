@@ -13,9 +13,9 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: desc },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:url", content: "https://manus-to-makeover.lovable.app/" },
+      { property: "og:url", content: "https://moveflew.lovable.app/" },
     ],
-    links: [{ rel: "canonical", href: "https://manus-to-makeover.lovable.app/" }],
+    links: [{ rel: "canonical", href: "https://moveflew.lovable.app/" }],
   }),
   component: Home,
 });

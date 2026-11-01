@@ -4,9 +4,9 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MoveGridBrand from "@/components/MoveGridBrand";
 
-export default function SaasLayout({ children, footerNote }: { children: ReactNode; footerNote?: string }) {
+export default function SaasLayout({ children, footerNote, light = false }: { children: ReactNode; footerNote?: string; light?: boolean }) {
   const [menu, setMenu] = useState(false);
-  return <div className="saas-site">
+  return <div className={light ? "saas-site mf-home" : "saas-site"}>
     <div className="saas-announcement"><span>Free beta access. Built for moving companies.</span><Link href="/register">Join the beta <ArrowRight size={14} /></Link></div>
     <header className="saas-header">
       <div className="saas-wrap saas-navigation">
