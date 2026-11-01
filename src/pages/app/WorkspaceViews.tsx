@@ -2102,7 +2102,9 @@ export function JobDetailPage({ role, navigate, path }: PageProps) {
             {t("Open shareable proposal")} <ExternalLink size={14} />
           </a>
           <p className="ws-helper">
-            {job.signature
+            {(job as unknown as { testApproval?: unknown }).testApproval
+              ? 'Approved for testing; customer signature not recorded.'
+              : job.signature
               ? t("Customer e-signature received.")
               : t("Awaiting customer signature.")}
           </p>
