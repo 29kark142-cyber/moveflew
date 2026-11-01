@@ -1,9 +1,9 @@
 # Northwest Moving Crew migration
 
 ## Reports and tariffs readiness
-- [ ] Replace legacy Reports with workspace operational metrics and clearly labeled sample data when empty.
-- [ ] Replace legacy Tariffs with persisted admin pricing controls and current workspace branding.
-- [ ] Verify English/Russian labels, permissions and save/readback flows.
+- [x] Replace legacy Reports with completed-move revenue, count, average order value and crew metrics; empty workspaces show labeled UI-only examples.
+- [x] Replace legacy Tariffs with atomic admin pricing/travel/fuel saves and workspace branding; truck fee feeds new estimates.
+- [x] Verify signed-in Reports, English/Russian switching and tariff save/reload/restore; 16 rule tests pass and preview checks are clean.
 
 ## Workspace appearance
 - [x] Add five-preset gallery, eight accents and masked glass wallpapers with opaque tables, charts and inputs; verified 40 palette combinations with minimum 5.36:1 body/muted/button contrast.
