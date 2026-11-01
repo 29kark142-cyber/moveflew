@@ -703,6 +703,7 @@ export type Database = {
       }
       workspaces: {
         Row: {
+          appearance: Json
           beta_ends_at: string | null
           company_phone: string
           created_at: string
@@ -729,6 +730,7 @@ export type Database = {
           trial_ends_at: string | null
         }
         Insert: {
+          appearance?: Json
           beta_ends_at?: string | null
           company_phone?: string
           created_at?: string
@@ -755,6 +757,7 @@ export type Database = {
           trial_ends_at?: string | null
         }
         Update: {
+          appearance?: Json
           beta_ends_at?: string | null
           company_phone?: string
           created_at?: string
@@ -888,6 +891,7 @@ export type Database = {
         Returns: Json
       }
       view_moving_proposal: { Args: { _token: string }; Returns: Json }
+      wallpaper_workspace_id: { Args: { _path: string }; Returns: number }
       workspace_role: { Args: { _ws: number }; Returns: string }
       workspace_writable: { Args: { _ws: number }; Returns: boolean }
     }

@@ -1,5 +1,9 @@
 # Northwest Moving Crew migration
 
+## Workspace appearance
+- [x] Add five-preset gallery, eight accents and masked glass wallpapers with opaque tables, charts and inputs; verified 40 palette combinations with minimum 5.36:1 body/muted/button contrast.
+- [x] Persist scoped local preferences and manager-controlled workspace settings; verified saved theme/accent and private wallpaper after reload, phone layout, invalid-image fallback and 403/400/401 rejection paths. Nine targeted tests pass.
+
 ## Field documentation and offline execution
 - [x] BOL, damage acknowledgment and furniture inspection with embedded signatures.
 - [x] Immutable signed PDF with inspection photos and secure download; visually checked all pages and fixed orphaned headings.

@@ -1,4 +1,6 @@
 import WorkerDirectory from "@/components/workspace/WorkerDirectory";
+import AppearanceSettings from "@/components/workspace/AppearanceSettings";
+import { Button } from "@/components/ui/button";
 import DepositSettings from "@/components/workspace/DepositSettings";
 import TravelSettings from "@/components/workspace/TravelSettings";
 import IntegrationsHub from "@/components/workspace/IntegrationsHub";
@@ -4142,10 +4144,10 @@ export function InvoicesPage({ navigate }: PageProps) {
   );
 }
 
-export function SettingsPage({ role, navigate, integrationsTab }: PageProps & { integrationsTab?: boolean }) {
+export function SettingsPage({ role, navigate, integrationsTab, workspaceId = Number(getWorkspaceId()), appearanceWritable = true }: PageProps & { integrationsTab?: boolean; workspaceId?: number; appearanceWritable?: boolean }) {
   const { t } = useI18n();
-  const [tab, setTabState] = useState<"pricing" | "team" | "sequences" | "integrations">(integrationsTab ? "integrations" : "pricing");
-  const setTab = (next: "pricing" | "team" | "sequences" | "integrations") => {
+  const [tab, setTabState] = useState<"pricing" | "team" | "sequences" | "integrations" | "appearance">(integrationsTab ? "integrations" : "pricing");
+  const setTab = (next: "pricing" | "team" | "sequences" | "integrations" | "appearance") => {
     setTabState(next);
     navigate(next === "integrations" ? "/app/settings/integrations" : "/app/settings");
   };
@@ -4160,6 +4162,7 @@ export function SettingsPage({ role, navigate, integrationsTab }: PageProps & { 
         )}
       />
       <div className="ws-tabs">
+        <Button variant="ghost" className={tab === "appearance" ? "active" : ""} onClick={() => setTab("appearance")}>Appearance</Button>
         <button
           className={tab === "pricing" ? "active" : ""}
           onClick={() => setTab("pricing")}
@@ -4193,6 +4196,8 @@ export function SettingsPage({ role, navigate, integrationsTab }: PageProps & { 
             "Pricing and sequence settings are available to Admin and Office Admin. Dispatchers can use the Membership tab as a read-only crew directory."
           )}
         </div>
+      ) : tab === "appearance" ? (
+        <AppearanceSettings role={role} workspaceId={workspaceId} writable={appearanceWritable} />
       ) : tab === "pricing" ? (
         <><DepositSettings admin={role === "admin"} /><TravelSettings admin={role === "admin"} /><PricingSettings /></>
       ) : tab === "team" ? (
