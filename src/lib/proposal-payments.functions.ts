@@ -24,6 +24,7 @@ export const createProposalDepositCheckout = createServerFn({ method: 'POST' })
     const { data: job } = await supabaseAdmin.from('workspace_records')
       .select('data').eq('id', proposal.job_id).eq('kind', 'job').maybeSingle();
     const jobStatus = String((job?.data as Record<string, unknown> | null)?.['status'] ?? '').toLowerCase();
+    if ((job?.data as Record<string, unknown> | null)?.['testApproval']) return { error: 'This job was manually approved for testing; no deposit is collected.' };
     if (!job || ['cancelled', 'canceled', 'declined', 'lost', 'archived'].includes(jobStatus))
       return { error: 'This proposal is no longer available.' };
     if (proposal.deposit_cents < 50) return { error: 'No online deposit is required for this proposal.' };

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { enforceIntakeLimit } from './intake-limit.server';
 
 export const leadSchema = z.object({
   name: z.string().trim().min(1).max(180),
@@ -118,6 +119,8 @@ const MESSAGES: Record<number, string> = {
 
 // Shared by /api/public/v1/leads and API-key calls to /api/v1/public/quotes.
 export async function handleIntegrationLead(request: Request): Promise<Response> {
+        const limited = await enforceIntakeLimit(request, leadCors);
+        if (limited) return limited;
         const bearer = request.headers.get("Authorization")?.replace(/^Bearer /, "");
         const widget = request.headers.get("X-Widget-Key");
         const credential = bearer && /^(nw_pub|sk)_[a-f0-9]{48}$/.test(bearer) ? bearer : widget && /^pk_[a-f0-9]{32}$/.test(widget) ? widget : null;

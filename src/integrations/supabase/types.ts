@@ -91,6 +91,24 @@ export type Database = {
           },
         ]
       }
+      intake_ip_limits: {
+        Row: {
+          ip_hash: string
+          requests: string[]
+          updated_at: string
+        }
+        Insert: {
+          ip_hash: string
+          requests?: string[]
+          updated_at?: string
+        }
+        Update: {
+          ip_hash?: string
+          requests?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       integration_lead_receipts: {
         Row: {
           created_at: string
@@ -151,6 +169,8 @@ export type Database = {
           signature: string | null
           signed_at: string | null
           snapshot: Json
+          test_approved_at: string | null
+          test_approved_by: string | null
           token: string
           workspace_id: number
         }
@@ -164,6 +184,8 @@ export type Database = {
           signature?: string | null
           signed_at?: string | null
           snapshot: Json
+          test_approved_at?: string | null
+          test_approved_by?: string | null
           token?: string
           workspace_id: number
         }
@@ -177,6 +199,8 @@ export type Database = {
           signature?: string | null
           signed_at?: string | null
           snapshot?: Json
+          test_approved_at?: string | null
+          test_approved_by?: string | null
           token?: string
           workspace_id?: number
         }
@@ -684,6 +708,10 @@ export type Database = {
         }
         Returns: number
       }
+      book_job_for_preview: {
+        Args: { _actor: string; _job: number; _ws: number }
+        Returns: Json
+      }
       can_access_record: {
         Args: { _data: Json; _kind: string; _ws: number }
         Returns: boolean
@@ -692,6 +720,7 @@ export type Database = {
         Args: { _ws: number }
         Returns: undefined
       }
+      consume_intake_ip_limit: { Args: { _hash: string }; Returns: Json }
       create_workspace: { Args: { _name: string }; Returns: number }
       crew_invite_info: {
         Args: { _token: string }

@@ -1,5 +1,9 @@
 # Northwest Moving Crew migration
 
+## Internal testing readiness
+- [x] Add shared database-backed 10/minute/IP quote and lead intake limit; verified request 11 returns 429, aliases share budget, and preflight stays available.
+- [x] Add preview-only admin manual approval/booking from job dashboard; verified saved booking, active proposal approval, no payment receipt, and 18 targeted tests.
+
 ## SaaS homepage pivot
 - [x] Polish hero grid/beta badge, dark feature previews and CTA glow; verify homepage navigation and layout.
 - [x] Apply MoveGrid branding, cube logo, new hero copy and verify public navigation.
