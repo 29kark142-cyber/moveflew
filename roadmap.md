@@ -1,5 +1,11 @@
 # Northwest Moving Crew migration
 
+## Field documentation and offline execution
+- [ ] BOL, damage acknowledgment and furniture inspection with embedded signatures.
+- [ ] Immutable signed PDF with inspection photos and secure download.
+- [ ] Automatic customer and office email links (blocked: sender domain not configured).
+- [ ] Guarded field PWA and user/workspace-scoped IndexedDB sync; verify offline replay.
+
 ## Internal testing readiness
 - [x] Add shared database-backed 10/minute/IP quote and lead intake limit; verified request 11 returns 429, aliases share budget, and preflight stays available.
 - [x] Add preview-only admin manual approval/booking from job dashboard; verified saved booking, active proposal approval, no payment receipt, and 18 targeted tests.
