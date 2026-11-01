@@ -1,5 +1,9 @@
 # Northwest Moving Crew migration
 
+## Workspace appearance
+- [ ] Add preset gallery, accents and accessible wallpaper controls.
+- [ ] Persist locally and sync workspace preferences; verify permissions and saved appearance.
+
 ## Field documentation and offline execution
 - [x] BOL, damage acknowledgment and furniture inspection with embedded signatures.
 - [x] Immutable signed PDF with inspection photos and secure download; visually checked all pages and fixed orphaned headings.
