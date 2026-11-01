@@ -4,7 +4,7 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MoveGridBrand from "@/components/MoveGridBrand";
 
-export default function SaasLayout({ children }: { children: ReactNode }) {
+export default function SaasLayout({ children, footerNote }: { children: ReactNode; footerNote?: string }) {
   const [menu, setMenu] = useState(false);
   return <div className="saas-site">
     <div className="saas-announcement"><span>Free beta access. Built for moving companies.</span><Link href="/register">Join the beta <ArrowRight size={14} /></Link></div>
@@ -21,6 +21,6 @@ export default function SaasLayout({ children }: { children: ReactNode }) {
       </div>
     </header>
     <main>{children}</main>
-    <footer className="saas-footer"><div className="saas-wrap"><div><MoveGridBrand /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/login">Log in</Link></nav><small>© {new Date().getFullYear()} MoveGrid</small></div></footer>
+    <footer className="saas-footer"><div className="saas-wrap"><div><MoveGridBrand /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/login">Log in</Link></nav><small>© {new Date().getFullYear()} MoveGrid</small></div>{footerNote && <p className="saas-wrap saas-comparison-note">{footerNote}</p>}</footer>
   </div>;
 }
