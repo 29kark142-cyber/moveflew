@@ -75,6 +75,7 @@ export async function fieldRoute(ctx: Ctx, method: string, parts: string[], body
     if(job['completedSignature'])h.fail(409,'Signed documents are locked');
     const b=z.object({document:documentSchema,operationId:operationSchema}).parse(await body());
     const docs=(job['fieldDocuments'] || {}) as FieldDocuments;
+    if(docs[b.document.kind]?.signature===b.document.signature && b.document.signature)return view(job);
     if(docs[b.document.kind]?.signature)h.fail(409,'This signed document is locked');
     const doc={...b.document,...(b.document.signature?{signedAt:new Date().toISOString(),by:ctx.userId}:{})};
     return view(await h.saveData(ctx,id,{fieldDocuments:{...docs,[doc.kind]:doc}}));

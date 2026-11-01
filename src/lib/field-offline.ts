@@ -19,7 +19,7 @@ async function activeScope(scope: FieldScope) {
   const { data } = await supabase.auth.getSession();
   return data.session?.user.id === scope.userId && Number(getWorkspaceId()) === scope.workspaceId;
 }
-export async function syncField(scope: FieldScope) {
+async function replayField(scope: FieldScope) {
   if (!navigator.onLine || !await activeScope(scope)) return;
   const operations = await queuedField(scope);
   for (const op of operations) {
@@ -32,4 +32,8 @@ export async function syncField(scope: FieldScope) {
       break; // Never lose refused writes or replay a later signature ahead of photos/checklists.
     }
   }
+}
+export async function syncField(scope:FieldScope) {
+  if(navigator.locks)return navigator.locks.request(`moveflew-field-sync:${scopeKey(scope)}`,()=>replayField(scope));
+  return replayField(scope);
 }

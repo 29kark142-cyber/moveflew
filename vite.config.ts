@@ -16,8 +16,8 @@ export default defineConfig({
   },
   plugins: [mcpPlugin(), VitePWA({ strategies:'generateSW', filename:'sw.js', injectRegister:null, registerType:'autoUpdate', manifest:false, devOptions:{enabled:false},
     workbox:{ globPatterns:['**/*.{js,css,woff2,ttf,png,svg}'], globIgnores:['**/server/**'], maximumFileSizeToCacheInBytes:5*1024*1024,
-      additionalManifestEntries:[{url:'/field-offline.html',revision:'1'}], navigateFallback:'/field-offline.html', navigateFallbackAllowlist:[/^\/app\/field(?:\/?$|\/)/], navigateFallbackDenylist:[/^\/~oauth/],
-      runtimeCaching:[{urlPattern:({request,url})=>request.mode==='navigate' && url.pathname.startsWith('/app/field') && !url.pathname.startsWith('/~oauth'),handler:'NetworkFirst',options:{cacheName:'moveflew-field-navigation',networkTimeoutSeconds:5,expiration:{maxEntries:1,maxAgeSeconds:86400}}},
+      additionalManifestEntries:[{url:'/field-offline.html',revision:'1'}], navigateFallback:undefined,
+      runtimeCaching:[{urlPattern:({request,url})=>request.mode==='navigate' && /^\/app\/field(?:\/?$|\/)/.test(url.pathname),handler:'NetworkFirst',options:{cacheName:'moveflew-field-navigation',networkTimeoutSeconds:5,precacheFallback:{fallbackURL:'/field-offline.html'},cacheableResponse:{statuses:[200]},expiration:{maxEntries:1,maxAgeSeconds:86400}}},
       {urlPattern:({url})=>url.origin===self.location.origin && /\/assets\/.*-[a-zA-Z0-9_-]+\.(js|css|woff2|ttf|png|svg)$/.test(url.pathname),handler:'CacheFirst',options:{cacheName:'moveflew-field-assets',expiration:{maxEntries:150,maxAgeSeconds:2592000}}}], cleanupOutdatedCaches:true }
   })],
   vite: {

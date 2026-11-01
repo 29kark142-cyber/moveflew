@@ -5,7 +5,7 @@ import { Banknote, Camera, CheckCircle2, ChevronLeft, CreditCard, MapPin, Messag
 import { crmFetch } from "@/lib/crm";
 import SignaturePad from "@/components/workspace/SignaturePad";
 import { FIELD_PHASES, type FieldPhase, type FieldStatus, type FinalBill, type Timeline } from "@shared/field";
-import { fieldStatus,finalBill } from '@shared/field';
+import { fieldStatus,finalBill,billableHours } from '@shared/field';
 import { cacheField,readField,queuedField,enqueueField,syncField,type FieldScope,type FieldOperation } from '@/lib/field-offline';
 import FieldDocuments from './FieldDocuments';
 import type { FieldDocument,FieldDocuments as Documents } from '@/shared/field-documents';
@@ -82,7 +82,7 @@ export default function MobileField({ role,userId,workspaceId }: { role: string;
     if (rest.length < q.length) { toast.success("Offline updates synced"); void load(); }
   }, [load,userId,workspaceId]);
 
-  useEffect(() => { localStorage.removeItem('nwc-field-cache');localStorage.removeItem('nwc-field-queue');void flush().then(load).catch(e=>toast.error(String(e)));crmFetch<{officeEmail:string}>('/field/settings').then(x=>setOfficeEmail(x.officeEmail)).catch(()=>{}); }, [flush, load]);
+  useEffect(() => { void flush().then(load).catch(e=>toast.error(String(e)));crmFetch<{officeEmail:string}>('/field/settings').then(x=>setOfficeEmail(x.officeEmail)).catch(()=>{}); }, [flush, load]);
   useEffect(() => {
     const on = () => {setOffline(false);void flush().then(load);};
     const off = () => setOffline(true);
@@ -184,7 +184,7 @@ function JobSheet({ job, me, role, scope,onBack, onChange, queue }: { job: Field
       await queue(job.id,'phase',{phase,at});
       const tl = { ...t, [phase]: at };
       const idx = FIELD_PHASES.findIndex(p => p.key === phase);
-      onChange({ ...job, timeline: tl, nextPhase: FIELD_PHASES[idx + 1]?.key ?? null,fieldStatus:fieldStatus(tl),bill:phase==='complete'?finalBill(job,job.bill.hours):job.bill });
+      onChange({ ...job, timeline: tl, nextPhase: FIELD_PHASES[idx + 1]?.key ?? null,fieldStatus:fieldStatus(tl),bill:phase==='complete'?finalBill(job,billableHours(tl)):job.bill });
       toast("Saved on this phone — it will sync when you're back online.");
     }
   });
