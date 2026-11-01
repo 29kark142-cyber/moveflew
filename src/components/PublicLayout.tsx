@@ -3,7 +3,6 @@ import { Link, useLocation } from "@/lib/wouter";
 import {
   ArrowRight,
   Menu,
-  Phone,
   UserRound,
   X,
   ChevronDown,
