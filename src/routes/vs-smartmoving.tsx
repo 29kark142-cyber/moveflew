@@ -11,7 +11,7 @@ export const Route = createFileRoute("/vs-smartmoving")({
   component: ComparisonPage,
 });
 function ComparisonPage() {
-  return <SaasLayout><section className="saas-wrap saas-comparison">
+  return <SaasLayout footerNote="SmartMoving® is a registered trademark of SmartMoving Software, Inc. MoveGrid is an independent software platform and is not affiliated with, endorsed by, or sponsored by SmartMoving. All competitor pricing and features are based on publicly available information and are used solely for comparative purposes."><section className="saas-wrap saas-comparison">
     <span className="saas-eyebrow">CHOOSING YOUR MOVING CRM</span>
     <h1>MoveGrid vs. SmartMoving</h1>
     <p className="saas-comparison-intro">Your next CRM should fit your operations—and your budget. Explore MoveGrid with free beta access before you commit.</p>
