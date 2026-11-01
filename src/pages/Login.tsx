@@ -7,6 +7,7 @@ import {
   Mail,
   Phone,
   Send,
+  ShieldCheck,
   Truck,
   ArrowLeft,
 } from "lucide-react";
