@@ -141,6 +141,13 @@
       "when": 1793510393022,
       "tag": "0019_field_document_snapshots",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1793512445221,
+      "tag": "0020_workspace_appearance_preferences",
+      "breakpoints": true
     }
   ]
 }
