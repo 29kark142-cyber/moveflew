@@ -17,9 +17,9 @@ export default function Home() {
     <section className="saas-hero">
       <img className="saas-hero-image" src={operationsHero} width={1920} height={1024} alt="Moving trucks and crew at a dispatch depot" fetchPriority="high" />
       <div className="saas-wrap saas-hero-content">
-        <span className="saas-eyebrow"><span className="saas-status-dot" /> NORTHWEST CREW · MOVING CRM</span>
-        <h1>The Moving CRM Built for Fast Operations <span>— Without the Enterprise Price Tag.</span></h1>
-        <p>Streamline lead capture, automated distance pricing, proposal deposits, conflict-free dispatch, and mobile crew management in one clean platform.</p>
+        <span className="saas-eyebrow"><span className="saas-status-dot" /> MOVEGRID · MOVING CRM</span>
+        <h1>Precision Moving CRM &amp; Conflict-Free Dispatch <span>— Without the Enterprise Price Tag.</span></h1>
+        <p>Streamline lead capture, automated distance pricing, proposal deposits, visual dispatch, and mobile crew management in one clean platform.</p>
         <div className="saas-hero-actions">
           <Button asChild size="lg"><Link href="/register">Start Free Beta Access <ArrowRight /></Link></Button>
           <Button asChild variant="outline" size="lg"><Link href="/vs-smartmoving">Compare vs. SmartMoving <ChevronRight /></Link></Button>
@@ -33,6 +33,6 @@ export default function Home() {
       <div className="saas-section-heading"><div><span className="saas-eyebrow">LESS BUSYWORK. MORE MOVING.</span><h2>Your moving operations.<br />All moving together.</h2></div><p>From the first website inquiry to the final customer sign-off, give your office and field crew one connected workflow.</p></div>
       <div className="saas-feature-grid">{features.map(({ Icon, name, text, tone }, index) => <article className={`saas-feature saas-feature-${tone}`} key={name}><div className="saas-feature-top"><span className="saas-feature-icon"><Icon size={24} /></span><small>0{index + 1}</small></div><h3>{name}</h3><p>{text}</p></article>)}<div className="saas-feature-invite"><span className="saas-eyebrow">BUILT FOR YOUR NEXT MOVE</span><h3>A clearer day starts with a connected crew.</h3><Button asChild><Link href="/register">Start Free Beta Access <ArrowRight /></Link></Button><small>No credit card required.</small></div></div>
     </section>
-    <section className="saas-closing"><div className="saas-wrap"><div><span className="saas-eyebrow">YOUR OPERATIONS. WITHOUT THE OVERHEAD.</span><h2>Make your next move a smarter one.</h2><p>Bring your team into Northwest Crew with free beta access.</p></div><Button asChild size="lg"><Link href="/register">Start Free Beta Access <ArrowRight /></Link></Button></div></section>
+    <section className="saas-closing"><div className="saas-wrap"><div><span className="saas-eyebrow">YOUR OPERATIONS. WITHOUT THE OVERHEAD.</span><h2>Make your next move a smarter one.</h2><p>Bring your team into MoveGrid with free beta access.</p></div><Button asChild size="lg"><Link href="/register">Start Free Beta Access <ArrowRight /></Link></Button></div></section>
   </SaasLayout>;
 }

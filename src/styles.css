@@ -2990,15 +2990,18 @@ html:lang(ru) .steps-grid p {
 
 /* Isolated SaaS marketing theme: does not change CRM or legacy service pages. */
 .saas-site {
-  --background: oklch(0.99 0.003 180);
-  --foreground: oklch(0.24 0.024 180);
-  --primary: oklch(0.4 0.075 181);
-  --color-primary-foreground: oklch(1 0 0);
-  --border: oklch(0.88 0.014 180);
+  --saas-midnight: #090D16;
+  --saas-emerald: #10B981;
+  --background: oklch(0.985 0.002 255);
+  --foreground: var(--saas-midnight);
+  --primary: var(--saas-emerald);
+  --color-primary-foreground: var(--saas-midnight);
+  --border: oklch(0.9 0.008 255);
   --color-input: var(--border);
   --color-accent: oklch(0.94 0.026 180);
   --saas-paper: oklch(1 0 0);
-  --saas-muted: oklch(0.47 0.02 180);
+  --saas-muted: oklch(0.45 0.018 255);
+  --saas-accent-ink: oklch(0.44 0.105 164);
   --saas-mint: oklch(0.94 0.032 163);
   --saas-sky: oklch(0.95 0.025 240);
   --saas-rose: oklch(0.95 0.026 15);
@@ -3012,6 +3015,12 @@ html:lang(ru) .steps-grid p {
 .saas-site h1, .saas-site h2, .saas-site h3 { font-family: "Outfit", sans-serif; }
 .saas-wrap { width: min(1200px, calc(100% - 80px)); margin-inline: auto; }
 .saas-announcement { display:flex; align-items:center; justify-content:center; gap:22px; padding:9px 20px; background:var(--primary); color:var(--color-primary-foreground); font-size:12px; }
+.saas-announcement { background:var(--saas-midnight); color:var(--saas-paper); }
+.saas-announcement a { color:var(--primary); }
+.movegrid-brand { display:inline-flex; align-items:center; gap:11px; font-family:"Outfit", sans-serif; font-weight:600; font-size:28px; line-height:1; color:var(--foreground); }
+.movegrid-symbol { width:38px; height:42px; flex-shrink:0; color:var(--primary); }
+.movegrid-word-accent { color:var(--saas-accent-ink); }
+.saas-site a:focus-visible, .saas-site button:focus-visible { outline-color:var(--primary); }
 .saas-announcement a { display:inline-flex; align-items:center; gap:8px; font-weight:600; }
 .saas-header { background:var(--saas-paper); position:relative; z-index:5; border-bottom:1px solid var(--border); }
 .saas-navigation { min-height:86px; display:flex; align-items:center; gap:32px; }
@@ -3019,17 +3028,17 @@ html:lang(ru) .steps-grid p {
 .saas-site .brand-words strong span { color:var(--foreground); }
 .saas-site .brand-words small { color:var(--saas-muted); }
 .saas-menu { display:flex; gap:26px; align-items:center; margin-left:auto; font-size:13px; }
-.saas-menu a:hover, .saas-footer a:hover { color:var(--primary); }
+.saas-menu a:hover, .saas-footer a:hover { color:var(--saas-accent-ink); }
 .saas-nav-cta { height:42px; }
 .saas-menu-toggle { display:none; }
 .saas-hero { position:relative; isolation:isolate; min-height:620px; display:flex; align-items:center; overflow:hidden; }
 .saas-hero-image { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 65%; z-index:-2; }
 .saas-hero::before { content:""; position:absolute; inset:0; background:var(--saas-hero-wash); width:57%; z-index:-1; }
 .saas-hero-content { padding-top:58px; padding-bottom:60px; }
-.saas-eyebrow { font-size:11px; font-weight:700; display:inline-flex; gap:9px; align-items:center; color:var(--primary); margin-bottom:20px; }
+.saas-eyebrow { font-size:11px; font-weight:700; display:inline-flex; gap:9px; align-items:center; color:var(--saas-accent-ink); margin-bottom:20px; }
 .saas-status-dot { width:7px; height:7px; background:var(--primary); border-radius:50%; }
 .saas-hero h1 { font-size:48px; line-height:1.12; font-weight:600; max-width:625px; margin-bottom:24px; }
-.saas-hero h1 span { color:var(--primary); }
+.saas-hero h1 span { color:var(--saas-accent-ink); }
 .saas-hero-content > p { max-width:580px; font-size:16px; line-height:1.75; color:var(--saas-muted); margin-bottom:28px; }
 .saas-hero-actions { display:flex; flex-wrap:wrap; gap:12px; }
 .saas-hero-actions > a { height:48px; padding-inline:18px; }
@@ -3085,7 +3094,7 @@ html:lang(ru) .steps-grid p {
 .saas-comparison-row svg { flex-shrink:0; margin-top:3px; color:var(--primary); }
 .saas-comparison-head { background:var(--saas-mint); }
 .saas-comparison-note { font-size:13px; color:var(--saas-muted); margin-top:22px; max-width:920px; }
-.saas-return { display:inline-flex; gap:8px; align-items:center; color:var(--primary); margin-top:20px; font-weight:600; }
+.saas-return { display:inline-flex; gap:8px; align-items:center; color:var(--saas-accent-ink); margin-top:20px; font-weight:600; }
 @media (min-width:1600px) { .saas-hero { min-height:660px; } }
 @media (max-width:1100px) { .saas-navigation { gap:20px; } .saas-menu { gap:18px; } .saas-nav-cta { display:none; } .saas-hero::before { width:67%; } .saas-workflow > div { gap:25px; } .saas-workflow svg { margin-left:0; } }
 @media (max-width:760px) {
@@ -3132,7 +3141,7 @@ html:lang(ru) .steps-grid p {
   .saas-comparison-row { grid-template-columns:1fr; padding:12px; }
   .saas-comparison-row > * { padding:8px; }
   .saas-comparison-head { display:none; }
-  .saas-comparison-row > span:nth-child(2)::before { content:"Northwest Crew:"; font-weight:600; color:var(--foreground); }
+  .saas-comparison-row > span:nth-child(2)::before { content:"MoveGrid:"; font-weight:600; color:var(--foreground); }
   .saas-comparison-row > span:nth-child(3)::before { content:"SmartMoving:"; font-weight:600; color:var(--foreground); }
   .saas-comparison-row > span { display:block; }
   .saas-comparison-row > span svg { display:none; }
@@ -3140,4 +3149,4 @@ html:lang(ru) .steps-grid p {
 @media (prefers-reduced-motion:reduce) { .saas-site *, .saas-site *::before { transition:none; scroll-behavior:auto; } }
 .saas-site a.bg-primary { color:var(--color-primary-foreground); }
 .saas-brand { display:flex; flex-direction:column; gap:5px; flex-shrink:0; }
-.saas-brand > small { color:var(--saas-muted); font-size:8px; font-weight:600; margin-left:43px; }
+.saas-brand > small { color:var(--saas-muted); font-size:8px; font-weight:600; margin-left:49px; }
