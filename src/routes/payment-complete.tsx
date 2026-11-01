@@ -3,10 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/payment-complete")({
   head: () => ({
     meta: [
-      { title: "Payment received | Northwest Moving Crew" },
+      { title: "Payment received | MoveFlew" },
       { name: "description", content: "Thank you — your moving payment was submitted." },
-      { property: "og:title", content: "Payment received | Northwest Moving Crew" },
-      { property: "og:description", content: "Thank you for moving with Northwest Moving Crew." },
+      { property: "og:title", content: "Payment received | MoveFlew" },
+      { property: "og:description", content: "Thank you for moving with MoveFlew." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },

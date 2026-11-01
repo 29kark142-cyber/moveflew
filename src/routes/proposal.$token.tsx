@@ -4,10 +4,10 @@ import { ClientOnly } from '@tanstack/react-router';
 const ProposalPage = lazy(() => import('@/pages/app/ProposalPage'));
 export const Route = createFileRoute('/proposal/$token')({
   head:()=>({meta:[
-    {title:'Your moving proposal | Northwest Moving Crew'},
+    {title:'Your moving proposal | MoveFlew'},
     {name:'description',content:'Review your moving estimate and securely sign your customer proposal.'},
-    {property:'og:title',content:'Moving proposal | Northwest Moving Crew'},
-    {property:'og:description',content:'Review and accept your Northwest Moving Crew estimate.'},
+    {property:'og:title',content:'Moving proposal | MoveFlew'},
+    {property:'og:description',content:'Review and accept your MoveFlew estimate.'},
     {property:'og:type',content:'website'},
     {name:'twitter:card',content:'summary_large_image'},
     {name:'robots',content:'noindex, nofollow'},
