@@ -1,39 +1,36 @@
+import { useState, type FormEvent } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@/lib/wouter";
-import { ArrowRight, Check, ChevronRight } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SaasLayout from "@/components/SaasLayout";
-import MoveGridFeaturePreview from "@/components/MoveGridFeaturePreview";
-import operationsHero from "@/assets/crm-operations-hero.jpg";
-
-const features = [
-  { name: "Instant Web Lead Capture & Embeddable Widgets", text: "Connect your website, embedded quote forms, and inbound webhooks. New website leads land in your workspace pipeline.", tone: "capture" },
-  { name: "Google Maps Distance, Travel & Fuel Surcharge Engine", text: "Turn pickup and drop-off addresses into route distance and driving time. Apply your workspace’s travel and fuel pricing rules.", tone: "pricing" },
-  { name: "Digital Proposals with Stripe Deposit Collection", text: "Share a customer-ready proposal, collect a digital signature, and take a deposit with your default rules or an office override.", tone: "proposals" },
-  { name: "Visual Dispatch Calendar with Overlap Prevention", text: "See booked jobs, assign trucks and crews, and catch overlapping assignments before they disrupt the day.", tone: "dispatch" },
-  { name: "Mobile Field App for Crews & Digital Sign-Offs", text: "Keep assigned jobs, move-day progress, inspection photos, customer signatures, and final payment close at hand.", tone: "field" },
-];
+import { DispatchPreview, FieldPreview, RoutingPreview, SmallProductPreview } from "@/components/HomeProductPreview";
 
 export default function Home() {
-  return <SaasLayout><div className="movegrid-home">
-    <section className="saas-hero">
-      <img className="saas-hero-image" src={operationsHero} width={1920} height={1024} alt="Moving trucks and crew at a dispatch depot" fetchPriority="high" />
-      <div className="saas-wrap saas-hero-content">
-        <span className="mg-beta-badge"><span aria-hidden="true">🟢</span> Built for Moving Operations <span aria-hidden="true">•</span> Free Beta Access</span>
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  function startBeta(event: FormEvent) {
+    event.preventDefault();
+    void navigate({ to: "/register", search: { email: email.trim() } });
+  }
+  return <SaasLayout light>
+    <section className="mf-hero saas-wrap">
+      <div className="mf-hero-copy">
+        <span className="mf-beta"><i /> Built for moving operations <span> / </span> Free beta</span>
         <h1>Precision Moving CRM &amp; Conflict-Free Dispatch <span>— Without the Enterprise Price Tag.</span></h1>
-        <p>Streamline lead capture, automated distance pricing, proposal deposits, visual dispatch, and mobile crew management in one clean platform.</p>
-        <div className="saas-hero-actions">
-          <Button asChild size="lg"><Link href="/register">Start Free Beta Access <ArrowRight /></Link></Button>
-          <Button asChild variant="outline" size="lg"><Link href="/vs-smartmoving">Compare vs. SmartMoving <ChevronRight /></Link></Button>
-        </div>
-        <div className="saas-beta-details"><span><Check size={15} /> Free during beta</span><span><Check size={15} /> No credit card required</span></div>
+        <p>A clearer day for your office. A smoother move for your crew. Meet MoveFlew, your connected moving operations workspace.</p>
+        <ul className="mf-value-list"><li><Check /> Assign crews and trucks without double-booking.</li><li><Check /> Turn route distance into accurate estimates.</li><li><Check /> Keep proposals, payments and sign-offs connected.</li></ul>
+        <form className="mf-signup" onSubmit={startBeta}><label><Mail size={18} /><input aria-label="Work email" type="email" placeholder="Your work email" autoComplete="email" required value={email} onChange={event => setEmail(event.target.value)} /></label><Button type="submit" size="lg">Start Free Beta <ArrowRight /></Button></form>
+        <div className="mf-signup-note"><span>No credit card required.</span><span>Free during beta.</span></div>
+        <Link className="mf-comparison-link" href="/vs-smartmoving">Compare vs. SmartMoving <ChevronRight size={14} /></Link>
       </div>
-      <div className="saas-hero-caption">From the office to the last box. Connected.</div>
+      <DispatchPreview />
     </section>
-    <section className="saas-workflow"><div className="saas-wrap"><span>ONE WORKSPACE. EVERY STAGE.</span><div>{["Capture", "Price", "Book", "Dispatch", "Complete"].map((stage, index) => <div key={stage}><small>0{index + 1}</small><strong>{stage}</strong>{index < 4 && <ArrowRight size={17} />}</div>)}</div></div></section>
-    <section className="saas-features saas-wrap">
-      <div className="saas-section-heading"><div><span className="saas-eyebrow">LESS BUSYWORK. MORE MOVING.</span><h2>Your moving operations.<br />All moving together.</h2></div><p>From the first website inquiry to the final customer sign-off, give your office and field crew one connected workflow.</p></div>
-      <div className="saas-feature-grid">{features.map(({ name, text, tone }, index) => <article className={`saas-feature saas-feature-${tone}`} key={name}><MoveGridFeaturePreview kind={tone} /><div className="mg-feature-copy"><small className="mg-feature-number">0{index + 1} / {tone.toUpperCase()}</small><h3>{name}</h3><p>{text}</p></div></article>)}<div className="saas-feature-invite"><span className="saas-eyebrow">BUILT FOR YOUR NEXT MOVE</span><h3>A clearer day starts with a connected crew.</h3><Button asChild><Link href="/register">Start Free Beta Access <ArrowRight /></Link></Button><small>No credit card required.</small></div></div>
+    <section className="mf-workflow"><div className="saas-wrap"><span>ONE WORKSPACE. EVERY STAGE.</span><div>{["Capture", "Price", "Book", "Dispatch", "Complete"].map((stage, i) => <span key={stage}><small>0{i+1}</small>{stage}{i < 4 && <ArrowRight size={16} />}</span>)}</div></div></section>
+    <section className="mf-features saas-wrap"><div className="mf-section-heading"><div><span className="mf-eyebrow">BUILT AROUND YOUR WORKDAY</span><h2>Every detail handled.<br />Every team connected.</h2></div><p>From the first inquiry to the last signature.<br />Less switching tabs. More moving forward.</p></div>
+      <div className="mf-bento-top"><article className="mf-bento mf-routing"><div className="mf-bento-copy"><span className="mf-eyebrow">01 / PLAN &amp; DISPATCH</span><h3>The right crew. The right route.<br />No crossed wires.</h3><p>Visual dispatch catches overlapping assignments. Google Maps calculates distance and drive time, with travel and fuel priced by your rules.</p></div><RoutingPreview /></article><article className="mf-bento mf-field"><div className="mf-bento-copy"><span className="mf-eyebrow">02 / MOVE DAY</span><h3>Your office, in their pocket.</h3><p>Jobs, photos and signed BOLs. Connected online. Ready offline.</p></div><FieldPreview /></article></div>
+      <div className="mf-bento-bottom">{[{ kind: "invoices" as const, title: "From completed to collected.", text: "Keep invoices and payment status together, from deposit to final bill.", label: "03 / INVOICING" }, { kind: "storage" as const, title: "A place for every piece.", text: "Keep storage inventory organized and customer items accounted for.", label: "04 / INVENTORY & STORAGE" }, { kind: "proposals" as const, title: "Make it easy to say yes.", text: "Share clear proposals. Collect digital signatures and Stripe deposits.", label: "05 / AUTOMATED PROPOSALS" }].map(item => <article className="mf-bento" key={item.kind}><div className="mf-bento-copy"><span className="mf-eyebrow">{item.label}</span><h3>{item.title}</h3><p>{item.text}</p></div><SmallProductPreview kind={item.kind} /></article>)}</div>
     </section>
-    <section className="saas-closing"><div className="saas-wrap"><div><span className="saas-eyebrow">YOUR OPERATIONS. WITHOUT THE OVERHEAD.</span><h2>Make your next move a smarter one.</h2><p>Bring your team into MoveFlew with free beta access.</p></div><Button asChild size="lg"><Link href="/register">Start Free Beta Access <ArrowRight /></Link></Button></div></section>
-  </div></SaasLayout>;
+    <section className="mf-closing"><div className="saas-wrap"><div><span className="mf-eyebrow">A BETTER WAY TO MOVE</span><h2>Your next chapter starts here.</h2><p>Bring your team into MoveFlew. Free during beta.</p></div><Button asChild size="lg"><Link href="/register">Start Free Beta <ArrowRight /></Link></Button></div></section>
+  </SaasLayout>;
 }

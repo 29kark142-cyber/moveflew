@@ -8,6 +8,7 @@ const title = "Start your moving company workspace — Northwest Crew CRM";
 const desc = "Register your moving company and get a free beta workspace for leads, estimates, dispatch and crews.";
 
 export const Route = createFileRoute("/register")({
+  validateSearch: (search: Record<string, unknown>) => ({ email: typeof search.email === "string" && z.string().email().safeParse(search.email).success ? search.email : undefined }),
   head: () => ({
     meta: [
       { title },
@@ -31,7 +32,8 @@ const schema = z.object({
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ company: "", owner: "", email: "", phone: "", password: "" });
+  const search = Route.useSearch();
+  const [form, setForm] = useState({ company: "", owner: "", email: search.email ?? "", phone: "", password: "" });
   const [msg, setMsg] = useState("");
   const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
