@@ -2,6 +2,7 @@ import { PDFDocument, type PDFPage } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import fontUrl from '@/assets/fonts/field-sans.ttf?url';
 import { BOL_TERMS, DAMAGE_TERMS, DOCUMENT_TITLES, type FieldSnapshot } from '@/shared/field-documents';
+import {FIELD_PHASES} from '@/shared/field';
 
 export async function generateFieldPdf(snapshot: FieldSnapshot, origin: string) {
   const pdf = await PDFDocument.create();
@@ -12,6 +13,7 @@ export async function generateFieldPdf(snapshot: FieldSnapshot, origin: string) 
   let page: PDFPage = pdf.addPage([612,792]);
   let y = 744;
   const newPage = () => { page = pdf.addPage([612,792]); y = 744; };
+  const heading=(label:string,needed=100)=>{if(y<60+needed)newPage();y-=10;text(label,14);};
   const text = (value: unknown, size=11) => {
     const words = String(value ?? '').split(/\s+/); let line = '';
     for (const word of words) {
@@ -37,21 +39,22 @@ export async function generateFieldPdf(snapshot: FieldSnapshot, origin: string) 
   text(`Move date: ${snapshot.job['moveDate']}`);
   text(`Pickup: ${snapshot.job['origin']}`);text(`Delivery: ${snapshot.job['destination']}`);
   text(`Office: ${snapshot.company.officeEmail || 'Not configured'} · ${snapshot.company.phone}`);
-  text('SERVICE TIMES AND CHARGES',14);
-  for(const [k,v] of Object.entries((snapshot.job['timeline'] ?? {}) as Record<string,unknown>))text(`${k.replaceAll('_',' ')}: ${v}`);
+  heading('SERVICE TIMES AND CHARGES');
+  const timeline=(snapshot.job['timeline'] ?? {}) as Record<string,unknown>;
+  for(const phase of FIELD_PHASES)if(timeline[phase.key])text(`${phase.label}: ${timeline[phase.key]}`);
   const bill=(snapshot.job['bill'] ?? {}) as Record<string,unknown>;
   for(const [k,v] of Object.entries(bill))text(`${k}: ${k==='hours'?`${v} hours`:`$${Number(v).toFixed(2)}`}`);
-  text('SHIPMENT INVENTORY',14);
+  heading('SHIPMENT INVENTORY');
   const inventory=Array.isArray(snapshot.job['inventory'])?snapshot.job['inventory']:[];
   if(!inventory.length)text('No shipment inventory supplied.');
   for(const item of inventory)text(JSON.stringify(item));
   for(const [key,title] of Object.entries(DOCUMENT_TITLES)) {
     const doc=snapshot.documents[key as keyof typeof DOCUMENT_TITLES];
-    text(title.toUpperCase(),14);text(key==='damage'?DAMAGE_TERMS:key==='bol'?BOL_TERMS:'Furniture conditions recorded by the crew and acknowledged by the customer.');
+    heading(title.toUpperCase(),140);text(key==='damage'?DAMAGE_TERMS:key==='bol'?BOL_TERMS:'Furniture conditions recorded by the crew and acknowledged by the customer.');
     if(doc){text(doc.notes);for(const item of doc.items)text(`${item.item}: ${item.condition} — ${item.notes}`);if(doc.signature){text(`Signed ${doc.signedAt || snapshot.signedAt}`);await image(doc.signature,85);}}
     else text('No separate record captured.');
   }
-  text('CUSTOMER FINAL SIGNATURE',14);text(BOL_TERMS);await image(snapshot.signature,100);
+  heading('CUSTOMER FINAL SIGNATURE',220);text(BOL_TERMS);await image(snapshot.signature,100);
   if(snapshot.photos.length){newPage();text('INSPECTION PHOTO APPENDIX',16);for(const photo of snapshot.photos){text(`${photo.phase==='pre'?'Before move':'After move'} · ${photo.note || 'Inspection photo'}`);await image(photo.photoUrl,280);}}
   pdf.setTitle(`Signed Bill of Lading — Job ${snapshot.job['id']}`);pdf.setAuthor(snapshot.company.name);
   for(const [i,p] of pdf.getPages().entries())p.drawText(`Job ${snapshot.job['id']} · Page ${i+1} of ${pdf.getPageCount()}`,{x:48,y:28,size:9,font});
