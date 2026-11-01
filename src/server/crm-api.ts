@@ -133,7 +133,9 @@ async function enrichJob(ctx: Ctx, data: Record<string, unknown>, pricing: Prici
 
 async function create(ctx: Ctx, kind: string, body: unknown) {
   const ws = requireWs(ctx);
-  let data: Record<string, unknown> = { ...DEFAULTS[kind], ...clean(kind, body) };
+  const input = clean(kind, body);
+  if (kind === "job" && !PRICING_ROLES.includes(ctx.role ?? "")) for (const f of JOB_PRICING_FIELDS) delete input[f];
+  let data: Record<string, unknown> = { ...DEFAULTS[kind], ...input };
   if (kind === "job") data = await enrichJob(ctx, data, await pricingFor(ctx));
   const { data: row, error } = await ctx.db
     .from("workspace_records").insert({ workspace_id: ws, kind, data: data as never })
@@ -142,10 +144,22 @@ async function create(ctx: Ctx, kind: string, body: unknown) {
   return toRecord(row as Row, ws);
 }
 
+// Billing inputs that drive the customer's final balance.
+const JOB_PRICING_FIELDS = ["pricingMode", "crewSize", "hourlyRate", "estimatedHours", "distanceMiles", "travelMinutes", "travelFee", "weightRate", "mileRate", "fees", "total", "actualHours", "finalTotal", "inventory", "travelMiles", "travelCharge", "fuelCharge", "distance", "mode", "size"];
+const PRICING_ROLES = ["admin", "office_admin", "estimator"];
+
 async function update(ctx: Ctx, kind: string, id: number, body: unknown) {
   const ws = requireWs(ctx);
   const current = await getOne(ctx, kind, id);
-  let data: Record<string, unknown> = { ...current.data, ...clean(kind, body, current.data) };
+  const changes = clean(kind, body, current.data);
+  if (kind === "job") {
+    const touched = JOB_PRICING_FIELDS.filter((f) => f in changes && JSON.stringify(changes[f]) !== JSON.stringify(current.data[f]));
+    if (touched.length) {
+      if (!PRICING_ROLES.includes(ctx.role ?? "")) fail(403, "Only admins, office admins and estimators can change job pricing");
+      if (current.data["signedOffAt"] || current.data["finalBill"] || current.data["finalCheckout"] || current.data["finalPayment"]) fail(409, "Pricing is locked after the customer has signed off");
+    }
+  }
+  let data: Record<string, unknown> = { ...current.data, ...changes };
   if (kind === "job") data = await enrichJob(ctx, data, await pricingFor(ctx));
   const { data: row, error } = await ctx.db
     .from("workspace_records").update({ data: data as never, updated_at: new Date().toISOString() })
