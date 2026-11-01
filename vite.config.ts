@@ -6,6 +6,7 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   tanstackStart: {
@@ -13,7 +14,12 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
-  plugins: [mcpPlugin()],
+  plugins: [mcpPlugin(), VitePWA({ strategies:'generateSW', filename:'sw.js', injectRegister:null, registerType:'autoUpdate', manifest:false, devOptions:{enabled:false},
+    workbox:{ globPatterns:['**/*.{js,css,woff2,ttf,png,svg}'], globIgnores:['**/server/**'], maximumFileSizeToCacheInBytes:5*1024*1024,
+      additionalManifestEntries:[{url:'/field-offline.html',revision:'1'}], navigateFallback:'/field-offline.html', navigateFallbackAllowlist:[/^\/app\/field(?:\/?$|\/)/], navigateFallbackDenylist:[/^\/~oauth/],
+      runtimeCaching:[{urlPattern:({request,url})=>request.mode==='navigate' && url.pathname.startsWith('/app/field') && !url.pathname.startsWith('/~oauth'),handler:'NetworkFirst',options:{cacheName:'moveflew-field-navigation',networkTimeoutSeconds:5,expiration:{maxEntries:1,maxAgeSeconds:86400}}},
+      {urlPattern:({url})=>url.origin===self.location.origin && /\/assets\/.*-[a-zA-Z0-9_-]+\.(js|css|woff2|ttf|png|svg)$/.test(url.pathname),handler:'CacheFirst',options:{cacheName:'moveflew-field-assets',expiration:{maxEntries:150,maxAgeSeconds:2592000}}}], cleanupOutdatedCaches:true }
+  })],
   vite: {
     define: { __APP_BUILD_ID__: JSON.stringify(Date.now().toString(36)) },
   },
