@@ -1,4 +1,5 @@
 import WorkerDirectory from "@/components/workspace/WorkerDirectory";
+import CrewInvitations from '@/components/workspace/CrewInvitations';
 import AppearanceSettings from "@/components/workspace/AppearanceSettings";
 import { Button } from "@/components/ui/button";
 import DepositSettings from "@/components/workspace/DepositSettings";
@@ -4397,24 +4398,10 @@ function MembershipSettings({ role }: { role: WorkspaceRole }) {
     error,
     refresh,
   } = useRemote(() => crm.members(), []);
-  const [email, setEmail] = useState("");
-  const [newRole, setNewRole] = useState<WorkspaceRole>("estimator");
   const [message, setMessage] = useState("");
   if (loading) return <LoadingBlock label={t("Loading membership…")} />;
   if (error || !members)
     return <ErrorNotice error={error} retry={() => void refresh()} />;
-  const add = async () => {
-    try {
-      await crm.createMember(email, newRole);
-      setEmail("");
-      setMessage("Membership link saved.");
-      await refresh();
-    } catch (reason) {
-      setMessage(
-        reason instanceof Error ? reason.message : "Could not add member."
-      );
-    }
-  };
   return (
     <section className="ws-settings-section">
       <section className="ws-card ws-card-pad">
@@ -4481,47 +4468,7 @@ function MembershipSettings({ role }: { role: WorkspaceRole }) {
           </table>
         </div>
       </section>
-      {role === "admin" && (
-        <section className="ws-card ws-card-pad" style={{ marginTop: 15 }}>
-          <div className="ws-card-title">
-            <div>
-              <h2>{t("Link signed-in user")}</h2>
-              <p>
-                {t(
-                  "Server returns a clear error if this email has not signed in yet."
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="ws-inline">
-            <input
-              className="ws-input"
-              type="email"
-              placeholder={t("person@example.com")}
-              value={email}
-              onChange={e => setEmail(eventValue(e))}
-            />
-            <select
-              className="ws-select"
-              value={newRole}
-              onChange={e => setNewRole(eventValue(e) as WorkspaceRole)}
-            >
-              {roleOptions.map(value => (
-                <option key={value} value={value}>
-                  {t(value.replace("_", " "))}
-                </option>
-              ))}
-            </select>
-            <button
-              className="ws-btn primary"
-              disabled={!email}
-              onClick={() => void add()}
-            >
-              {t("Link member")}
-            </button>
-          </div>
-        </section>
-      )}
+      <CrewInvitations role={role} onAccepted={() => void refresh()} />
       {message && (
         <div
           className={message.includes("saved") ? "ws-alert" : "ws-error"}
