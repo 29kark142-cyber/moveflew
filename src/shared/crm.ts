@@ -114,6 +114,7 @@ export type Damage = {
   createdAt: string;
 };
 export type Pricing = {
+  truckFee?: number;
   rates: number[];
   minimumHours: number;
   packingRate: number;

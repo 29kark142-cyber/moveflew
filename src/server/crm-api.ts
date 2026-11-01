@@ -7,6 +7,9 @@ import { conflictsFor, type ScheduledJob } from "../shared/dispatch";
 import { fieldRoute } from "./field-api";
 import { canTestBook } from '../lib/test-booking';
 import { appearanceSchema, parseAppearance, validWallpaperScope } from '../lib/workspace-appearance';
+import { pricingSchema, canEditTariffs } from '../shared/workspace-tariffs';
+import { operationalReport } from '../shared/workspace-reports';
+import { travelSettingsSchema } from '../lib/travel-rules';
 
 export type Ctx = { db: SupabaseClient; userId: string; email: string; wsId: number | null; role: string | null; q?: URLSearchParams; origin?: string };
 export type Row = { id: number; data: Record<string, unknown>; created_at: string };
@@ -104,17 +107,6 @@ function clean(kind: string, input: unknown, existing?: Record<string, unknown>)
   if (JSON.stringify(out).length > 900_000) fail(413, "Request is too large");
   return out;
 }
-
-const pricingSchema = z.object({
-  rates: z.array(z.number().min(0).max(100000)).min(1).max(20),
-  minimumHours: z.number().min(0).max(24),
-  packingRate: z.number().min(0).max(100000),
-  weekendPercent: z.number().min(0).max(100),
-  travelPerMile: z.number().min(0).max(1000),
-  weightRate: z.number().min(0).max(1000),
-  mileRate: z.number().min(0).max(1000),
-  materials: z.array(z.object({ name: z.string().trim().min(1).max(120), price: z.number().min(0).max(100000) }).strip()).max(200),
-}).strip();
 
 async function enrichJob(ctx: Ctx, data: Record<string, unknown>, pricing: Pricing) {
   if (!data["customerId"] && data["customer"]) {
@@ -293,6 +285,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
   if (head === "pricing") {
     if (method === "GET") return pricingFor(ctx);
     if (method === "PUT") {
+      if (!canEditTariffs(ctx.role)) fail(403, "Only admins can edit tariffs");
       const parsed = pricingSchema.safeParse(await body());
       if (!parsed.success) return fail(400, "Invalid pricing settings");
       const value = parsed.data;
@@ -300,6 +293,33 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       if (error) fail(403, error.message);
       return value;
     }
+  }
+  if (head === 'reports' && method === 'GET') {
+    const [jobs, crew, customers] = await Promise.all(['job', 'crew', 'customer'].map(k => list(ctx, k)));
+    return { ...operationalReport(jobs as never, crew as never, customers as never), hasJobs: jobs.length > 0 };
+  }
+  if (head === 'tariffs' && (method === 'GET' || method === 'PUT')) {
+    const ws = requireWs(ctx);
+    if (method === 'PUT') {
+      if (!canEditTariffs(ctx.role)) fail(403, 'Only admins can edit tariffs');
+      const parsed = z.object({ pricing: pricingSchema, travel: travelSettingsSchema }).safeParse(await body());
+      if (!parsed.success) fail(400, 'Invalid tariff settings');
+      if (!parsed.success) return;
+      const s = parsed.data.travel;
+      const { error } = await ctx.db.from('workspaces').update({
+        pricing: parsed.data.pricing as never, dispatch_address: s.dispatchAddress || null,
+        travel_pricing_type: s.travelPricingType, travel_flat_rate: s.travelFlatRate, travel_mileage_rate: s.travelMileageRate,
+        fuel_surcharge_type: s.fuelSurchargeType, fuel_flat_rate: s.fuelFlatRate, fuel_per_mile_rate: s.fuelPerMileRate, fuel_percentage_rate: s.fuelPercentageRate,
+      }).eq('id', ws);
+      if (error) fail(403, 'Could not save tariff settings');
+    }
+    const { data: row, error } = await ctx.db.from('workspaces').select('pricing,dispatch_address,travel_pricing_type,travel_flat_rate,travel_mileage_rate,fuel_surcharge_type,fuel_flat_rate,fuel_per_mile_rate,fuel_percentage_rate').eq('id', ws).single();
+    if (error || !row) return fail(500, 'Could not load tariff settings');
+    return { pricing: { ...DEFAULT_PRICING, ...(row.pricing as object ?? {}), truckFee: Number((row.pricing as Record<string, unknown> | null)?.['truckFee'] ?? 0) }, travel: {
+      dispatchAddress: row.dispatch_address ?? '', travelPricingType: row.travel_pricing_type,
+      travelFlatRate: Number(row.travel_flat_rate), travelMileageRate: Number(row.travel_mileage_rate),
+      fuelSurchargeType: row.fuel_surcharge_type, fuelFlatRate: Number(row.fuel_flat_rate), fuelPerMileRate: Number(row.fuel_per_mile_rate), fuelPercentageRate: Number(row.fuel_percentage_rate),
+    } };
   }
   if (head === "members") {
     const ws = requireWs(ctx);
