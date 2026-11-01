@@ -124,7 +124,7 @@ h4 {
   z-index: 2;
 }
 .brand-symbol {
-  color: var(--blue);
+  color: #059669;
   width: 35px;
   height: 35px;
   display: block;
@@ -139,14 +139,14 @@ h4 {
   line-height: 1;
 }
 .brand-words strong {
-  color: var(--blue);
+  color: var(--navy);
   font-family: "Outfit", sans-serif;
   letter-spacing: -0.04em;
   font-size: 23px;
   font-weight: 650;
 }
 .brand-words strong span {
-  color: var(--navy);
+  color: #059669;
   margin-left: 2px;
 }
 .brand-words small {
@@ -161,7 +161,7 @@ h4 {
   color: white;
 }
 .brand-light .brand-symbol {
-  color: var(--cyan);
+  color: #10b981;
 }
 .brand-light .brand-words small {
   color: #b3c7d7;
