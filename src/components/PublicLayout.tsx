@@ -71,9 +71,9 @@ export function PublicHeader({ hero = false }: { hero?: boolean }) {
           </nav>
           <div className="nav-actions">
             <LanguageSwitcher />
-            <a className="nav-phone" href="tel:+12243130604">
-              <Phone size={18} />
-              <span>(224) 313-0604</span>
+            <a className="nav-phone" href="mailto:support@moveflew.com">
+              <Mail size={18} />
+              <span>support@moveflew.com</span>
             </a>
             <Link href="/login" className="nav-login">
               <UserRound size={18} /> {t("Log in")}
