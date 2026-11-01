@@ -1,5 +1,10 @@
 # Northwest Moving Crew migration
 
+## Sitewide workspace readiness
+- [ ] Audit all authenticated views and replace unavailable modules with complete native views and clearly labeled local sample records.
+- [ ] Add interactive expenses, billing, inventory/storage, operations/trips, printable documents and camera/manual scanning.
+- [ ] Remove legacy workspace branding and verify signed-in navigation, interactions and language support.
+
 ## Reports and tariffs readiness
 - [x] Replace legacy Reports with completed-move revenue, count, average order value and crew metrics; empty workspaces show labeled UI-only examples.
 - [x] Replace legacy Tariffs with atomic admin pricing/travel/fuel saves and workspace branding; truck fee feeds new estimates.
