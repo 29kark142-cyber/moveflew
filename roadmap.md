@@ -1,5 +1,9 @@
 # Northwest Moving Crew migration
 
+## Internal testing readiness
+- [ ] Add shared database-backed 10/minute/IP quote and lead intake limit.
+- [ ] Add preview-only admin manual approval/booking from job dashboard and verify safeguards.
+
 ## SaaS homepage pivot
 - [x] Polish hero grid/beta badge, dark feature previews and CTA glow; verify homepage navigation and layout.
 - [x] Apply MoveGrid branding, cube logo, new hero copy and verify public navigation.
