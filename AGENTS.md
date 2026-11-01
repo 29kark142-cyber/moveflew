@@ -14,6 +14,7 @@
 - Homepage feature previews are static illustrative UI in MoveGridFeaturePreview, themed under .movegrid-home; never read real tenant records for public marketing examples. Why: public product previews must not expose customer data or change workspace settings.
 - Shared domain logic from the source app lives in src/shared (alias @shared/*); server code must be rewritten as server functions, not copied from the old Express server.
 - Both crew invitation routes render one shared onboarding form with locally scoped semantic theme tokens; registration uses an authenticated atomic RPC so the worker is saved before workspace selection and field navigation.
+- Crew acceptance derives operational roles from the stored invitation or manager-owned candidate, never the caller's role argument; restrictive roster policies block direct crew INSERT/UPDATE, including changing a record into a crew row. Why: field privileges must remain manager-controlled.
 - External website quote delivery uses /api/public/v1/quotes; /api/v1/public/quotes is a compatibility alias because only /api/public/* bypasses hosted site authentication.
 - Quote intake credentials are workspace-scoped, stored only as hashes, and revealed once to an authenticated admin; external forms must relay from their server, never expose credentials in browser code.
 - Published proposals store immutable customer-visible snapshots and separate signatures; deposits derive from workspace configuration or explicit office overrides, never client-supplied checkout amounts.
