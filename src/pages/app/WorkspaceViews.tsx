@@ -2450,6 +2450,7 @@ export function DispatchPage({ role, navigate }: PageProps) {
           </button>
         }
       />
+      {demoBanner}
       {ready.length > 0 && (
         <section className="ws-card ws-card-pad" style={{ marginBottom: 16 }} aria-label={t("Ready to dispatch")}>
           <div className="ws-card-title"><div><h2>{t("Ready to dispatch")}</h2><p>{t("Booked moves that still need a truck or crew.")}</p></div></div>
