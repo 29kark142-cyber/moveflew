@@ -119,6 +119,7 @@ export function PublicFooter() {
           <Link href="/contact">{t("Contact the crew")}</Link>
           <Link href="/login">{t("Team login")}</Link>
           <Link href="/privacy">{tx("Privacy Policy", "Политика конфиденциальности")}</Link>
+          <Link href="/terms">{tx("Terms of Service", "Условия использования")}</Link>
         </div>
         <div>
           <h4>{t("Let’s talk moving")}</h4>
