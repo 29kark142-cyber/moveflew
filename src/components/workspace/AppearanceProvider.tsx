@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode, type CS
 import { crmFetch } from "@/lib/crm";
 import { appearanceKey, DEFAULT_APPEARANCE, parseAppearance, type WorkspaceAppearance } from "@/lib/workspace-appearance";
 import { supabase } from "@/integrations/supabase/client";
-import { SIGNED_URL_TTL_SECONDS, WALLPAPER_REFRESH_MS } from "@/lib/signed-url";
+import { WALLPAPER_REFRESH_MS } from "@/lib/signed-url";
 import "@/workspace-appearance.css";
 
 type AppearanceResponse = { appearance: WorkspaceAppearance; wallpaperUrl: string | null };
@@ -28,12 +28,13 @@ export default function AppearanceProvider({ userId, workspaceId, initial, child
   useEffect(() => {
     let active = true;
     let timer: ReturnType<typeof setInterval> | undefined;
+    let objectUrl: string | null = null;
     setWallpaperUrl(null); setWallpaperError("");
     const wallpaper = value.wallpaper;
     const resolve = async () => {
       if (!wallpaper) return;
       let url: string | null = wallpaper.kind === "url" ? wallpaper.value : null;
-      if (wallpaper.kind === "storage") { const { data, error } = await supabase.storage.from("workspace-wallpapers").createSignedUrl(wallpaper.value, SIGNED_URL_TTL_SECONDS); if (error) { if (active) setWallpaperError("Wallpaper could not be loaded. Upload it again or choose another image."); return; } url = data.signedUrl; }
+      if (wallpaper.kind === "storage") { const { data, error } = await supabase.storage.from("workspace-wallpapers").download(wallpaper.value); if (error || !data) { if (active) { setWallpaperUrl(null); setWallpaperError("Wallpaper could not be loaded. Upload it again or choose another image."); } return; } if (!active) return; if (objectUrl) URL.revokeObjectURL(objectUrl); objectUrl = URL.createObjectURL(data); url = objectUrl; }
       if (!url || !active) return;
       const image = new Image(); image.referrerPolicy = "no-referrer";
       image.onload = () => { if (active) { setWallpaperUrl(url); setWallpaperError(""); } };
@@ -41,7 +42,7 @@ export default function AppearanceProvider({ userId, workspaceId, initial, child
       image.src = url;
     };
     void resolve(); if (wallpaper?.kind === "storage") timer = setInterval(() => void resolve(), WALLPAPER_REFRESH_MS);
-    return () => { active = false; if (timer) clearInterval(timer); };
+    return () => { active = false; if (timer) clearInterval(timer); if (objectUrl) URL.revokeObjectURL(objectUrl); };
   }, [value.wallpaper]);
   async function save() { const result = await crmFetch<AppearanceResponse>("/appearance", { method: "PUT", body: JSON.stringify(value) }); setSaved(result.appearance); }
   const style = { "--workspace-wallpaper": wallpaperUrl ? `url(${JSON.stringify(wallpaperUrl)})` : "none" } as CSSProperties;
