@@ -455,6 +455,25 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       return { deleted: true };
     }
   }
+  if (head === "feedback" && method === "POST") {
+    const b = z.object({ kind: z.enum(["feedback", "bug"]), message: z.string().trim().min(3).max(4000), page: z.string().max(300).default("") }).safeParse(await body());
+    if (!b.success) fail(400, "Please write at least a few words");
+    const { error } = await ctx.db.from("beta_feedback").insert({ user_id: ctx.userId, user_email: ctx.email, workspace_id: ctx.wsId, kind: b.data!.kind, message: b.data!.message, page: b.data!.page });
+    if (error) fail(403, "Could not send feedback");
+    return { sent: true };
+  }
+  if (head === "demo" && method === "POST") {
+    if (!["admin", "office_admin"].includes(ctx.role ?? "")) fail(403, "Only admins can load demo data");
+    const b = z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }).safeParse(await body());
+    if (!b.success) fail(400, "Choose a day");
+    const { DEMO_TRUCK, DEMO_CREW, DEMO_CUSTOMER, demoJob } = await import("../shared/demo-job");
+    const truck = await create(ctx, "truck", DEMO_TRUCK);
+    const crew = [];
+    for (const c of DEMO_CREW) crew.push(await create(ctx, "crew", c));
+    const customer = await create(ctx, "customer", DEMO_CUSTOMER);
+    const job = await create(ctx, "job", demoJob(b.data!.date, truck.id, crew.map(c => c.id), customer.id));
+    return { job, truck, crew, customer };
+  }
   if (head === "field") return fieldRoute(ctx, method, parts.slice(1), body, { list, getOne, update, saveData, requireWs, fail, toRecord });
   // Crew members work through the field endpoints; they cannot edit jobs or customers directly.
   if (ctx.role === "crew" && method !== "GET" && (head === "jobs" || head === "customers")) fail(403, "Crew members can update jobs only from the field screen");

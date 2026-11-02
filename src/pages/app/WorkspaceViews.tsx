@@ -13,6 +13,7 @@ import TextWorker from "@/components/workspace/TextWorker";
 import { eligibleRevenue } from "@shared/revenue";
 import { allConflicts, conflictsFor, CREW_ROLES, crewRoleOf, needsDispatch, type CrewRole, type ScheduledJob } from "@shared/dispatch";
 import DeleteJobButton from "@/components/workspace/DeleteJobButton";
+import { DemoJobButton, localToday } from "@/components/workspace/BetaTools";
 import {
   BarChart3,
   CalendarClock,
@@ -304,6 +305,7 @@ export function DashboardPage({ role, navigate }: PageProps) {
             <EmptyState
               title={t("No upcoming moves")}
               detail="Scheduled estimates will show here when their dates are saved."
+              action={<DemoJobButton role={role} onLoaded={() => void refresh()} />}
             />
           )}
         </section>
@@ -2365,6 +2367,13 @@ export function DispatchPage({ role, navigate }: PageProps) {
     );
   const [jobs, trucks, crew] = data;
   const dayJobs = jobs.filter(job => toLocalDateInput(job.moveDate) === date);
+  const demoBanner = !jobs.length ? (
+    <EmptyState
+      title={t("No moves to dispatch yet")}
+      detail="Load a sample truck, two crew members and a booked move for today to try the board."
+      action={<DemoJobButton role={role} onLoaded={() => { setDate(localToday()); void refresh(); }} />}
+    />
+  ) : null;
   const drop = async (event: React.DragEvent, target: DispatchDropTarget) => {
     event.preventDefault();
     const jobId = Number(event.dataTransfer.getData("application/nwcrew-job"));
@@ -2441,6 +2450,7 @@ export function DispatchPage({ role, navigate }: PageProps) {
           </button>
         }
       />
+      {demoBanner}
       {ready.length > 0 && (
         <section className="ws-card ws-card-pad" style={{ marginBottom: 16 }} aria-label={t("Ready to dispatch")}>
           <div className="ws-card-title"><div><h2>{t("Ready to dispatch")}</h2><p>{t("Booked moves that still need a truck or crew.")}</p></div></div>

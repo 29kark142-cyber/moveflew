@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      beta_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          message: string
+          page: string
+          user_email: string
+          user_id: string
+          workspace_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          message: string
+          page?: string
+          user_email?: string
+          user_id?: string
+          workspace_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          page?: string
+          user_email?: string
+          user_id?: string
+          workspace_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beta_feedback_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_enquiries: {
         Row: {
           company: string
