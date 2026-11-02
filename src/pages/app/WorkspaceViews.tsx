@@ -13,7 +13,7 @@ import TextWorker from "@/components/workspace/TextWorker";
 import { eligibleRevenue } from "@shared/revenue";
 import { allConflicts, conflictsFor, CREW_ROLES, crewRoleOf, needsDispatch, type CrewRole, type ScheduledJob } from "@shared/dispatch";
 import DeleteJobButton from "@/components/workspace/DeleteJobButton";
-import { DemoJobButton } from "@/components/workspace/BetaTools";
+import { DemoJobButton, localToday } from "@/components/workspace/BetaTools";
 import {
   BarChart3,
   CalendarClock,
@@ -2371,7 +2371,7 @@ export function DispatchPage({ role, navigate }: PageProps) {
     <EmptyState
       title={t("No moves to dispatch yet")}
       detail="Load a sample truck, two crew members and a booked move for today to try the board."
-      action={<DemoJobButton role={role} onLoaded={() => { setDate(today()); void refresh(); }} />}
+      action={<DemoJobButton role={role} onLoaded={() => { setDate(localToday()); void refresh(); }} />}
     />
   ) : null;
   const drop = async (event: React.DragEvent, target: DispatchDropTarget) => {

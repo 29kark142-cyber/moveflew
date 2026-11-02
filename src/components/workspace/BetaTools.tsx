@@ -8,7 +8,7 @@ import { Modal } from "./WorkspaceUI";
 const post = <T,>(path: string, body: unknown) =>
   crmFetch<T>(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
-const localToday = () => {
+export const localToday = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
