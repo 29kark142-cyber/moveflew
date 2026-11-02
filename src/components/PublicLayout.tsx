@@ -95,7 +95,7 @@ export function PublicHeader({ hero = false }: { hero?: boolean }) {
 }
 
 export function PublicFooter() {
-  const { t } = useI18n();
+  const { t, tx } = useI18n();
   return (
     <footer className="public-footer">
       <div className="wrap footer-grid">
