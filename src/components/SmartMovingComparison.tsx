@@ -59,6 +59,9 @@ export function ComparisonHighlights() {
             <span>Background sync the moment a connection returns</span>
           </li>
         </ul>
+        <Link href="/demo/proposal" className="saas-alt-card-link">
+          See what your customer signs <ArrowRight size={15} aria-hidden="true" />
+        </Link>
       </article>
 
       <article className="saas-alt-card is-roi">

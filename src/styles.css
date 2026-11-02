@@ -3115,7 +3115,7 @@ html:lang(ru) .steps-grid p {
 .saas-pricing-badge { display:inline-flex; align-items:center; gap:10px; padding:11px 18px; border:1px solid color-mix(in oklab, var(--primary) 30%, var(--border)); background:var(--mf-success-bg, #ECFDF5); border-radius:999px; font-size:13px; font-weight:600; color:color-mix(in oklab, var(--primary) 62%, var(--foreground)); margin-bottom:26px; max-width:760px; }
 .saas-pricing-badge svg { color:var(--primary); flex-shrink:0; }
 .saas-pricing-actions { display:flex; flex-wrap:wrap; gap:12px; }
-.saas-pricing-footnote { display:block; font-size:12px; line-height:1.65; color:var(--mf-muted, #64748B); margin-top:18px; max-width:900px; }
+.saas-pricing-footnote { display:block; font-size:12px; line-height:1.65; color:color-mix(in oklab, var(--mf-muted, #64748B) 45%, var(--foreground)); margin-top:18px; max-width:900px; }
 .saas-pricing-plans { padding-block:26px 70px; }
 .saas-pricing-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
 .saas-pricing-card { position:relative; display:flex; flex-direction:column; align-items:flex-start; border:1px solid var(--border); border-radius:12px; padding:30px; background:var(--saas-paper); box-shadow:var(--mf-shadow); }
@@ -3534,8 +3534,10 @@ html:lang(ru) .steps-grid p {
 .saas-alt-ledger-row strong { font-weight:600; white-space:nowrap; }
 .saas-alt-ledger-row.is-total { background:var(--mf-surface, #F1F5F9); }
 .saas-alt-ledger-row.is-total strong { color:var(--primary); font-size:15px; }
-.saas-alt-roi-note { font-size:12px; line-height:1.65; color:var(--mf-muted, #64748B); margin-bottom:18px; }
+.saas-alt-roi-note { font-size:12px; line-height:1.65; color:color-mix(in oklab, var(--mf-muted, #64748B) 45%, var(--foreground)); margin-bottom:18px; }
 .saas-alt-card-cta { margin-top:auto; }
+.saas-alt-card-link { margin-top:auto; padding-top:20px; display:inline-flex; gap:8px; align-items:center; font-size:13px; font-weight:600; color:var(--primary); }
+.saas-alt-card-link:hover { text-decoration:underline; }
 .saas-demo { padding-block:56px 70px; }
 .saas-demo-flag { display:inline-flex; gap:10px; align-items:center; border:1px solid color-mix(in oklab, var(--primary) 30%, var(--border)); background:var(--mf-success-bg, #ECFDF5); color:color-mix(in oklab, var(--primary) 62%, var(--foreground)); border-radius:999px; padding:9px 16px; font-size:12px; font-weight:600; margin-bottom:26px; max-width:780px; }
 .saas-demo-flag svg { color:var(--primary); flex-shrink:0; }
