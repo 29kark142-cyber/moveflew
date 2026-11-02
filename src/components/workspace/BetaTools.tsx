@@ -61,7 +61,7 @@ export function FeedbackButton() {
         <div className="ws-appearance-root ws-copilot-portal" data-preset={appearance?.value.preset} data-accent={appearance?.value.accent}>
         <Modal title="Send Feedback / Report Bug" onClose={close}>
           <form
-            className="ws-feedback-form"
+            className="ws-modal__body ws-feedback-form"
             onSubmit={async e => {
               e.preventDefault();
               if (message.trim().length < 3) return;
