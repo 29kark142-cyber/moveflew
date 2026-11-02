@@ -2,7 +2,6 @@ import { z } from 'zod';
 import type { Ctx } from './crm-api';
 import { generateFieldPdf } from '@/lib/field-pdf.server';
 import { type FieldSnapshot } from '@/shared/field-documents';
-import { SIGNED_URL_TTL_SECONDS } from '@/lib/signed-url';
 
 // Access to the job is verified by fieldRoute before any privileged storage work.
 export async function finalizeFieldSnapshot(ctx: Ctx, jobId: number, operationId: string, snapshot: FieldSnapshot) {
@@ -25,8 +24,18 @@ export async function prepareFieldPdf(ctx: Ctx, id: string) {
     const { error: saveError }=await supabaseAdmin.from('field_document_snapshots').update({storage_path:path,pdf_hash:hash}).eq('id',id);
     if(saveError)throw new Error('Could not save PDF download details');
   }
-  const { data: link,error: linkError }=await supabaseAdmin.storage.from('field-documents').createSignedUrl(path,SIGNED_URL_TTL_SECONDS,{download:`BOL-job-${row.job_id}.pdf`});
-  if(linkError || !link)throw new Error('Could not create secure PDF download');
-  return { id,url:link.signedUrl,emailStatus:'sender_domain_required' as const };
+  // No bearer link: the browser downloads through the authenticated field route,
+  // which rechecks workspace membership and job assignment on every request.
+  return { id,ready:true,emailStatus:'sender_domain_required' as const };
+}
+// Caller access to the job must already be verified (fieldRoute) for this request.
+export async function streamFieldPdf(ctx: Ctx, id: string) {
+  await prepareFieldPdf(ctx,id);
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+  const { data: row } = await supabaseAdmin.from('field_document_snapshots').select('job_id,storage_path').eq('id',id).eq('workspace_id',Number(ctx.wsId)).single();
+  if(!row?.storage_path)throw new Error('Signed document not found');
+  const { data: file,error } = await supabaseAdmin.storage.from('field-documents').download(row.storage_path);
+  if(error || !file)throw new Error('Could not load the signed PDF');
+  return new Response(file,{ headers:{ 'Content-Type':'application/pdf','Content-Disposition':`attachment; filename="BOL-job-${row.job_id}.pdf"`,'Cache-Control':'private, no-store' } });
 }
 export const officeEmailSchema=z.object({ officeEmail:z.string().trim().email().max(254).or(z.literal('')) }).strict();

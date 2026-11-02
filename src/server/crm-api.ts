@@ -553,6 +553,7 @@ export async function handleCrm(request: Request, splat: string) {
         return {};
       }
     });
+    if (result instanceof Response) return result;
     return Response.json(result ?? null);
   } catch (e) {
     if (e instanceof HttpError) return Response.json({ error: e.message }, { status: e.status });

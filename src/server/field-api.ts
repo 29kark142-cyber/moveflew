@@ -5,7 +5,7 @@ import type { Ctx, Row } from "./crm-api";
 import { acceptedTime, billableHours, fieldStatus, finalBill, isPhase, nextPhase, type Timeline } from "../shared/field";
 import { isPreviewHost } from "../lib/payment-mode";
 import { documentSchema, operationSchema, type FieldDocuments, type FieldSnapshot } from '../shared/field-documents';
-import { finalizeFieldSnapshot, prepareFieldPdf, officeEmailSchema } from './field-documents';
+import { finalizeFieldSnapshot, prepareFieldPdf, streamFieldPdf, officeEmailSchema } from './field-documents';
 
 type Rec = Record<string, unknown> & { id: number };
 type Helpers = {
@@ -83,6 +83,10 @@ export async function fieldRoute(ctx: Ctx, method: string, parts: string[], body
   if(sub==='pdf' && method==='GET') {
     if(!job['fieldDocumentId'])h.fail(404,'Sign off this job to create the PDF');
     return prepareFieldPdf(ctx,String(job['fieldDocumentId']));
+  }
+  if(sub==='pdf-file' && method==='GET') {
+    if(!job['fieldDocumentId'])h.fail(404,'Sign off this job to create the PDF');
+    return streamFieldPdf(ctx,String(job['fieldDocumentId']));
   }
 
   if (sub === "phase" && method === "POST") {
