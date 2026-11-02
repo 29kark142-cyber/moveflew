@@ -474,6 +474,19 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     const job = await create(ctx, "job", demoJob(b.data!.date, truck.id, crew.map(c => c.id), customer.id));
     return { job, truck, crew, customer };
   }
+  if (head === "demo" && method === "DELETE") {
+    if (!["admin", "office_admin"].includes(ctx.role ?? "")) fail(403, "Only admins can clear demo data");
+    const ws = requireWs(ctx);
+    const { isDemoRecord } = await import("../shared/demo-job");
+    const { data: rows, error } = await ctx.db.from("workspace_records").select("id,kind,data").eq("workspace_id", ws).in("kind", ["job", "truck", "crew", "customer"]);
+    if (error) fail(403, error.message);
+    const ids = (rows ?? []).filter(r => isDemoRecord(r.kind as string, (r.data ?? {}) as Record<string, unknown>)).map(r => r.id as number);
+    if (ids.length) {
+      const { error: delError } = await ctx.db.from("workspace_records").delete().eq("workspace_id", ws).in("id", ids);
+      if (delError) fail(403, delError.message);
+    }
+    return { deleted: ids.length };
+  }
   if (head === "field") return fieldRoute(ctx, method, parts.slice(1), body, { list, getOne, update, saveData, requireWs, fail, toRecord });
   // Crew members work through the field endpoints; they cannot edit jobs or customers directly.
   if (ctx.role === "crew" && method !== "GET" && (head === "jobs" || head === "customers")) fail(403, "Crew members can update jobs only from the field screen");
