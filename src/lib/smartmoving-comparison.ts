@@ -30,8 +30,8 @@ export const comparisonRows: ComparisonRow[] = [
   {
     capability: "Pricing Structure",
     Icon: Banknote,
-    moveflew: "$0 beta / $99 flat monthly rate (unlimited users)",
-    smartmoving: "$299–$399+/month + annual contract lock-ins",
+    moveflew: "Free during beta · flat monthly rate, unlimited users",
+    smartmoving: "Tiered plans with annual contract lock-ins",
   },
   {
     capability: "Document & BOL Generation",
@@ -60,4 +60,4 @@ export const comparisonRows: ComparisonRow[] = [
 ];
 
 export const comparisonFooter =
-  "SmartMoving® is a registered trademark of SmartMoving Software, Inc. MoveFlew is an independent software platform and is not affiliated with, endorsed by, or sponsored by SmartMoving. Competitor pricing and features are drawn from publicly available information and are not independently verified; confirm current terms with the vendor.";
+  "SmartMoving® is a registered trademark of SmartMoving Software, Inc. MoveFlew is an independent software platform and is not affiliated with, endorsed by, or sponsored by SmartMoving. Competitor features and plan terms are drawn from publicly available information and are not independently verified; confirm current terms with the vendor.";

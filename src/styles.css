@@ -3125,6 +3125,7 @@ html:lang(ru) .steps-grid p {
 .saas-pricing-tagline { font-size:13px; line-height:1.65; color:var(--mf-muted, #64748B); margin-bottom:22px; min-height:42px; }
 .saas-pricing-amount { display:flex; align-items:baseline; gap:6px; margin-bottom:22px; }
 .saas-pricing-amount strong { font-size:46px; font-weight:600; line-height:1; }
+.saas-pricing-amount.is-text strong { font-size:34px; letter-spacing:-0.01em; }
 .saas-pricing-amount span { font-size:14px; color:var(--mf-muted, #64748B); }
 .saas-pricing-points { list-style:none; margin:0 0 26px; padding:0; display:grid; gap:11px; width:100%; }
 .saas-pricing-points li { display:flex; gap:10px; align-items:flex-start; font-size:14px; line-height:1.6; color:var(--saas-muted); }

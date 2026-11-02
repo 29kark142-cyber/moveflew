@@ -3,7 +3,7 @@ import SmartMovingAlternative from "@/pages/SmartMovingAlternative";
 
 const title = "SmartMoving Alternative — MoveFlew Free Beta Moving CRM";
 const description =
-  "Compare MoveFlew with SmartMoving: offline-first field app with e-signatures, flat $99/month pricing after a free beta, unlimited users, no annual contract, automated Google Maps mileage and fuel.";
+  "Compare MoveFlew with SmartMoving: an offline-first field app with e-signatures, unlimited users, no annual contract and automated Google Maps mileage and fuel. Free during beta.";
 
 export const Route = createFileRoute("/smartmoving-alternative")({
   head: () => ({
