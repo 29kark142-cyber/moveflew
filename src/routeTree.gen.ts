@@ -17,6 +17,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PaymentCompleteRouteImport } from './routes/payment-complete'
 import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as VsSmartmovingRouteImport } from './routes/vs-smartmoving'
 import { Route as WidgetDotjsRouteImport } from './routes/widget[.]js'
@@ -71,6 +72,11 @@ const PlatformRoute = PlatformRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/payment-complete': typeof PaymentCompleteRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByTo {
   '/payment-complete': typeof PaymentCompleteRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/payment-complete': typeof PaymentCompleteRoute
   '/platform': typeof PlatformRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/payment-complete'
     | '/platform'
     | '/pricing'
+    | '/privacy'
     | '/register'
     | '/vs-smartmoving'
     | '/widget.js'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/payment-complete'
     | '/platform'
     | '/pricing'
+    | '/privacy'
     | '/register'
     | '/vs-smartmoving'
     | '/widget.js'
@@ -288,6 +299,7 @@ export interface FileRouteTypes {
     | '/payment-complete'
     | '/platform'
     | '/pricing'
+    | '/privacy'
     | '/register'
     | '/vs-smartmoving'
     | '/widget.js'
@@ -314,6 +326,7 @@ export interface RootRouteChildren {
   PaymentCompleteRoute: typeof PaymentCompleteRoute
   PlatformRoute: typeof PlatformRoute
   PricingRoute: typeof PricingRoute
+  PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
   VsSmartmovingRoute: typeof VsSmartmovingRoute
   WidgetDotjsRoute: typeof WidgetDotjsRoute
@@ -387,6 +400,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -506,6 +526,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentCompleteRoute: PaymentCompleteRoute,
   PlatformRoute: PlatformRoute,
   PricingRoute: PricingRoute,
+  PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
   VsSmartmovingRoute: VsSmartmovingRoute,
   WidgetDotjsRoute: WidgetDotjsRoute,

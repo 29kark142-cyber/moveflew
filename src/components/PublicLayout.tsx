@@ -95,7 +95,7 @@ export function PublicHeader({ hero = false }: { hero?: boolean }) {
 }
 
 export function PublicFooter() {
-  const { t } = useI18n();
+  const { t, tx } = useI18n();
   return (
     <footer className="public-footer">
       <div className="wrap footer-grid">
@@ -118,6 +118,7 @@ export function PublicFooter() {
           <Link href="/pricing">{t("Moving rates")}</Link>
           <Link href="/contact">{t("Contact the crew")}</Link>
           <Link href="/login">{t("Team login")}</Link>
+          <Link href="/privacy">{tx("Privacy Policy", "Политика конфиденциальности")}</Link>
         </div>
         <div>
           <h4>{t("Let’s talk moving")}</h4>
