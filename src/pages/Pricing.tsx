@@ -167,11 +167,11 @@ export default function Pricing() {
           {comparison.map(([label, moveflew, competitor]) => (
             <div className="saas-pricing-row" role="row" key={label}>
               <strong role="rowheader">{label}</strong>
-              <span role="cell">
+              <span role="cell" data-column="MoveFlew">
                 <Check size={16} aria-hidden="true" />
                 {moveflew}
               </span>
-              <span role="cell">{competitor}</span>
+              <span role="cell" data-column="SmartMoving">{competitor}</span>
             </div>
           ))}
         </div>
