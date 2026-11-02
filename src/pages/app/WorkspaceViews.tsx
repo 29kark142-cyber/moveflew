@@ -2099,14 +2099,7 @@ export function JobDetailPage({ role, navigate, path }: PageProps) {
               <p>{t("Public token access is limited to this estimate.")}</p>
             </div>
           </div>
-          <a
-            className="ws-link"
-            href={proposalUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t("Open shareable proposal")} <ExternalLink size={14} />
-          </a>
+          <ProposalLinkStatus token={job.proposalToken} url={proposalUrl} status={job.status} />
           <p className="ws-helper">
             {(job as unknown as { testApproval?: unknown }).testApproval
               ? 'Approved for testing; customer signature not recorded.'
@@ -4783,4 +4776,32 @@ function hour(value: number) {
 }
 function shortAddress(value: string) {
   return value ? value.split(",").slice(0, 2).join(",") : "—";
+}
+
+function ProposalLinkStatus({ token, url, status }: { token?: string; url: string; status: string }) {
+  const { t } = useI18n();
+  const [live, setLive] = useState<boolean | null>(null);
+  useEffect(() => {
+    let active = true;
+    if (!token || !/^[a-f0-9]{32}$/.test(token)) { setLive(false); return; }
+    import("@/lib/proposals.functions")
+      .then(m => m.readProposal({ data: { token } }))
+      .then(() => { if (active) setLive(true); })
+      .catch(() => { if (active) setLive(false); });
+    return () => { active = false; };
+  }, [token]);
+  if (live === null) return <p className="ws-helper">{t("Checking proposal link…")}</p>;
+  if (!live)
+    return (
+      <p className="ws-helper">
+        {status === "estimate"
+          ? t("No customer proposal yet. Use \"Create proposal link\" above to make one.")
+          : t("No customer proposal for this job. Set the status to estimate to create one.")}
+      </p>
+    );
+  return (
+    <a className="ws-link" href={url} target="_blank" rel="noreferrer">
+      {t("Open shareable proposal")} <ExternalLink size={14} />
+    </a>
+  );
 }
