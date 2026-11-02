@@ -81,3 +81,5 @@
 - [x] /app/settings/billing (Beta Access, DB-configured plans)
 - [x] Read-only enforcement when past due / canceled
 - [ ] Paid plans + Stripe portal (waiting: user to define tiers)
+
+- [x] Load Demo Job button (overview, dispatch, field) + in-app feedback/bug modal
