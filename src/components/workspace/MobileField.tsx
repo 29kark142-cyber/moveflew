@@ -8,6 +8,7 @@ import { FIELD_PHASES, type FieldPhase, type FieldStatus, type FinalBill, type T
 import { fieldStatus,finalBill,billableHours } from '@shared/field';
 import { cacheField,readField,queuedField,enqueueField,syncField,type FieldScope,type FieldOperation } from '@/lib/field-offline';
 import FieldDocuments from './FieldDocuments';
+import { DemoJobButton } from './BetaTools';
 import type { FieldDocument,FieldDocuments as Documents } from '@/shared/field-documents';
 import { Button } from '@/components/ui/button';
 
@@ -112,7 +113,7 @@ export default function MobileField({ role,userId,workspaceId }: { role: string;
           <input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-12 w-full rounded-xl border border-input bg-background px-4 text-base text-foreground" />
           {['admin','office_admin'].includes(role) && <form className="space-y-2 border-b border-border pb-4" onSubmit={e=>{e.preventDefault();setOfficeSaving(true);void post('/field/settings',{officeEmail}).then(()=>toast.success('Office email saved')).catch(e=>toast.error(e.message)).finally(()=>setOfficeSaving(false));}}><label className="block text-sm font-medium text-foreground" htmlFor="field-office-email">Company office email</label><div className="flex flex-wrap gap-2"><input id="field-office-email" type="email" value={officeEmail} onChange={e=>setOfficeEmail(e.target.value)} className="h-11 min-w-0 flex-1 rounded-md border border-input bg-background px-3 text-foreground"/><Button disabled={officeSaving} type="submit" variant="outline">Save office email</Button></div></form>}
           {jobs === null ? <p className="text-muted-foreground">Loading…</p> : jobs.length === 0 ? (
-            <div className="space-y-3 rounded-2xl border border-dashed border-border p-8 text-center text-muted-foreground"><p>No jobs assigned for this day.</p><DemoJobButton role={role} onLoaded={() => { setDate(todayLocal()); void load(); }} /></div>
+            <div className="space-y-3 rounded-2xl border border-dashed border-border p-8 text-center text-muted-foreground"><p>No jobs assigned for this day.</p><DemoJobButton role={role} onLoaded={() => { if (date === today()) void load(); else setDate(today()); }} /></div>
           ) : jobs.map(j => <JobCard key={j.id} job={j} onOpen={() => setOpenId(j.id)} />)}
         </>
       )}
