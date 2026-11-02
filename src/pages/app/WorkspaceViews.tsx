@@ -13,7 +13,7 @@ import TextWorker from "@/components/workspace/TextWorker";
 import { eligibleRevenue } from "@shared/revenue";
 import { allConflicts, conflictsFor, CREW_ROLES, crewRoleOf, needsDispatch, type CrewRole, type ScheduledJob } from "@shared/dispatch";
 import DeleteJobButton from "@/components/workspace/DeleteJobButton";
-import { DemoJobButton, localToday } from "@/components/workspace/BetaTools";
+import { DemoJobButton, ClearDemoButton, isDemoJob, localToday } from "@/components/workspace/BetaTools";
 import {
   BarChart3,
   CalendarClock,
@@ -278,9 +278,12 @@ export function DashboardPage({ role, navigate }: PageProps) {
               <h2>{t("Upcoming moves")}</h2>
               <p>{t("Scheduled records only.")}</p>
             </div>
-            <button className="ws-btn" onClick={() => navigate("/app/jobs")}>
-              {t("All jobs")}
-            </button>
+            <span style={{ display: "inline-flex", gap: 8, flexWrap: "wrap" }}>
+              {upcoming.some(isDemoJob) && <ClearDemoButton role={role} onCleared={() => void refresh()} />}
+              <button className="ws-btn" onClick={() => navigate("/app/jobs")}>
+                {t("All jobs")}
+              </button>
+            </span>
           </div>
           {upcoming.length ? (
             <div className="ws-list">
@@ -2366,6 +2369,8 @@ export function DispatchPage({ role, navigate }: PageProps) {
       detail="Load a sample truck, two crew members and a booked move for today to try the board."
       action={<DemoJobButton role={role} onLoaded={() => { setDate(localToday()); void refresh(); }} />}
     />
+  ) : jobs.some(isDemoJob) ? (
+    <div style={{ display: "flex", justifyContent: "flex-end" }}><ClearDemoButton role={role} onCleared={() => void refresh()} /></div>
   ) : null;
   const drop = async (event: React.DragEvent, target: DispatchDropTarget) => {
     event.preventDefault();

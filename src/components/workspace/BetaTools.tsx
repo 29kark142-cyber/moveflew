@@ -2,7 +2,8 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useWorkspaceAppearanceSafe } from "./AppearanceProvider";
 import { toast } from "sonner";
-import { MessageSquareWarning, Sparkles } from "lucide-react";
+import { MessageSquareWarning, Sparkles, Trash2 } from "lucide-react";
+import { isDemoRecord } from "@/shared/demo-job";
 import { crmFetch } from "@/lib/crm";
 import { useI18n } from "@/lib/i18n";
 import { Modal } from "./WorkspaceUI";
@@ -16,10 +17,49 @@ export const localToday = () => {
 };
 
 /** Creates one demo truck, two demo crew and a booked, assigned demo move for today. Admins only. */
-export function DemoJobButton({ role, onLoaded, className = "ws-btn primary" }: { role: string; onLoaded: () => void; className?: string }) {
+export const isDemoJob = (job: unknown) => !!job && typeof job === "object" && isDemoRecord("job", job as Record<string, unknown>);
+
+/** Deletes only records created by the demo loader. Admins only. */
+export function ClearDemoButton({ role, onCleared, className = "ws-btn danger" }: { role: string; onCleared: () => void; className?: string }) {
   const { t } = useI18n();
   const [busy, setBusy] = useState(false);
   if (!["admin", "office_admin"].includes(role)) return null;
+  return (
+    <button
+      type="button"
+      className={className}
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        try {
+          await crmFetch("/demo", { method: "DELETE" });
+          toast.success(t("Demo data removed successfully"));
+          onCleared();
+        } catch (e) {
+          toast.error(e instanceof Error ? e.message : t("Could not remove demo data"));
+        } finally {
+          setBusy(false);
+        }
+      }}
+    >
+      <Trash2 size={15} /> {busy ? t("Removing…") : t("Clear Demo Data")}
+    </button>
+  );
+}
+
+export function DemoJobButton({ role, onLoaded, className = "ws-btn primary" }: { role: string; onLoaded: () => void; className?: string }) {
+  if (!["admin", "office_admin"].includes(role)) return null;
+  return (
+    <span style={{ display: "inline-flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
+      <LoadDemoButton onLoaded={onLoaded} className={className} />
+      <ClearDemoButton role={role} onCleared={onLoaded} />
+    </span>
+  );
+}
+
+function LoadDemoButton({ onLoaded, className }: { onLoaded: () => void; className: string }) {
+  const { t } = useI18n();
+  const [busy, setBusy] = useState(false);
   return (
     <button
       type="button"
