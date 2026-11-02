@@ -20,6 +20,7 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as SmartmovingAlternativeRouteImport } from './routes/smartmoving-alternative'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VsSmartmovingRouteImport } from './routes/vs-smartmoving'
 import { Route as WidgetDotjsRouteImport } from './routes/widget[.]js'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -89,6 +90,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const SmartmovingAlternativeRoute = SmartmovingAlternativeRouteImport.update({
   id: '/smartmoving-alternative',
   path: '/smartmoving-alternative',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VsSmartmovingRoute = VsSmartmovingRouteImport.update({
@@ -181,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/smartmoving-alternative': typeof SmartmovingAlternativeRoute
+  '/terms': typeof TermsRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -209,6 +216,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/smartmoving-alternative': typeof SmartmovingAlternativeRoute
+  '/terms': typeof TermsRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -238,6 +246,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/smartmoving-alternative': typeof SmartmovingAlternativeRoute
+  '/terms': typeof TermsRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -268,6 +277,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/register'
     | '/smartmoving-alternative'
+    | '/terms'
     | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
@@ -296,6 +306,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/register'
     | '/smartmoving-alternative'
+    | '/terms'
     | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
@@ -324,6 +335,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/register'
     | '/smartmoving-alternative'
+    | '/terms'
     | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
@@ -353,6 +365,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
   SmartmovingAlternativeRoute: typeof SmartmovingAlternativeRoute
+  TermsRoute: typeof TermsRoute
   VsSmartmovingRoute: typeof VsSmartmovingRoute
   WidgetDotjsRoute: typeof WidgetDotjsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -447,6 +460,13 @@ declare module '@tanstack/react-router' {
       path: '/smartmoving-alternative'
       fullPath: '/smartmoving-alternative'
       preLoaderRoute: typeof SmartmovingAlternativeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vs-smartmoving': {
@@ -569,6 +589,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
   SmartmovingAlternativeRoute: SmartmovingAlternativeRoute,
+  TermsRoute: TermsRoute,
   VsSmartmovingRoute: VsSmartmovingRoute,
   WidgetDotjsRoute: WidgetDotjsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
