@@ -16,7 +16,7 @@ type FieldJob = Record<string, unknown> & {
   id: number; title?: string; origin?: string; destination?: string; startHour?: number; customerName?: string; customerPhone?: string;
   timeline?: Timeline; fieldStatus: FieldStatus; nextPhase: FieldPhase | null; bill: FinalBill;
   completedSignature?: string | null; finalPayment?: { method: string; amountCents: number; mode?: string } | null;
-  fieldDocuments?:Documents;fieldPdf?:{url:string;emailStatus:string};fieldDocumentId?:string;
+  fieldDocuments?:Documents;fieldPdf?:{ready?:boolean;emailStatus:string};fieldDocumentId?:string;
 };
 type Me = { id: number; name: string; crewRole: string } | null;
 type Photo = { id: number; note: string; photoUrl: string; phase: string };
@@ -166,23 +166,20 @@ function JobSheet({ job, me, role, scope,onBack, onChange, queue }: { job: Field
   const [note, setNote] = useState("");
   const [sig, setSig] = useState<string | null>(null);
   const [pay, setPay] = useState<{ url: string; qr: string; env: string } | null>(null);
-  const [pdf,setPdf]=useState<{url:string;emailStatus:string}|null>(job.fieldPdf || null);
+  const [pdf,setPdf]=useState<{ready?:boolean;emailStatus:string}|null>(job.fieldPdf || null);
   const t = job.timeline ?? {};
   const canStage = OFFICE.includes(role) || ["crew_lead", "driver"].includes(me?.crewRole ?? "");
   const done = Boolean(t.complete);
 
   useEffect(() => { void crmFetch<Photo[]>(`/field/jobs/${job.id}/photos`).then(p=>{setPhotos(p);void cacheField(scope,`photos:${job.id}`,p);}).catch(()=>{void readField<Photo[]>(scope,`photos:${job.id}`).then(p=>{if(p)setPhotos(p);});}); }, [job.id,scope.userId,scope.workspaceId]);
   useEffect(()=>{void readField<string>(scope,`final-signature:${job.id}`).then(s=>{if(s)setSig(s);});},[job.id,scope.userId,scope.workspaceId]);
-  // Slow move-day connections must not strand a worker on an expired link: re-sign
-  // the Bill of Lading download while the job sheet stays open.
-  useEffect(()=>{
-    if(!pdf || !job.completedSignature) return;
-    const timer = setInterval(()=>{
-      if(!navigator.onLine) return;
-      void crmFetch<{url:string;emailStatus:string}>(`/field/jobs/${job.id}/pdf`).then(setPdf).catch(()=>{});
-    }, PDF_LINK_REFRESH_MS);
-    return ()=>clearInterval(timer);
-  },[job.id,job.completedSignature,Boolean(pdf)]);
+  // Downloads go through the signed-in field route each time, so removing a worker
+  // from the job stops access immediately (no reusable bearer link).
+  const downloadPdf=()=>run(async()=>{
+    const res=await fetch(`/api/crm/field/jobs/${job.id}/pdf-file`,{headers:{...(await sessionAuthorization()),...(getWorkspaceId()?{'x-workspace-id':String(getWorkspaceId())}:{})}});
+    if(!res.ok)throw new Error(res.status===403?'You no longer have access to this job':'Could not download the signed PDF');
+    const url=URL.createObjectURL(await res.blob());const a=document.createElement('a');a.href=url;a.download=`BOL-job-${job.id}.pdf`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);
+  });
 
   const run = async (fn: () => Promise<void>) => {
     setBusy(true);
@@ -295,7 +292,7 @@ function JobSheet({ job, me, role, scope,onBack, onChange, queue }: { job: Field
               <Button disabled={!sig || busy} onClick={()=>void signoff()} className="min-h-12 w-full">Save customer sign-off & BOL</Button>
             </div>
           )}
-          {job.completedSignature && <div className="space-y-2 border-t border-border pt-3"><Button variant="outline" disabled={busy || !navigator.onLine} onClick={()=>void run(async()=>setPdf(await crmFetch(`/field/jobs/${job.id}/pdf`)))}>Get signed BOL PDF</Button>{pdf && <a href={pdf.url} target="_blank" rel="noreferrer" className="block text-sm text-primary underline">Download signed Bill of Lading</a>}<p className="text-sm text-muted-foreground">Email delivery awaits sender-domain setup. No emails have been sent.</p></div>}
+          {job.completedSignature && <div className="space-y-2 border-t border-border pt-3"><Button variant="outline" disabled={busy || !navigator.onLine} onClick={()=>void run(async()=>setPdf(await crmFetch(`/field/jobs/${job.id}/pdf`)))}>Get signed BOL PDF</Button>{pdf && <button type="button" disabled={busy || !navigator.onLine} onClick={()=>void downloadPdf()} className="block text-sm text-primary underline">Download signed Bill of Lading</button>}<p className="text-sm text-muted-foreground">Email delivery awaits sender-domain setup. No emails have been sent.</p></div>}
 
           {job.finalPayment ? (
             <p className="rounded-xl bg-muted p-3 text-sm font-medium text-foreground">
