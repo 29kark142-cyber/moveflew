@@ -35,3 +35,16 @@ export function demoJob(date: string, truckId: number, crewIds: number[], custom
     notes: "Sample job created by Load Demo Job. Safe to delete.",
   };
 }
+
+const DEMO_JOB_TITLE = "Demo move — 2BR apartment";
+const DEMO_JOB_NOTES = "Sample job created by Load Demo Job. Safe to delete.";
+type Data = Record<string, unknown>;
+
+/** True only for records created by the demo loader (matched on its exact sample values). */
+export function isDemoRecord(kind: string, d: Data): boolean {
+  if (kind === "job") return d["title"] === DEMO_JOB_TITLE && d["notes"] === DEMO_JOB_NOTES;
+  if (kind === "truck") return d["name"] === DEMO_TRUCK.name && d["plate"] === DEMO_TRUCK.plate;
+  if (kind === "crew") return DEMO_CREW.some(c => c.name === d["name"] && c.crewRole === d["crewRole"]) && !d["userId"];
+  if (kind === "customer") return d["name"] === DEMO_CUSTOMER.name && d["source"] === DEMO_CUSTOMER.source;
+  return false;
+}
