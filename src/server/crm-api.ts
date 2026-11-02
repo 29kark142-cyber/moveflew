@@ -275,7 +275,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
         if (error || !data) fail(400, "Upload the wallpaper before saving");
       }
       const { data, error } = await ctx.db.from("workspaces").update({ appearance }).eq("id", ws).select("appearance").single();
-      if (error || !data) fail(403, error?.message ?? "Could not save appearance");
+      if (error || !data) (error ? dbFail(403, error) : fail(403, "Could not save appearance"));
     } else {
       const { data, error } = await ctx.db.from("workspaces").select("appearance").eq("id", ws).single();
       if (error || !data) fail(403, "Could not read appearance");
