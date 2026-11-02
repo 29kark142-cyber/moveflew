@@ -1,5 +1,10 @@
 # Northwest Moving Crew migration
 
+## Pricing hidden during beta testing
+- [x] Remove every dollar figure from public marketing (Pricing page cards and comparison table, shared capability matrix, ROI card, page titles and descriptions); copy now reads "free during beta" with paid plans announced before beta closes.
+- [x] Verified no money strings on /pricing and /smartmoving-alternative at 1280px and 390px, no overflow, no console errors, cards balanced; 93 tests pass, typecheck and build clean. In-app billing screens and the /demo/proposal sample customer estimate keep their figures.
+
+
 ## Sitewide workspace readiness
 - [x] Audit all authenticated views; replace unavailable module routes with native views and explicitly labeled screen-only samples. Existing reports, tariffs, dispatch and field signing remain live.
 - [x] Add interactive expense examples, invoice history, catalog/storage assignments, operations/trip schedules, printable document/signature previews and camera/manual scanning. Unmigrated ledger writes, warehouse transfers and external messaging remain illustrative, not persisted operations.
