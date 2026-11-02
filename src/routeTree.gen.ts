@@ -26,6 +26,7 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as AdminPlatformRouteImport } from './routes/admin.platform'
 import { Route as ApiCopilotRouteImport } from './routes/api/copilot'
 import { Route as AppSplatRouteImport } from './routes/app.$'
+import { Route as DemoProposalRouteImport } from './routes/demo.proposal'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as ApiCrmSplatRouteImport } from './routes/api/crm/$'
@@ -121,6 +122,11 @@ const AppSplatRoute = AppSplatRouteImport.update({
   path: '/app/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemoProposalRoute = DemoProposalRouteImport.update({
+  id: '/demo/proposal',
+  path: '/demo/proposal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InviteTokenRoute = InviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
@@ -181,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/admin/platform': typeof AdminPlatformRoute
   '/api/copilot': typeof ApiCopilotRoute
   '/app/$': typeof AppSplatRoute
+  '/demo/proposal': typeof DemoProposalRoute
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
@@ -208,6 +215,7 @@ export interface FileRoutesByTo {
   '/admin/platform': typeof AdminPlatformRoute
   '/api/copilot': typeof ApiCopilotRoute
   '/app/$': typeof AppSplatRoute
+  '/demo/proposal': typeof DemoProposalRoute
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/admin/platform': typeof AdminPlatformRoute
   '/api/copilot': typeof ApiCopilotRoute
   '/app/$': typeof AppSplatRoute
+  '/demo/proposal': typeof DemoProposalRoute
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
@@ -265,6 +274,7 @@ export interface FileRouteTypes {
     | '/admin/platform'
     | '/api/copilot'
     | '/app/$'
+    | '/demo/proposal'
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/admin/platform'
     | '/api/copilot'
     | '/app/$'
+    | '/demo/proposal'
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
@@ -319,6 +330,7 @@ export interface FileRouteTypes {
     | '/admin/platform'
     | '/api/copilot'
     | '/app/$'
+    | '/demo/proposal'
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
@@ -347,6 +359,7 @@ export interface RootRouteChildren {
   AdminPlatformRoute: typeof AdminPlatformRoute
   ApiCopilotRoute: typeof ApiCopilotRoute
   AppSplatRoute: typeof AppSplatRoute
+  DemoProposalRoute: typeof DemoProposalRoute
   InviteTokenRoute: typeof InviteTokenRoute
   ProposalTokenRoute: typeof ProposalTokenRoute
   ApiCrmSplatRoute: typeof ApiCrmSplatRoute
@@ -478,6 +491,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/demo/proposal': {
+      id: '/demo/proposal'
+      path: '/demo/proposal'
+      fullPath: '/demo/proposal'
+      preLoaderRoute: typeof DemoProposalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invite/$token': {
       id: '/invite/$token'
       path: '/invite/$token'
@@ -556,6 +576,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPlatformRoute: AdminPlatformRoute,
   ApiCopilotRoute: ApiCopilotRoute,
   AppSplatRoute: AppSplatRoute,
+  DemoProposalRoute: DemoProposalRoute,
   InviteTokenRoute: InviteTokenRoute,
   ProposalTokenRoute: ProposalTokenRoute,
   ApiCrmSplatRoute: ApiCrmSplatRoute,

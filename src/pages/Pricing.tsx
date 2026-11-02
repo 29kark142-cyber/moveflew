@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SaasLayout from "@/components/SaasLayout";
+import { ComparisonHighlights, ComparisonMatrix } from "@/components/SmartMovingComparison";
 
 const badge = "Free During Beta — Unlimited Users, No Credit Card Required, Zero Contracts.";
 
