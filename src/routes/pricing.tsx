@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Pricing from "@/pages/Pricing";
 
-const title = "MoveFlew Pricing — Free Beta Moving CRM, $99/mo After Beta";
+const title = "MoveFlew Pricing — Moving CRM Free During Beta";
 const description =
-  "MoveFlew pricing: free during beta with unlimited users, no credit card and no contract. Flat $99/month after beta versus SmartMoving at $299-$399/month.";
+  "MoveFlew is free during beta: every module, unlimited users, no credit card and no contract. Paid plans are announced to beta companies before beta closes.";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({

@@ -14,14 +14,15 @@ import {
 import { Button } from "@/components/ui/button";
 import SaasLayout from "@/components/SaasLayout";
 import { ComparisonHighlights, ComparisonMatrix } from "@/components/SmartMovingComparison";
+import { comparisonFooter } from "@/lib/smartmoving-comparison";
 
 const badge = "Free During Beta — Unlimited Users, No Credit Card Required, Zero Contracts.";
 
 const plans = [
   {
     name: "Beta",
-    price: "$0",
-    interval: "/ month",
+    price: "Free",
+    interval: "during beta",
     tagline: "Every MoveFlew feature, free while we build in the open.",
     featured: true,
     cta: "Get Free Beta Access",
@@ -35,26 +36,26 @@ const plans = [
     ],
   },
   {
-    name: "Post-Beta Preview",
-    price: "$99",
-    interval: "/ month",
-    tagline: "The flat-rate estimate for when beta closes. Not billed today.",
+    name: "After Beta",
+    price: "Coming soon",
+    interval: "announced in advance",
+    tagline: "A flat monthly rate for unlimited users. Not on sale yet.",
     featured: false,
-    cta: "Claim Beta Pricing",
+    cta: "Claim Beta Access",
     points: [
       "Same full platform, all modules included",
       "Flat rate for unlimited users — no per-seat fees",
-      "$0 setup fee, cancel anytime",
+      "No setup fee, cancel anytime",
       "Beta companies keep priority onboarding",
-      "Future pricing may change before launch",
+      "Pricing shared with beta companies before beta closes",
     ],
   },
 ];
 
 const comparison = [
-  ["Current price", "$0 during beta", "$299–$399/month"],
-  ["Expected price after beta", "$99/month flat", "$299–$399/month and up"],
-  ["Setup fee", "$0", "Onboarding often charged separately"],
+  ["Price today", "Free during beta", "Paid plans, priced per tier"],
+  ["Price after beta", "Announced before beta closes", "Tiered plans and annual contracts are common"],
+  ["Setup fee", "None", "Onboarding often charged separately"],
   ["User pricing", "Unlimited users included", "Seats and tiers add cost"],
   ["Contract", "Cancel anytime, zero contracts", "Annual lock-ins are common"],
 ];
@@ -94,10 +95,7 @@ const included = [
 
 export default function Pricing() {
   return (
-    <SaasLayout
-      light
-      footerNote="SmartMoving® is a registered trademark of SmartMoving Software, Inc. MoveFlew is an independent software platform and is not affiliated with, endorsed by, or sponsored by SmartMoving. Competitor pricing is drawn from publicly listed sources and is not independently verified; confirm current terms with the vendor."
-    >
+    <SaasLayout light footerNote={comparisonFooter}>
       <section className="saas-wrap saas-pricing-hero">
         <span className="saas-eyebrow">PRICING</span>
         <h1>Enterprise Moving CRM without the Enterprise Price Tag.</h1>
@@ -129,7 +127,7 @@ export default function Pricing() {
               {featured && <span className="saas-pricing-flag">Most popular — start here</span>}
               <h2>{name}</h2>
               <p className="saas-pricing-tagline">{tagline}</p>
-              <div className="saas-pricing-amount">
+              <div className="saas-pricing-amount is-text">
                 <strong>{price}</strong>
                 <span>{interval}</span>
               </div>
@@ -148,21 +146,22 @@ export default function Pricing() {
           ))}
         </div>
         <p className="saas-pricing-footnote">
-          Beta access is free today. The $99/month figure is a post-beta preview and is not charged now;
-          final pricing may change before launch. Stripe payment processing fees may apply to deposits.
+          Beta access is free today and needs no credit card. MoveFlew is not selling paid plans yet;
+          pricing will be shared with beta companies before beta closes. Stripe payment processing
+          fees may apply to customer deposits.
         </p>
       </section>
 
       <section className="saas-wrap saas-pricing-compare">
-        <span className="saas-eyebrow">PRICE COMPARISON</span>
+        <span className="saas-eyebrow">PLAN COMPARISON</span>
         <h2>MoveFlew vs. SmartMoving</h2>
         <p className="saas-pricing-sub">
           What moving company owners usually ask before they switch: what it costs now, what it costs
           later, and how hard it is to get out.
         </p>
-        <div className="saas-pricing-table" role="table" aria-label="MoveFlew versus SmartMoving pricing">
+        <div className="saas-pricing-table" role="table" aria-label="MoveFlew versus SmartMoving plans">
           <div className="saas-pricing-row saas-pricing-head" role="row">
-            <strong role="columnheader">What you pay</strong>
+            <strong role="columnheader">What you're comparing</strong>
             <strong role="columnheader">MoveFlew</strong>
             <strong role="columnheader">SmartMoving</strong>
           </div>
@@ -178,8 +177,8 @@ export default function Pricing() {
           ))}
         </div>
         <p className="saas-pricing-footnote">
-          SmartMoving pricing is based on publicly listed figures and may change; confirm current terms
-          with the vendor before deciding.
+          SmartMoving plan terms are based on publicly available information and may change; confirm
+          current terms with the vendor before deciding.
         </p>
       </section>
 

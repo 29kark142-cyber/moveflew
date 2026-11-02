@@ -70,26 +70,30 @@ export function ComparisonHighlights() {
         </span>
         <h3>Transparent ROI</h3>
         <p className="saas-alt-savings">
-          <strong>$3,000+</strong>
-          <span>a year, back in your operating budget</span>
+          <strong>Free now</strong>
+          <span>every module, unlimited users, no card</span>
         </p>
-        <div className="saas-alt-ledger" role="table" aria-label="Annual software cost comparison">
-          <div className="saas-alt-ledger-row" role="row">
-            <span role="cell">SmartMoving at $299–$399/month</span>
-            <strong role="cell">$3,588–$4,788</strong>
-          </div>
-          <div className="saas-alt-ledger-row" role="row">
-            <span role="cell">MoveFlew after beta at $99/month</span>
-            <strong role="cell">$1,188</strong>
-          </div>
-          <div className="saas-alt-ledger-row is-total" role="row">
-            <span role="cell">Difference</span>
-            <strong role="cell">$2,400–$3,600</strong>
-          </div>
-        </div>
+        <ul className="saas-alt-points">
+          <li>
+            <Check size={15} aria-hidden="true" />
+            <span>One flat monthly rate for unlimited users — no per-seat fees</span>
+          </li>
+          <li>
+            <Check size={15} aria-hidden="true" />
+            <span>No setup fee and no annual contract to cancel</span>
+          </li>
+          <li>
+            <Check size={15} aria-hidden="true" />
+            <span>Every module included; nothing sold as a paid add-on</span>
+          </li>
+          <li>
+            <Check size={15} aria-hidden="true" />
+            <span>Paid plans announced to beta companies before beta closes</span>
+          </li>
+        </ul>
         <p className="saas-alt-roi-note">
-          Free during beta, so the full $3,588+ stays with you in year one. Figures use SmartMoving's
-          publicly listed range against MoveFlew's $99/month post-beta preview.
+          MoveFlew is free while in beta and is not selling paid plans yet. Pricing will be shared
+          with beta companies in advance, so nothing changes without notice.
         </p>
         <Button asChild variant="outline" className="saas-alt-card-cta">
           <Link href="/register">
