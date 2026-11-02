@@ -22,6 +22,6 @@ export default function SaasLayout({ children, footerNote, light = false }: { ch
       </div>
     </header>
     <main>{children}</main>
-    <footer className="saas-footer"><div className="saas-wrap"><div><MoveGridBrand /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/login">Log in</Link><Link href="/privacy">Privacy Policy</Link></nav><small>© {new Date().getFullYear()} MoveFlew</small></div>{footerNote && <p className="saas-wrap saas-comparison-note">{footerNote}</p>}</footer>
+    <footer className="saas-footer"><div className="saas-wrap"><div><MoveGridBrand /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/pricing">Pricing</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/login">Log in</Link><Link href="/privacy">Privacy Policy</Link></nav><small>© {new Date().getFullYear()} MoveFlew</small></div>{footerNote && <p className="saas-wrap saas-comparison-note">{footerNote}</p>}</footer>
   </div>;
 }
