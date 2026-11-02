@@ -19,12 +19,14 @@ import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as SmartmovingAlternativeRouteImport } from './routes/smartmoving-alternative'
 import { Route as VsSmartmovingRouteImport } from './routes/vs-smartmoving'
 import { Route as WidgetDotjsRouteImport } from './routes/widget[.]js'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AdminPlatformRouteImport } from './routes/admin.platform'
 import { Route as ApiCopilotRouteImport } from './routes/api/copilot'
 import { Route as AppSplatRouteImport } from './routes/app.$'
+import { Route as DemoProposalRouteImport } from './routes/demo.proposal'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as ApiCrmSplatRouteImport } from './routes/api/crm/$'
@@ -84,6 +86,11 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SmartmovingAlternativeRoute = SmartmovingAlternativeRouteImport.update({
+  id: '/smartmoving-alternative',
+  path: '/smartmoving-alternative',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VsSmartmovingRoute = VsSmartmovingRouteImport.update({
   id: '/vs-smartmoving',
   path: '/vs-smartmoving',
@@ -113,6 +120,11 @@ const ApiCopilotRoute = ApiCopilotRouteImport.update({
 const AppSplatRoute = AppSplatRouteImport.update({
   id: '/app/$',
   path: '/app/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoProposalRoute = DemoProposalRouteImport.update({
+  id: '/demo/proposal',
+  path: '/demo/proposal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InviteTokenRoute = InviteTokenRouteImport.update({
@@ -168,12 +180,14 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/smartmoving-alternative': typeof SmartmovingAlternativeRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/platform': typeof AdminPlatformRoute
   '/api/copilot': typeof ApiCopilotRoute
   '/app/$': typeof AppSplatRoute
+  '/demo/proposal': typeof DemoProposalRoute
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
@@ -194,12 +208,14 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/smartmoving-alternative': typeof SmartmovingAlternativeRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/platform': typeof AdminPlatformRoute
   '/api/copilot': typeof ApiCopilotRoute
   '/app/$': typeof AppSplatRoute
+  '/demo/proposal': typeof DemoProposalRoute
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
@@ -221,12 +237,14 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/smartmoving-alternative': typeof SmartmovingAlternativeRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/platform': typeof AdminPlatformRoute
   '/api/copilot': typeof ApiCopilotRoute
   '/app/$': typeof AppSplatRoute
+  '/demo/proposal': typeof DemoProposalRoute
   '/invite/$token': typeof InviteTokenRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/api/crm/$': typeof ApiCrmSplatRoute
@@ -249,12 +267,14 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/register'
+    | '/smartmoving-alternative'
     | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/admin/platform'
     | '/api/copilot'
     | '/app/$'
+    | '/demo/proposal'
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
@@ -275,12 +295,14 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/register'
+    | '/smartmoving-alternative'
     | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/admin/platform'
     | '/api/copilot'
     | '/app/$'
+    | '/demo/proposal'
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
@@ -301,12 +323,14 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/register'
+    | '/smartmoving-alternative'
     | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
     | '/admin/platform'
     | '/api/copilot'
     | '/app/$'
+    | '/demo/proposal'
     | '/invite/$token'
     | '/proposal/$token'
     | '/api/crm/$'
@@ -328,12 +352,14 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
+  SmartmovingAlternativeRoute: typeof SmartmovingAlternativeRoute
   VsSmartmovingRoute: typeof VsSmartmovingRoute
   WidgetDotjsRoute: typeof WidgetDotjsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AdminPlatformRoute: typeof AdminPlatformRoute
   ApiCopilotRoute: typeof ApiCopilotRoute
   AppSplatRoute: typeof AppSplatRoute
+  DemoProposalRoute: typeof DemoProposalRoute
   InviteTokenRoute: typeof InviteTokenRoute
   ProposalTokenRoute: typeof ProposalTokenRoute
   ApiCrmSplatRoute: typeof ApiCrmSplatRoute
@@ -416,6 +442,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/smartmoving-alternative': {
+      id: '/smartmoving-alternative'
+      path: '/smartmoving-alternative'
+      fullPath: '/smartmoving-alternative'
+      preLoaderRoute: typeof SmartmovingAlternativeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vs-smartmoving': {
       id: '/vs-smartmoving'
       path: '/vs-smartmoving'
@@ -456,6 +489,13 @@ declare module '@tanstack/react-router' {
       path: '/app/$'
       fullPath: '/app/$'
       preLoaderRoute: typeof AppSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/proposal': {
+      id: '/demo/proposal'
+      path: '/demo/proposal'
+      fullPath: '/demo/proposal'
+      preLoaderRoute: typeof DemoProposalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/invite/$token': {
@@ -528,6 +568,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
+  SmartmovingAlternativeRoute: SmartmovingAlternativeRoute,
   VsSmartmovingRoute: VsSmartmovingRoute,
   WidgetDotjsRoute: WidgetDotjsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
@@ -535,6 +576,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPlatformRoute: AdminPlatformRoute,
   ApiCopilotRoute: ApiCopilotRoute,
   AppSplatRoute: AppSplatRoute,
+  DemoProposalRoute: DemoProposalRoute,
   InviteTokenRoute: InviteTokenRoute,
   ProposalTokenRoute: ProposalTokenRoute,
   ApiCrmSplatRoute: ApiCrmSplatRoute,

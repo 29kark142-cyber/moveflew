@@ -24,6 +24,10 @@
 - [x] Add shared database-backed 10/minute/IP quote and lead intake limit; verified request 11 returns 429, aliases share budget, and preflight stays available.
 - [x] Add preview-only admin manual approval/booking from job dashboard; verified saved booking, active proposal approval, no payment receipt, and 18 targeted tests.
 
+## SmartMoving alternative landing
+- [x] Add /smartmoving-alternative: hero, six-row capability matrix, "Built for Crews in the Field" and "Transparent ROI" cards, "Try MoveFlew Free" and "View Live Demo" CTAs; matrix and cards also embedded in /pricing.
+- [x] Add /demo/proposal sample customer proposal (illustrative data only, noindex) as the live-demo target; verified desktop/phone layout, navigation and no console errors; 93 tests pass.
+
 ## Public pricing page (B2B SaaS)
 - [x] Replace consumer moving-labor rates with MoveFlew subscription pricing: beta $0 (all features), post-beta preview $99/mo flat, unlimited users, no card or contract; SmartMoving price comparison card; "Get Free Beta Access" CTA to /register.
 - [x] Verified headline/badge/plan cards/comparison rows render on desktop and 390px phone with no overflow, Pricing added to SaaS navigation and both footers, and CTAs reach /register.

@@ -7,11 +7,13 @@ import {
   Palette,
   PenLine,
   CalendarDays,
+  PlayCircle,
   Smartphone,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SaasLayout from "@/components/SaasLayout";
+import { ComparisonHighlights, ComparisonMatrix } from "@/components/SmartMovingComparison";
 
 const badge = "Free During Beta — Unlimited Users, No Credit Card Required, Zero Contracts.";
 
@@ -179,6 +181,38 @@ export default function Pricing() {
           SmartMoving pricing is based on publicly listed figures and may change; confirm current terms
           with the vendor before deciding.
         </p>
+      </section>
+
+      <section className="saas-wrap saas-alt-matrix">
+        <div className="saas-pricing-heading">
+          <div>
+            <span className="saas-eyebrow">FEATURE &amp; CAPABILITY MATRIX</span>
+            <h2>What you get beyond the price.</h2>
+          </div>
+          <p>
+            The six things that decide a move: what the crew can do without signal, what it costs per
+            user, how documents get signed and sent, whose brand is on them, how miles and fuel get
+            priced, and how tenant data is kept apart.
+          </p>
+        </div>
+        <ComparisonMatrix />
+        <p className="saas-pricing-footnote">
+          MoveFlew describes this product as built today. Competitor values are based on publicly
+          available information and are not independently verified.
+        </p>
+        <div className="saas-pricing-actions saas-alt-more">
+          <Button asChild size="lg" variant="outline">
+            <Link href="/smartmoving-alternative">
+              See the full SmartMoving comparison <ArrowRight />
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/demo/proposal">
+              <PlayCircle size={18} aria-hidden="true" /> View Live Demo
+            </Link>
+          </Button>
+        </div>
+        <ComparisonHighlights />
       </section>
 
       <section className="saas-wrap saas-pricing-included">
