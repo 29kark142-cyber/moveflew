@@ -13,6 +13,7 @@ import TextWorker from "@/components/workspace/TextWorker";
 import { eligibleRevenue } from "@shared/revenue";
 import { allConflicts, conflictsFor, CREW_ROLES, crewRoleOf, needsDispatch, type CrewRole, type ScheduledJob } from "@shared/dispatch";
 import DeleteJobButton from "@/components/workspace/DeleteJobButton";
+import { DemoJobButton } from "@/components/workspace/BetaTools";
 import {
   BarChart3,
   CalendarClock,
@@ -304,6 +305,7 @@ export function DashboardPage({ role, navigate }: PageProps) {
             <EmptyState
               title={t("No upcoming moves")}
               detail="Scheduled estimates will show here when their dates are saved."
+              action={<DemoJobButton role={role} onLoaded={() => void refresh()} />}
             />
           )}
         </section>
@@ -2365,6 +2367,13 @@ export function DispatchPage({ role, navigate }: PageProps) {
     );
   const [jobs, trucks, crew] = data;
   const dayJobs = jobs.filter(job => toLocalDateInput(job.moveDate) === date);
+  const demoBanner = !jobs.length ? (
+    <EmptyState
+      title={t("No moves to dispatch yet")}
+      detail="Load a sample truck, two crew members and a booked move for today to try the board."
+      action={<DemoJobButton role={role} onLoaded={() => { setDate(today()); void refresh(); }} />}
+    />
+  ) : null;
   const drop = async (event: React.DragEvent, target: DispatchDropTarget) => {
     event.preventDefault();
     const jobId = Number(event.dataTransfer.getData("application/nwcrew-job"));
