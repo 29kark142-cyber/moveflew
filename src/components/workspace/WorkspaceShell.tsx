@@ -33,6 +33,7 @@ import { Fragment, useState } from "react";
 import type { Workspace } from "@/lib/crm";
 import { useI18n } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { FeedbackButton } from "./BetaTools";
 import "@/module-navigation.css";
 const office: WorkspaceRole[] = [
   "admin",
@@ -429,6 +430,7 @@ export default function WorkspaceShell({
             <strong>{workspace.name}</strong>
           </div>
           <div className="ws-topbar__user">
+            <FeedbackButton />
             <LanguageSwitcher />
             <CircleUserRound size={20} />
             <span>{user.email}</span>
