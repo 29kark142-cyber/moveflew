@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
+import { useWorkspaceAppearanceSafe } from "./AppearanceProvider";
 import { toast } from "sonner";
 import { MessageSquareWarning, Sparkles } from "lucide-react";
 import { crmFetch } from "@/lib/crm";
@@ -47,6 +49,7 @@ export function FeedbackButton() {
   const [kind, setKind] = useState<"feedback" | "bug">("feedback");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const appearance = useWorkspaceAppearanceSafe();
   const close = () => { setOpen(false); setMessage(""); setKind("feedback"); };
   return (
     <>
@@ -54,7 +57,8 @@ export function FeedbackButton() {
         <MessageSquareWarning size={15} />
         <span>{t("Send Feedback / Report Bug")}</span>
       </button>
-      {open && (
+      {open && createPortal(
+        <div className="ws-appearance-root ws-copilot-portal" data-preset={appearance?.value.preset} data-accent={appearance?.value.accent}>
         <Modal title="Send Feedback / Report Bug" onClose={close}>
           <form
             className="ws-feedback-form"
@@ -89,6 +93,8 @@ export function FeedbackButton() {
             </div>
           </form>
         </Modal>
+        </div>,
+        document.body,
       )}
     </>
   );
