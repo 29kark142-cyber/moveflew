@@ -8,7 +8,7 @@ describe("demo job", () => {
     expect(job.status).toBe("booked");
     expect(job.moveDate).toBe("2026-11-02");
     expect(job.crewIds).toEqual([8, 9]);
-    expect(needsDispatch(job)).toBe(false);
+    expect(needsDispatch({ ...job, id: 1 })).toBe(false);
   });
   it("ships one driver and one helper", () => {
     expect(DEMO_CREW.map(c => c.crewRole)).toEqual(["driver", "helper"]);
