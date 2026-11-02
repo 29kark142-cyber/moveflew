@@ -13,6 +13,7 @@ export default function SaasLayout({ children, footerNote, light = false }: { ch
         <div className="saas-brand"><MoveGridBrand /><small>MOVING OPERATIONS CRM</small></div>
         <nav aria-label="Main navigation" className={menu ? "saas-menu is-open" : "saas-menu"}>
           <Link href="/" onClick={() => setMenu(false)}>Moving CRM</Link>
+          <Link href="/pricing" onClick={() => setMenu(false)}>Pricing</Link>
           <Link href="/vs-smartmoving" onClick={() => setMenu(false)}>Compare vs. SmartMoving</Link>
           <Link href="/login" onClick={() => setMenu(false)}>Log in</Link>
         </nav>
