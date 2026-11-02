@@ -7,6 +7,7 @@ import {
   Palette,
   PenLine,
   CalendarDays,
+  PlayCircle,
   Smartphone,
   Users,
 } from "lucide-react";

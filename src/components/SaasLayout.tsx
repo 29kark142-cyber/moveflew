@@ -15,6 +15,7 @@ export default function SaasLayout({ children, footerNote, light = false }: { ch
           <Link href="/" onClick={() => setMenu(false)}>Moving CRM</Link>
           <Link href="/pricing" onClick={() => setMenu(false)}>Pricing</Link>
           <Link href="/vs-smartmoving" onClick={() => setMenu(false)}>Compare vs. SmartMoving</Link>
+          <Link href="/smartmoving-alternative" onClick={() => setMenu(false)}>SmartMoving alternative</Link>
           <Link href="/login" onClick={() => setMenu(false)}>Log in</Link>
         </nav>
         <Button asChild className="saas-nav-cta"><Link href="/register">Start Free Beta Access <ArrowRight /></Link></Button>
@@ -22,6 +23,6 @@ export default function SaasLayout({ children, footerNote, light = false }: { ch
       </div>
     </header>
     <main>{children}</main>
-    <footer className="saas-footer"><div className="saas-wrap"><div><MoveGridBrand /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/pricing">Pricing</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/login">Log in</Link><Link href="/privacy">Privacy Policy</Link></nav><small>© {new Date().getFullYear()} MoveFlew</small></div>{footerNote && <p className="saas-wrap saas-comparison-note">{footerNote}</p>}</footer>
+    <footer className="saas-footer"><div className="saas-wrap"><div><MoveGridBrand /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/pricing">Pricing</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/smartmoving-alternative">SmartMoving alternative</Link><Link href="/demo/proposal">Sample proposal</Link><Link href="/login">Log in</Link><Link href="/privacy">Privacy Policy</Link></nav><small>© {new Date().getFullYear()} MoveFlew</small></div>{footerNote && <p className="saas-wrap saas-comparison-note">{footerNote}</p>}</footer>
   </div>;
 }
