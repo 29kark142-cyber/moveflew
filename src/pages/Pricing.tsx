@@ -1,3 +1,4 @@
+import MoveFlewFaq from "@/components/MoveFlewFaq";
 import { Link } from "@/lib/wouter";
 import {
   ArrowRight,
@@ -246,6 +247,7 @@ export default function Pricing() {
           <Link href="/register">Get Free Beta Access <ArrowRight /></Link>
         </Button>
       </section>
+      <MoveFlewFaq />
     </SaasLayout>
   );
 }

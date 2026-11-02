@@ -39,7 +39,7 @@
   --primary: #0877eb;
   --card: #fff;
   --radius: 0.6rem;
-  --font-body: "DM Sans", sans-serif;
+  --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -140,7 +140,7 @@ h4 {
 }
 .brand-words strong {
   color: var(--navy);
-  font-family: "Outfit", sans-serif;
+  font-family: "Outfit", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
   letter-spacing: -0.04em;
   font-size: 23px;
   font-weight: 650;
@@ -499,7 +499,7 @@ h4 {
   left: 53%;
   top: 93px;
   z-index: 1;
-  font-family: "DM Sans", sans-serif;
+  font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
   color: var(--navy);
 }
 .preview-main {
@@ -973,7 +973,7 @@ h4 {
   align-items: center;
   gap: 7px;
   color: #b9c1c8;
-  font-family: "Outfit", sans-serif;
+  font-family: "Outfit", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
   font-size: 12px;
   font-weight: 650;
 }
@@ -3025,12 +3025,12 @@ html:lang(ru) .steps-grid p {
   background: var(--background); color: var(--foreground);
 }
 .saas-site h1, .saas-site h2, .saas-site h3, .saas-site strong, .saas-site small { letter-spacing: 0; }
-.saas-site h1, .saas-site h2, .saas-site h3 { font-family: "Outfit", sans-serif; }
+.saas-site h1, .saas-site h2, .saas-site h3 { font-family: "Outfit", system-ui, -apple-system, "Segoe UI", Arial, sans-serif; }
 .saas-wrap { width: min(1200px, calc(100% - 80px)); margin-inline: auto; }
 .saas-announcement { display:flex; align-items:center; justify-content:center; gap:22px; padding:9px 20px; background:var(--primary); color:var(--color-primary-foreground); font-size:12px; }
 .saas-announcement { background:var(--saas-midnight); color:var(--saas-paper); }
 .saas-announcement a { color:var(--primary); }
-.movegrid-brand { display:inline-flex; align-items:center; gap:11px; font-family:"Outfit", sans-serif; font-weight:600; font-size:28px; line-height:1; color:var(--foreground); }
+.movegrid-brand { display:inline-flex; align-items:center; gap:11px; font-family:"Outfit", system-ui, -apple-system, "Segoe UI", Arial, sans-serif; font-weight:600; font-size:28px; line-height:1; color:var(--foreground); }
 .movegrid-symbol { width:38px; height:42px; flex-shrink:0; color:var(--primary); }
 .movegrid-word-accent { color:var(--saas-accent-ink); }
 .saas-site a:focus-visible, .saas-site button:focus-visible { outline-color:var(--primary); }

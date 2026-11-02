@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { faqJsonLd } from "@/lib/moveflew-faq";
 import SmartMovingAlternative from "@/pages/SmartMovingAlternative";
 
 const title = "SmartMoving Alternative — MoveFlew Free Beta Moving CRM";
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/smartmoving-alternative")({
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:url", content: "https://moveflew.lovable.app/smartmoving-alternative" },
     ],
+    scripts: [faqJsonLd()],
     links: [
       { rel: "canonical", href: "https://moveflew.lovable.app/smartmoving-alternative" },
     ],
