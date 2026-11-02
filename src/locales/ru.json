@@ -2245,5 +2245,8 @@
   "Could not send feedback": "Не удалось отправить отзыв",
   "Type": "Тип",
   "No moves to dispatch yet": "Пока нет переездов для диспетчеризации",
-  "Load a sample truck, two crew members and a booked move for today to try the board.": "Загрузите тестовый грузовик, двух сотрудников и забронированный переезд на сегодня, чтобы попробовать доску."
+  "Load a sample truck, two crew members and a booked move for today to try the board.": "Загрузите тестовый грузовик, двух сотрудников и забронированный переезд на сегодня, чтобы попробовать доску.",
+  "Checking proposal link…": "Проверяем ссылку на предложение…",
+  "No customer proposal yet. Use \"Create proposal link\" above to make one.": "Предложения для клиента пока нет. Создайте его кнопкой «Create proposal link» выше.",
+  "No customer proposal for this job. Set the status to estimate to create one.": "Для этого заказа нет предложения. Установите статус «смета», чтобы создать его."
 }

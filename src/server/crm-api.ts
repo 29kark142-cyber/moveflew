@@ -123,7 +123,7 @@ async function enrichJob(ctx: Ctx, data: Record<string, unknown>, pricing: Prici
     data["customerEmail"] = c.data["email"] ?? "";
     data["customerPhone"] = c.data["phone"] ?? "";
   }
-  if (!data["proposalToken"]) data["proposalToken"] = crypto.randomUUID().replace(/-/g, "");
+  // Proposal links are issued only by publishing a proposal (moving_proposals); never invent one here.
   try {
     data["total"] = calculateQuote(data as never, pricing.minimumHours);
   } catch {

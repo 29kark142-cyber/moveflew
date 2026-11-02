@@ -2099,14 +2099,7 @@ export function JobDetailPage({ role, navigate, path }: PageProps) {
               <p>{t("Public token access is limited to this estimate.")}</p>
             </div>
           </div>
-          <a
-            className="ws-link"
-            href={proposalUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t("Open shareable proposal")} <ExternalLink size={14} />
-          </a>
+          <ProposalLinkStatus token={job.proposalToken} url={proposalUrl} status={job.status} />
           <p className="ws-helper">
             {(job as unknown as { testApproval?: unknown }).testApproval
               ? 'Approved for testing; customer signature not recorded.'
