@@ -118,7 +118,7 @@ export function PublicFooter() {
           <Link href="/pricing">{t("Moving rates")}</Link>
           <Link href="/contact">{t("Contact the crew")}</Link>
           <Link href="/login">{t("Team login")}</Link>
-          <Link href="/privacy">{t("Privacy Policy")}</Link>
+          <Link href="/privacy">{tx("Privacy Policy", "Политика конфиденциальности")}</Link>
         </div>
         <div>
           <h4>{t("Let’s talk moving")}</h4>
