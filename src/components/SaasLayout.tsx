@@ -13,6 +13,7 @@ export default function SaasLayout({ children, footerNote, light = false }: { ch
         <div className="saas-brand"><MoveGridBrand /><small>MOVING OPERATIONS CRM</small></div>
         <nav aria-label="Main navigation" className={menu ? "saas-menu is-open" : "saas-menu"}>
           <Link href="/" onClick={() => setMenu(false)}>Moving CRM</Link>
+          <Link href="/pricing" onClick={() => setMenu(false)}>Pricing</Link>
           <Link href="/vs-smartmoving" onClick={() => setMenu(false)}>Compare vs. SmartMoving</Link>
           <Link href="/login" onClick={() => setMenu(false)}>Log in</Link>
         </nav>
@@ -21,6 +22,6 @@ export default function SaasLayout({ children, footerNote, light = false }: { ch
       </div>
     </header>
     <main>{children}</main>
-    <footer className="saas-footer"><div className="saas-wrap"><div><MoveGridBrand /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/login">Log in</Link><Link href="/privacy">Privacy Policy</Link></nav><small>© {new Date().getFullYear()} MoveFlew</small></div>{footerNote && <p className="saas-wrap saas-comparison-note">{footerNote}</p>}</footer>
+    <footer className="saas-footer"><div className="saas-wrap"><div><MoveGridBrand /><p>Moving company software. One connected crew.</p></div><nav aria-label="Footer navigation"><Link href="/register">Join the beta</Link><Link href="/pricing">Pricing</Link><Link href="/vs-smartmoving">Compare vs. SmartMoving</Link><Link href="/login">Log in</Link><Link href="/privacy">Privacy Policy</Link></nav><small>© {new Date().getFullYear()} MoveFlew</small></div>{footerNote && <p className="saas-wrap saas-comparison-note">{footerNote}</p>}</footer>
   </div>;
 }

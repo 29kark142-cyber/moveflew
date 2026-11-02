@@ -1,245 +1,218 @@
-import { useState } from "react";
-import { useWebMCP } from "use-webmcp-tool";
-import { runWebMCPTool } from "@/lib/webmcp-telemetry";
 import { Link } from "@/lib/wouter";
 import {
   ArrowRight,
   Check,
-  Truck,
-  UserRound,
-  UsersRound,
-  Package,
-  Clock3,
+  CreditCard,
+  Map,
+  Palette,
+  PenLine,
+  CalendarDays,
+  Smartphone,
+  Users,
 } from "lucide-react";
-import PublicLayout from "@/components/PublicLayout";
-import { DEFAULT_PRICING, money } from "@shared/crm";
-import { moverCount, useI18n } from "@/lib/i18n";
+import { Button } from "@/components/ui/button";
+import SaasLayout from "@/components/SaasLayout";
 
-const crews = [
+const badge = "Free During Beta — Unlimited Users, No Credit Card Required, Zero Contracts.";
+
+const plans = [
   {
-    n: 1,
-    Icon: UserRound,
-    label: "A helping hand",
-    desc: "Careful lifting, loading, and unloading. You bring the truck.",
-    features: [
-      "1 professional mover",
-      "No truck included",
-      "Loading & unloading help",
+    name: "Beta",
+    price: "$0",
+    interval: "/ month",
+    tagline: "Every MoveFlew feature, free while we build in the open.",
+    featured: true,
+    cta: "Get Free Beta Access",
+    points: [
+      "Google Maps routing with travel and fuel line items",
+      "Visual dispatch calendar with conflict prevention",
+      "Offline field PWA with photos and job sign-off",
+      "Digital Bill of Lading, waiver and inspection signatures",
+      "White-label branding for your own proposals",
+      "Unlimited users, leads, estimates and jobs",
     ],
   },
   {
-    n: 2,
-    Icon: Truck,
-    label: "Your everyday move",
-    desc: "The right-sized crew for apartments and smaller moves.",
-    features: [
-      "2 professional movers",
-      "Moving truck included",
-      "Careful loading & transport",
-    ],
-  },
-  {
-    n: 3,
-    Icon: UsersRound,
-    label: "Room for more",
-    desc: "More hands for larger homes and heavier furniture.",
-    features: [
-      "3 professional movers",
-      "Moving truck included",
-      "Whole-home moving support",
+    name: "Post-Beta Preview",
+    price: "$99",
+    interval: "/ month",
+    tagline: "The flat-rate estimate for when beta closes. Not billed today.",
+    featured: false,
+    cta: "Claim Beta Pricing",
+    points: [
+      "Same full platform, all modules included",
+      "Flat rate for unlimited users — no per-seat fees",
+      "$0 setup fee, cancel anytime",
+      "Beta companies keep priority onboarding",
+      "Future pricing may change before launch",
     ],
   },
 ];
 
+const comparison = [
+  ["Current price", "$0 during beta", "$299–$399/month"],
+  ["Expected price after beta", "$99/month flat", "$299–$399/month and up"],
+  ["Setup fee", "$0", "Onboarding often charged separately"],
+  ["User pricing", "Unlimited users included", "Seats and tiers add cost"],
+  ["Contract", "Cancel anytime, zero contracts", "Annual lock-ins are common"],
+];
+
+const included = [
+  {
+    Icon: Map,
+    title: "Distance-priced estimates",
+    text: "Routes calculate miles and drive time, then apply your travel and fuel rules as estimate line items.",
+  },
+  {
+    Icon: CalendarDays,
+    title: "Conflict-free dispatch",
+    text: "A visual board warns about overlapping trucks and crews before a job is assigned.",
+  },
+  {
+    Icon: Smartphone,
+    title: "Offline field workspace",
+    text: "Crews capture timestamps, photos and signatures on site, then sync when they reconnect.",
+  },
+  {
+    Icon: PenLine,
+    title: "Signed documents",
+    text: "Bill of Lading, damage waiver and inspection checklist, delivered as a signed PDF.",
+  },
+  {
+    Icon: Users,
+    title: "Everyone on the crew",
+    text: "Invite drivers, helpers and crew leads without paying for each seat.",
+  },
+  {
+    Icon: Palette,
+    title: "White-label branding",
+    text: "Proposals and documents carry your company name and colors, not ours.",
+  },
+];
+
 export default function Pricing() {
-  const { t, locale } = useI18n();
-  const [crew, setCrew] = useState(2);
-  const [hours, setHours] = useState(2.5);
-  const [packing, setPacking] = useState(false);
-  const rate = DEFAULT_PRICING.rates[crew - 1];
-
-  useWebMCP({
-    name: "read_price_estimate",
-    description: "Read the price calculator's current crew size, hours, packing choice and estimated total.",
-    annotations: { readOnlyHint: true },
-    execute: () =>
-      runWebMCPTool("read_price_estimate", () =>
-        `${crew} movers, ${hours} hours, packing ${packing ? "on" : "off"}: estimated $${((rate + (packing ? 85 : 0)) * hours).toFixed(2)}`,
-      ),
-  });
-
-  useWebMCP({
-    name: "set_price_estimate",
-    description: "Set the price calculator's crew size, hours and packing option on the pricing page.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        movers: { type: "integer", minimum: 1, maximum: DEFAULT_PRICING.rates.length, description: "Number of movers." },
-        hours: { type: "number", minimum: 2.5, maximum: 48, description: "Hours, in 0.5 steps." },
-        packing: { type: "boolean", description: "Include packing help." },
-      },
-    },
-    execute: (args: { movers?: unknown; hours?: unknown; packing?: unknown }) =>
-      runWebMCPTool("set_price_estimate", () => {
-        const { movers, hours: h, packing: p } = args;
-        if (movers !== undefined && (!Number.isInteger(movers) || (movers as number) < 1 || (movers as number) > DEFAULT_PRICING.rates.length))
-          throw new Error(`movers must be 1-${DEFAULT_PRICING.rates.length}`);
-        if (h !== undefined && (typeof h !== "number" || h < 2.5 || h > 48 || (h * 2) % 1 !== 0))
-          throw new Error("hours must be 2.5-48 in 0.5 steps");
-        if (p !== undefined && typeof p !== "boolean") throw new Error("packing must be true or false");
-        if (movers !== undefined) setCrew(movers as number);
-        if (h !== undefined) setHours(h);
-        if (p !== undefined) setPacking(p);
-        return "Calculator updated.";
-      }),
-  });
-  const formatNumber = (value: number) =>
-    new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(value);
   return (
-    <PublicLayout>
-      <section className="page-heading wrap">
-        <span className="section-kicker">{t("CLEAR, SIMPLE MOVING RATES")}</span>
-        <h1>
-          {t("Know what to expect.")}
-          <br />
-          <span>{t("Before we arrive.")}</span>
-        </h1>
-        <p>
-          {t("Choose the help that fits your move. Straightforward hourly pricing for every job.")}
+    <SaasLayout
+      light
+      footerNote="SmartMoving® is a registered trademark of SmartMoving Software, Inc. MoveFlew is an independent software platform and is not affiliated with, endorsed by, or sponsored by SmartMoving. Competitor pricing is drawn from publicly listed sources and is not independently verified; confirm current terms with the vendor."
+    >
+      <section className="saas-wrap saas-pricing-hero">
+        <span className="saas-eyebrow">PRICING</span>
+        <h1>Enterprise Moving CRM without the Enterprise Price Tag.</h1>
+        <p className="saas-pricing-intro">
+          Lead capture, distance-priced estimates, signed proposals, conflict-free dispatch and a
+          mobile crew workspace — one flat platform your whole team can use.
         </p>
-        <span className="minimum-tag">
-          <Clock3 size={16} />
-          {t("Minimum order: 2.5 hours")}
-        </span>
+        <div className="saas-pricing-badge" role="note">
+          <CreditCard size={18} aria-hidden="true" />
+          <span>{badge}</span>
+        </div>
+        <div className="saas-pricing-actions">
+          <Button asChild size="lg">
+            <Link href="/register">Get Free Beta Access <ArrowRight /></Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/vs-smartmoving">Compare vs. SmartMoving</Link>
+          </Button>
+        </div>
+        <small className="saas-pricing-footnote">
+          Free beta access. No credit card, no contract, no setup fee.
+        </small>
       </section>
-      <section className="rate-cards wrap">
-        {crews.map(({ n, Icon, label, desc, features }) => (
-          <article className={n === 2 ? "featured" : ""} key={n}>
-            {n === 2 && (
-              <div className="popular-label">{t("A GREAT PLACE TO START")}</div>
-            )}
-            <Icon size={28} />
-            <span>{t(label)}</span>
-            <h2>
-              {moverCount(n)}
-              {n > 1 && <small>{t("+ truck")}</small>}
-            </h2>
-            <div className="rate-price">
-              {money(DEFAULT_PRICING.rates[n - 1])}
-              <small>{t("/ hour")}</small>
-            </div>
-            <p>{t(desc)}</p>
-            <ul>
-              {features.map(feature => (
-                <li key={feature}>
-                  <Check size={16} />
-                  {t(feature)}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/contact"
-              className={`btn ${n === 2 ? "btn-blue" : "btn-outline"}`}
-            >
-              {t("Choose this crew")} <ArrowRight size={16} />
-            </Link>
-          </article>
-        ))}
+
+      <section className="saas-wrap saas-pricing-plans">
+        <div className="saas-pricing-grid">
+          {plans.map(({ name, price, interval, tagline, featured, cta, points }) => (
+            <article className={featured ? "saas-pricing-card is-featured" : "saas-pricing-card"} key={name}>
+              {featured && <span className="saas-pricing-flag">Most popular — start here</span>}
+              <h2>{name}</h2>
+              <p className="saas-pricing-tagline">{tagline}</p>
+              <div className="saas-pricing-amount">
+                <strong>{price}</strong>
+                <span>{interval}</span>
+              </div>
+              <ul className="saas-pricing-points">
+                {points.map(point => (
+                  <li key={point}>
+                    <Check size={16} aria-hidden="true" />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button asChild size="lg" variant={featured ? "default" : "outline"} className="saas-pricing-cta">
+                <Link href="/register">{cta} <ArrowRight /></Link>
+              </Button>
+            </article>
+          ))}
+        </div>
+        <p className="saas-pricing-footnote">
+          Beta access is free today. The $99/month figure is a post-beta preview and is not charged now;
+          final pricing may change before launch. Stripe payment processing fees may apply to deposits.
+        </p>
       </section>
-      <section className="calculator-section wrap">
-        <div>
-          <span className="section-kicker">{t("A CREW THAT FITS YOUR DAY")}</span>
-          <h2>
-            {t("A little help.")}
-            <br />
-            {t("Or the whole crew.")}
-          </h2>
-          <p>
-            {t("Choose from one to six movers and see your estimated labor cost. Travel time, materials, and additional services may apply.")}
-          </p>
-          <div className="full-rate-guide">
-            {DEFAULT_PRICING.rates.map((r, i) => (
-              <span key={r}>
-                <b>{moverCount(i + 1)}</b>
-                {money(r)}{t("/hr")}
+
+      <section className="saas-wrap saas-pricing-compare">
+        <span className="saas-eyebrow">PRICE COMPARISON</span>
+        <h2>MoveFlew vs. SmartMoving</h2>
+        <p className="saas-pricing-sub">
+          What moving company owners usually ask before they switch: what it costs now, what it costs
+          later, and how hard it is to get out.
+        </p>
+        <div className="saas-pricing-table" role="table" aria-label="MoveFlew versus SmartMoving pricing">
+          <div className="saas-pricing-row saas-pricing-head" role="row">
+            <strong role="columnheader">What you pay</strong>
+            <strong role="columnheader">MoveFlew</strong>
+            <strong role="columnheader">SmartMoving</strong>
+          </div>
+          {comparison.map(([label, moveflew, competitor]) => (
+            <div className="saas-pricing-row" role="row" key={label}>
+              <strong role="rowheader">{label}</strong>
+              <span role="cell" data-column="MoveFlew">
+                <Check size={16} aria-hidden="true" />
+                {moveflew}
               </span>
-            ))}
-          </div>
+              <span role="cell" data-column="SmartMoving">{competitor}</span>
+            </div>
+          ))}
         </div>
-        <div className="rate-calculator">
-          <h3>{t("Plan your moving help")}</h3>
-          <label>
-            {t("Crew size")}
-            <select
-              value={crew}
-              aria-label={t("Crew size")}
-              onChange={e => setCrew(+e.target.value)}
-            >
-              {DEFAULT_PRICING.rates.map((r, i) => (
-                <option value={i + 1} key={i}>
-                  {t("{movers} · {truck} · {rate}/hour", {
-                    movers: moverCount(i + 1),
-                    truck: i === 0 ? t("no truck") : t("truck"),
-                    rate: money(r),
-                  })}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            {t("Estimated hours")}
-            <input
-              type="number"
-              min="2.5"
-              max="48"
-              step="0.5"
-              value={hours}
-              onChange={e => setHours(Math.max(2.5, Number(e.target.value)))}
-            />
-          </label>
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={packing}
-              onChange={e => setPacking(e.target.checked)}
-            />
-            {t("Add standard packing help ($85/hour)")}
-          </label>
-          <div className="calculator-total">
-            <span>
-              {t("Estimated labor")}
-              <small>
-                {t("{movers} · {hours} hours", {
-                  movers: moverCount(crew),
-                  hours: formatNumber(hours),
-                })}
-              </small>
-            </span>
-            <strong>{money((rate + (packing ? 85 : 0)) * hours)}</strong>
-          </div>
-          <small className="calculator-disclaimer">
-            {t("Planning estimate only. This is not a confirmed booking or final quote.")}
-          </small>
-          <Link href="/contact" className="btn btn-blue">
-            {t("Request your quote")} <ArrowRight size={17} />
-          </Link>
-        </div>
+        <p className="saas-pricing-footnote">
+          SmartMoving pricing is based on publicly listed figures and may change; confirm current terms
+          with the vendor before deciding.
+        </p>
       </section>
-      <section className="packing-banner wrap">
-        <span>
-          <Package size={36} />
-        </span>
-        <div>
-          <h2>{t("Good packing makes a great start.")}</h2>
+
+      <section className="saas-wrap saas-pricing-included">
+        <div className="saas-pricing-heading">
+          <div>
+            <span className="saas-eyebrow">IN EVERY WORKSPACE</span>
+            <h2>Nothing is held back for a higher tier.</h2>
+          </div>
           <p>
-            {t("Standard packing and unpacking starts at")}{" "}
-            <strong>{money(85)}{t("/hour")}</strong>. {t("Fragile, heavy, or specialty items? Let’s talk about the right approach.")}
+            The beta includes the modules most CRMs sell as add-ons, so you can run a full move
+            without switching tools.
           </p>
         </div>
-        <Link href="/contact" className="text-link">
-          {t("Ask about packing")} <ArrowRight size={17} />
-        </Link>
+        <div className="saas-pricing-features">
+          {included.map(({ Icon, title, text }) => (
+            <article className="saas-pricing-feature" key={title}>
+              <span className="saas-pricing-feature-icon"><Icon size={20} aria-hidden="true" /></span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
       </section>
-    </PublicLayout>
+
+      <section className="saas-wrap saas-pricing-closing">
+        <div>
+          <span className="saas-eyebrow">GET STARTED</span>
+          <h2>Try it on your next move.</h2>
+          <p>Create a workspace, invite your crew and run a real job. Free during beta.</p>
+        </div>
+        <Button asChild size="lg">
+          <Link href="/register">Get Free Beta Access <ArrowRight /></Link>
+        </Button>
+      </section>
+    </SaasLayout>
   );
 }

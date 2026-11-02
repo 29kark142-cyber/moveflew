@@ -24,6 +24,10 @@
 - [x] Add shared database-backed 10/minute/IP quote and lead intake limit; verified request 11 returns 429, aliases share budget, and preflight stays available.
 - [x] Add preview-only admin manual approval/booking from job dashboard; verified saved booking, active proposal approval, no payment receipt, and 18 targeted tests.
 
+## Public pricing page (B2B SaaS)
+- [x] Replace consumer moving-labor rates with MoveFlew subscription pricing: beta $0 (all features), post-beta preview $99/mo flat, unlimited users, no card or contract; SmartMoving price comparison card; "Get Free Beta Access" CTA to /register.
+- [x] Verified headline/badge/plan cards/comparison rows render on desktop and 390px phone with no overflow, Pricing added to SaaS navigation and both footers, and CTAs reach /register.
+
 ## SaaS homepage pivot
 - [x] Redesign homepage with light palette, email signup handoff, interactive dispatch/signature previews and bento showcase; verified desktop/mobile navigation, signup email prefill, no overflow or runtime errors.
 - [x] Polish hero grid/beta badge, dark feature previews and CTA glow; verify homepage navigation and layout.
