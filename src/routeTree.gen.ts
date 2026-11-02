@@ -19,6 +19,7 @@ import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as SmartmovingAlternativeRouteImport } from './routes/smartmoving-alternative'
 import { Route as VsSmartmovingRouteImport } from './routes/vs-smartmoving'
 import { Route as WidgetDotjsRouteImport } from './routes/widget[.]js'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -82,6 +83,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SmartmovingAlternativeRoute = SmartmovingAlternativeRouteImport.update({
+  id: '/smartmoving-alternative',
+  path: '/smartmoving-alternative',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VsSmartmovingRoute = VsSmartmovingRouteImport.update({
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/smartmoving-alternative': typeof SmartmovingAlternativeRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/smartmoving-alternative': typeof SmartmovingAlternativeRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -221,6 +229,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/smartmoving-alternative': typeof SmartmovingAlternativeRoute
   '/vs-smartmoving': typeof VsSmartmovingRoute
   '/widget.js': typeof WidgetDotjsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/register'
+    | '/smartmoving-alternative'
     | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
@@ -275,6 +285,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/register'
+    | '/smartmoving-alternative'
     | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
@@ -301,6 +312,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/register'
+    | '/smartmoving-alternative'
     | '/vs-smartmoving'
     | '/widget.js'
     | '/.well-known/oauth-protected-resource'
@@ -328,6 +340,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
+  SmartmovingAlternativeRoute: typeof SmartmovingAlternativeRoute
   VsSmartmovingRoute: typeof VsSmartmovingRoute
   WidgetDotjsRoute: typeof WidgetDotjsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -414,6 +427,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/smartmoving-alternative': {
+      id: '/smartmoving-alternative'
+      path: '/smartmoving-alternative'
+      fullPath: '/smartmoving-alternative'
+      preLoaderRoute: typeof SmartmovingAlternativeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vs-smartmoving': {
@@ -528,6 +548,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
+  SmartmovingAlternativeRoute: SmartmovingAlternativeRoute,
   VsSmartmovingRoute: VsSmartmovingRoute,
   WidgetDotjsRoute: WidgetDotjsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
