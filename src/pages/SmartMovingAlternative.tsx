@@ -1,3 +1,4 @@
+import MoveFlewFaq from "@/components/MoveFlewFaq";
 import { Link } from "@/lib/wouter";
 import { ArrowRight, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,7 @@ export default function SmartMovingAlternative() {
           </Link>
         </Button>
       </section>
+      <MoveFlewFaq />
     </SaasLayout>
   );
 }
