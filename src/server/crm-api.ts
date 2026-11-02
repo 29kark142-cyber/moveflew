@@ -23,6 +23,18 @@ class HttpError extends Error {
 const fail = (status: number, message: string): never => {
   throw new HttpError(status, message);
 };
+const GENERIC_DB_ERRORS: Record<number, string> = {
+  400: "The request could not be processed",
+  403: "You don't have permission to do that",
+  500: "Something went wrong",
+};
+// Database errors stay in server logs; callers only see app-authored rule messages
+// (raised via RAISE EXCEPTION in our own functions, SQLSTATE P0001) or a generic text.
+const dbFail = (status: number, error: { message?: string; code?: string }): never => {
+  console.error("CRM database error", { status, code: error.code, message: error.message });
+  const safe = status < 500 && error.code === "P0001" && error.message ? error.message : GENERIC_DB_ERRORS[status] ?? "Something went wrong";
+  throw new HttpError(status, safe);
+};
 
 const KINDS: Record<string, string> = {
   customers: "customer",
@@ -55,7 +67,7 @@ async function list(ctx: Ctx, kind: string) {
   const { data, error } = await ctx.db
     .from("workspace_records").select("id,data,created_at")
     .eq("workspace_id", ws).eq("kind", kind).order("id", { ascending: false }).limit(1000);
-  if (error) fail(500, error.message);
+  if (error) dbFail(500, error);
   return (data as Row[]).map((r) => toRecord(r, ws));
 }
 
@@ -64,7 +76,7 @@ async function getOne(ctx: Ctx, kind: string, id: number) {
   const { data, error } = await ctx.db
     .from("workspace_records").select("id,data,created_at")
     .eq("workspace_id", ws).eq("kind", kind).eq("id", id).maybeSingle();
-  if (error) fail(500, error.message);
+  if (error) dbFail(500, error);
   if (!data) fail(404, "Not found");
   return data as Row;
 }
@@ -141,7 +153,7 @@ async function create(ctx: Ctx, kind: string, body: unknown) {
   const { data: row, error } = await ctx.db
     .from("workspace_records").insert({ workspace_id: ws, kind, data: data as never })
     .select("id,data,created_at").single();
-  if (error) fail(403, error.message);
+  if (error) dbFail(403, error);
   return toRecord(row as Row, ws);
 }
 
@@ -165,7 +177,7 @@ async function update(ctx: Ctx, kind: string, id: number, body: unknown) {
   const { data: row, error } = await ctx.db
     .from("workspace_records").update({ data: data as never, updated_at: new Date().toISOString() })
     .eq("id", id).eq("workspace_id", ws).select("id,data,created_at").single();
-  if (error) fail(403, error.message);
+  if (error) dbFail(403, error);
   return toRecord(row as Row, ws);
 }
 
@@ -214,7 +226,7 @@ async function saveData(ctx: Ctx, id: number, patch: Record<string, unknown>) {
   const { data: row, error } = await ctx.db.from("workspace_records")
     .update({ data: { ...current.data, ...patch } as never, updated_at: new Date().toISOString() })
     .eq("id", id).eq("workspace_id", ws).select("id,data,created_at").single();
-  if (error) fail(403, error.message);
+  if (error) dbFail(403, error);
   return toRecord(row as Row, ws);
 }
 
@@ -232,7 +244,7 @@ async function pricingFor(ctx: Ctx): Promise<Pricing> {
 async function workspaces(ctx: Ctx) {
   const { data, error } = await ctx.db
     .from("workspace_members").select("role, workspace_id, workspaces(id,name,plan_id,subscription_status,onboarding_completed_at,travel_pricing_type,fuel_surcharge_type,deposit_rule,appearance)").eq("user_id", ctx.userId);
-  if (error) fail(500, error.message);
+  if (error) dbFail(500, error);
   return (data ?? []).map((m) => {
     const w = m.workspaces as unknown as { id: number; name: string; plan_id: string; subscription_status: string; onboarding_completed_at: string | null; travel_pricing_type: string; fuel_surcharge_type: string; deposit_rule: { value?: number } | null; appearance: unknown };
     return {
@@ -288,7 +300,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     const { name } = (await body()) as { name?: unknown };
     if (typeof name !== "string") fail(400, "Name is required");
     const { data, error } = await ctx.db.rpc("create_workspace", { _name: name as string });
-    if (error) fail(400, error.message);
+    if (error) dbFail(400, error);
     return { id: data as number, name: (name as string).trim(), role: "admin" };
   }
   if (head === "dashboard" && method === "GET") {
@@ -305,7 +317,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       if (!parsed.success) return fail(400, "Invalid pricing settings");
       const value = parsed.data;
       const { error } = await ctx.db.from("workspaces").update({ pricing: value as never }).eq("id", requireWs(ctx));
-      if (error) fail(403, error.message);
+      if (error) dbFail(403, error);
       return value;
     }
   }
@@ -347,7 +359,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       if (typeof role !== "string") fail(400, "Role is required");
       const { data, error } = await ctx.db.from("workspace_members").update({ role: role as string })
         .eq("id", id).eq("workspace_id", ws).select("id,name,email,role").single();
-      if (error) fail(403, error.message);
+      if (error) dbFail(403, error);
       return { ...data, userId: 0 };
     }
     if (method === "POST") fail(405, "Use workspace invitations to add a teammate.");
@@ -385,7 +397,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     if (method === "GET" && !idRaw) {
       const { data, error } = await ctx.db.from("workspace_invitations").select(COLS)
         .eq("workspace_id", ws).neq("status", "revoked").order("created_at", { ascending: false }).limit(200);
-      if (error) fail(500, error.message);
+      if (error) dbFail(500, error);
       return (data as Inv[]).map((r) => shape(r));
     }
     if (method === "POST" && !idRaw) {
@@ -402,7 +414,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       const { data, error } = await ctx.db.from("workspace_invitations")
         .insert({ workspace_id: ws, kind, email, role, hourly_rate: cents / 100, candidate_id: cand, send_count: kind === "email" ? 1 : 0, last_sent_at: kind === "email" ? new Date().toISOString() : null })
         .select(COLS).single();
-      if (error) fail(403, error.message);
+      if (error) dbFail(403, error);
       const inv = shape(data as Inv, origin(b["publicOrigin"]));
       return { invitation: inv, inviteUrl: inv.inviteUrl };
     }
@@ -413,13 +425,13 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
         : { expires_at: new Date(Date.now() + 14 * 864e5).toISOString(), last_sent_at: new Date().toISOString() };
       const { data, error } = await ctx.db.from("workspace_invitations").update(patch)
         .eq("id", id).eq("workspace_id", ws).eq("status", "pending").select(COLS).maybeSingle();
-      if (error) fail(403, error.message);
+      if (error) dbFail(403, error);
       if (sub === "revoke") {
         if (data) return { revoked: true, status: "revoked" };
         // A repeated revoke is successful; never overwrite an accepted invitation.
         const { data: current, error: readError } = await ctx.db.from("workspace_invitations")
           .select("status").eq("id", id).eq("workspace_id", ws).maybeSingle();
-        if (readError) fail(403, readError.message);
+        if (readError) dbFail(403, readError);
         if (!current) return fail(404, "Invitation not found");
         return { revoked: current.status === "revoked", status: current.status };
       }
@@ -435,7 +447,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       const { data, error } = await ctx.db.from("crew_invites")
         .select("id,token,email,crew_role,accepted_at,expires_at,created_at")
         .eq("workspace_id", ws).order("id", { ascending: false }).limit(100);
-      if (error) fail(500, error.message);
+      if (error) dbFail(500, error);
       return data;
     }
     if (method === "POST") {
@@ -446,12 +458,12 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
       const { data, error } = await ctx.db.from("crew_invites")
         .insert({ workspace_id: ws, email, crew_role: crewRole })
         .select("id,token,email,crew_role,accepted_at,expires_at,created_at").single();
-      if (error) fail(403, error.message);
+      if (error) dbFail(403, error);
       return data;
     }
     if (method === "DELETE" && id) {
       const { error } = await ctx.db.from("crew_invites").delete().eq("id", id).eq("workspace_id", ws);
-      if (error) fail(403, error.message);
+      if (error) dbFail(403, error);
       return { deleted: true };
     }
   }
@@ -479,11 +491,11 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     const ws = requireWs(ctx);
     const { isDemoRecord } = await import("../shared/demo-job");
     const { data: rows, error } = await ctx.db.from("workspace_records").select("id,kind,data").eq("workspace_id", ws).in("kind", ["job", "truck", "crew", "customer"]);
-    if (error) fail(403, error.message);
+    if (error) dbFail(403, error);
     const ids = (rows ?? []).filter(r => isDemoRecord(r.kind as string, (r.data ?? {}) as Record<string, unknown>)).map(r => r.id as number);
     if (ids.length) {
       const { error: delError } = await ctx.db.from("workspace_records").delete().eq("workspace_id", ws).in("id", ids);
-      if (delError) fail(403, delError.message);
+      if (delError) dbFail(403, delError);
     }
     return { deleted: ids.length };
   }
@@ -504,7 +516,7 @@ async function route(ctx: Ctx, method: string, parts: string[], body: () => Prom
     const b = (await body()) as { confirm?: boolean };
     if (!b.confirm) fail(400, "Please confirm the deletion");
     const { error } = await ctx.db.from("workspace_records").delete().eq("id", id).eq("workspace_id", requireWs(ctx)).eq("kind", "job");
-    if (error) fail(403, error.message);
+    if (error) dbFail(403, error);
     return { deleted: true };
   }
   if (head === "jobs" && id && sub) {
