@@ -1,3 +1,4 @@
+import { useState } from "react";
 import MoveFlewFaq from "@/components/MoveFlewFaq";
 import { Link } from "@/lib/wouter";
 import {
@@ -5,6 +6,7 @@ import {
   Check,
   CreditCard,
   Map,
+  Minus,
   Palette,
   PenLine,
   CalendarDays,
@@ -17,40 +19,52 @@ import SaasLayout from "@/components/SaasLayout";
 import { ComparisonHighlights, ComparisonMatrix } from "@/components/SmartMovingComparison";
 import { comparisonFooter } from "@/lib/smartmoving-comparison";
 
-const badge = "Free During Beta — Unlimited Users, No Credit Card Required, Zero Contracts.";
+const badge = "Free During Beta — Unlimited Access, No Credit Card Required";
 
+type Billing = "monthly" | "annual";
 const plans = [
   {
-    name: "Beta",
-    price: "Free",
-    interval: "during beta",
-    tagline: "Every MoveFlew feature, free while we build in the open.",
-    featured: true,
-    cta: "Get Free Beta Access",
+    name: "Starter",
+    monthly: 75,
+    annual: 750,
+    tagline: "For owner-operators and small crews getting organized.",
+    featured: false,
     points: [
-      "Google Maps routing with travel and fuel line items",
-      "Visual dispatch calendar with conflict prevention",
-      "Offline field PWA with photos and job sign-off",
-      "Digital Bill of Lading, waiver and inspection signatures",
-      "White-label branding for your own proposals",
-      "Unlimited users, leads, estimates and jobs",
+      "Up to 3 trucks and 10 crew members",
+      "Core estimates and proposals",
+      "Google Maps routing with travel and fuel pricing",
+      "Dispatch board with conflict warnings",
+      "100% offline field PWA with digital BOL signatures",
     ],
   },
   {
-    name: "After Beta",
-    price: "Coming soon",
-    interval: "announced in advance",
-    tagline: "A flat monthly rate for unlimited users. Not on sale yet.",
-    featured: false,
-    cta: "Claim Beta Access",
+    name: "Pro",
+    monthly: 100,
+    annual: 1000,
+    tagline: "For growing companies running multiple trucks every day.",
+    featured: true,
     points: [
-      "Same full platform, all modules included",
-      "Flat rate for unlimited users — no per-seat fees",
-      "No setup fee, cancel anytime",
-      "Beta companies keep priority onboarding",
-      "Pricing shared with beta companies before beta closes",
+      "Everything in Starter, plus:",
+      "Unlimited trucks and crew members",
+      "Embeddable website booking widget",
+      "Automated SMS & email alerts",
+      "Full white-labeling with custom domains",
+      "Warehouse & Storage Vault module",
     ],
   },
+];
+
+const tierMatrix: [string, boolean | string, boolean | string][] = [
+  ["Trucks", "Up to 3", "Unlimited"],
+  ["Crew members", "Up to 10", "Unlimited"],
+  ["Estimates & proposals", true, true],
+  ["Google Maps routing & fuel pricing", true, true],
+  ["Dispatch board", true, true],
+  ["Offline field PWA & digital BOL signatures", true, true],
+  ["Website booking widget", false, true],
+  ["Automated SMS & email alerts", false, true],
+  ["White-labeling with custom domains", false, true],
+  ["Warehouse & Storage Vault", false, true],
 ];
 
 const comparison = [
@@ -95,6 +109,7 @@ const included = [
 ];
 
 export default function Pricing() {
+  const [billing, setBilling] = useState<Billing>("monthly");
   return (
     <SaasLayout light footerNote={comparisonFooter}>
       <section className="saas-wrap saas-pricing-hero">
@@ -122,15 +137,20 @@ export default function Pricing() {
       </section>
 
       <section className="saas-wrap saas-pricing-plans">
+        <div className="saas-billing-toggle" role="group" aria-label="Billing period">
+          <button type="button" aria-pressed={billing === "monthly"} onClick={() => setBilling("monthly")}>Monthly</button>
+          <button type="button" aria-pressed={billing === "annual"} onClick={() => setBilling("annual")}>Annual</button>
+          <span className="saas-billing-save">2 Months Free on Annual Plans</span>
+        </div>
         <div className="saas-pricing-grid">
-          {plans.map(({ name, price, interval, tagline, featured, cta, points }) => (
+          {plans.map(({ name, monthly, annual, tagline, featured, points }) => (
             <article className={featured ? "saas-pricing-card is-featured" : "saas-pricing-card"} key={name}>
-              {featured && <span className="saas-pricing-flag">Most popular — start here</span>}
+              {featured && <span className="saas-pricing-flag">Most Popular</span>}
               <h2>{name}</h2>
               <p className="saas-pricing-tagline">{tagline}</p>
-              <div className="saas-pricing-amount is-text">
-                <strong>{price}</strong>
-                <span>{interval}</span>
+              <div className="saas-pricing-amount">
+                <strong>${billing === "monthly" ? monthly : annual.toLocaleString("en-US")}</strong>
+                <span>{billing === "monthly" ? "/mo" : "/yr"}</span>
               </div>
               <ul className="saas-pricing-points">
                 {points.map(point => (
@@ -141,16 +161,37 @@ export default function Pricing() {
                 ))}
               </ul>
               <Button asChild size="lg" variant={featured ? "default" : "outline"} className="saas-pricing-cta">
-                <Link href="/register">{cta} <ArrowRight /></Link>
+                <Link href="/register">Start Free Beta <ArrowRight /></Link>
               </Button>
             </article>
           ))}
         </div>
         <p className="saas-pricing-footnote">
-          Beta access is free today and needs no credit card. MoveFlew is not selling paid plans yet;
-          pricing will be shared with beta companies before beta closes. Stripe payment processing
-          fees may apply to customer deposits.
+          Every plan is free during beta with no credit card. Paid billing begins after beta; beta
+          companies get notice before anything is charged.
         </p>
+      </section>
+
+      <section className="saas-wrap saas-pricing-compare saas-tier-matrix">
+        <span className="saas-eyebrow">COMPARE PLANS</span>
+        <h2>Starter vs. Pro</h2>
+        <div className="saas-pricing-table" role="table" aria-label="Starter versus Pro features">
+          <div className="saas-pricing-row saas-pricing-head" role="row">
+            <strong role="columnheader">Feature</strong>
+            <strong role="columnheader">Starter</strong>
+            <strong role="columnheader">Pro</strong>
+          </div>
+          {tierMatrix.map(([label, starter, pro]) => (
+            <div className="saas-pricing-row" role="row" key={label}>
+              <strong role="rowheader">{label}</strong>
+              {[starter, pro].map((v, i) => (
+                <span role="cell" data-column={i ? "Pro" : "Starter"} key={i}>
+                  {v === true ? <><Check size={16} aria-label="Included" /></> : v === false ? <Minus size={16} className="saas-tier-no" aria-label="Not included" /> : v}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="saas-wrap saas-pricing-compare">
@@ -219,7 +260,7 @@ export default function Pricing() {
         <div className="saas-pricing-heading">
           <div>
             <span className="saas-eyebrow">IN EVERY WORKSPACE</span>
-            <h2>Nothing is held back for a higher tier.</h2>
+            <h2>Included in every workspace.</h2>
           </div>
           <p>
             The beta includes the modules most CRMs sell as add-ons, so you can run a full move

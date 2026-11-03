@@ -4,7 +4,7 @@ import Pricing from "@/pages/Pricing";
 
 const title = "MoveFlew Pricing — Moving CRM Free During Beta";
 const description =
-  "MoveFlew is free during beta: every module, unlimited users, no credit card and no contract. Paid plans are announced to beta companies before beta closes.";
+  "MoveFlew moving CRM pricing: Starter $75/mo and Pro $100/mo, 2 months free yearly. Free during beta, no credit card required.";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
