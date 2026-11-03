@@ -554,6 +554,35 @@ export type Database = {
         }
         Relationships: []
       }
+      workspace_admin_notes: {
+        Row: {
+          pricing_notes: string
+          updated_at: string
+          updated_by: string | null
+          workspace_id: number
+        }
+        Insert: {
+          pricing_notes?: string
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id: number
+        }
+        Update: {
+          pricing_notes?: string
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_admin_notes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspace_integration_keys: {
         Row: {
           created_at: string
@@ -749,7 +778,10 @@ export type Database = {
           company_phone: string
           created_at: string
           created_by: string
+          custom_annual_price: number | null
+          custom_monthly_price: number | null
           deposit_rule: Json | null
+          discount_percent: number | null
           dispatch_address: string | null
           feature_flags: Json
           fuel_flat_rate: number
@@ -757,12 +789,14 @@ export type Database = {
           fuel_percentage_rate: number
           fuel_surcharge_type: string
           id: number
+          is_custom_pricing: boolean
           limit_overrides: Json
           name: string
           office_email: string
           onboarding_completed_at: string | null
           plan_id: string
           pricing: Json | null
+          pricing_mode: string
           stripe_customer_id: string | null
           subscription_status: string
           travel_flat_rate: number
@@ -776,7 +810,10 @@ export type Database = {
           company_phone?: string
           created_at?: string
           created_by: string
+          custom_annual_price?: number | null
+          custom_monthly_price?: number | null
           deposit_rule?: Json | null
+          discount_percent?: number | null
           dispatch_address?: string | null
           feature_flags?: Json
           fuel_flat_rate?: number
@@ -784,12 +821,14 @@ export type Database = {
           fuel_percentage_rate?: number
           fuel_surcharge_type?: string
           id?: never
+          is_custom_pricing?: boolean
           limit_overrides?: Json
           name: string
           office_email?: string
           onboarding_completed_at?: string | null
           plan_id?: string
           pricing?: Json | null
+          pricing_mode?: string
           stripe_customer_id?: string | null
           subscription_status?: string
           travel_flat_rate?: number
@@ -803,7 +842,10 @@ export type Database = {
           company_phone?: string
           created_at?: string
           created_by?: string
+          custom_annual_price?: number | null
+          custom_monthly_price?: number | null
           deposit_rule?: Json | null
+          discount_percent?: number | null
           dispatch_address?: string | null
           feature_flags?: Json
           fuel_flat_rate?: number
@@ -811,12 +853,14 @@ export type Database = {
           fuel_percentage_rate?: number
           fuel_surcharge_type?: string
           id?: never
+          is_custom_pricing?: boolean
           limit_overrides?: Json
           name?: string
           office_email?: string
           onboarding_completed_at?: string | null
           plan_id?: string
           pricing?: Json | null
+          pricing_mode?: string
           stripe_customer_id?: string | null
           subscription_status?: string
           travel_flat_rate?: number
