@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { planStatusLabel, type PricingMode } from "@/shared/tenant-pricing";
 
 export const TENANT_STATUSES = ["beta", "trialing", "active", "past_due", "canceled", "suspended"] as const;
 const INACTIVE_JOB = new Set(["cancelled", "canceled", "declined", "completed", "lost"]);
@@ -22,12 +23,13 @@ export const getPlatformAccess = createServerFn({ method: "POST" }).middleware([
 export const getPlatformOverview = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const admin = await requirePlatformAdmin(context.supabase);
-    const [ws, members, jobs, plans, paid] = await Promise.all([
-      admin.from("workspaces").select("id,name,created_by,created_at,plan_id,subscription_status,trial_ends_at,beta_ends_at,feature_flags,limit_overrides").order("created_at", { ascending: false }),
+    const [ws, members, jobs, plans, paid, notes] = await Promise.all([
+      admin.from("workspaces").select("id,name,created_by,created_at,plan_id,subscription_status,trial_ends_at,beta_ends_at,feature_flags,limit_overrides,is_custom_pricing,pricing_mode,custom_monthly_price,custom_annual_price,discount_percent").order("created_at", { ascending: false }),
       admin.from("workspace_members").select("workspace_id,user_id,name,email,role"),
       admin.from("workspace_records").select("workspace_id,status:data->>status").eq("kind", "job").limit(100000),
       admin.from("subscription_plans").select("id,name,price_cents,limits").order("sort_order"),
       admin.from("proposal_checkouts").select("amount_cents,environment,proposal:moving_proposals(workspace_id)").eq("status", "paid"),
+      admin.from("workspace_admin_notes").select("workspace_id,pricing_notes"),
     ]);
     if (ws.error || members.error || jobs.error || plans.error || paid.error) throw new Error("Could not load platform data");
     const jobCount = new Map<number, { total: number; active: number }>();
@@ -48,6 +50,14 @@ export const getPlatformOverview = createServerFn({ method: "POST" }).middleware
         ownerName: owner?.name ?? "", ownerEmail: owner?.email ?? "",
         members: members.data.filter(m => m.workspace_id === w.id).length,
         totalJobs: jobCount.get(w.id)?.total ?? 0,
+        pricing: {
+          isCustomPricing: w.is_custom_pricing, pricingMode: w.pricing_mode as PricingMode,
+          customMonthly: w.custom_monthly_price == null ? null : Number(w.custom_monthly_price),
+          customAnnual: w.custom_annual_price == null ? null : Number(w.custom_annual_price),
+          discountPercent: w.discount_percent == null ? null : Number(w.discount_percent),
+          notes: (notes.data ?? []).find(n => n.workspace_id === w.id)?.pricing_notes ?? "",
+        },
+        planLabel: planStatusLabel(w.plan_id, w.is_custom_pricing),
       };
     });
     const live = (paid.data as { amount_cents: number; environment: string }[]).filter(p => p.environment === "live");
@@ -86,6 +96,35 @@ export const updateTenantWorkspace = createServerFn({ method: "POST" }).middlewa
     if (error) throw new Error("Could not update workspace");
     const { logPlatformEvent } = await import("./platform-events.server");
     await logPlatformEvent("admin", "info", `Workspace updated: ${data.status} / ${data.planId}`, { by: context.userId }, data.workspaceId);
+    return { ok: true };
+  });
+
+export const updateTenantPricing = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator((v: unknown) => z.object({
+    workspaceId: z.number().int().positive(),
+    planId: z.enum(["starter", "professional"]),
+    pricingMode: z.enum(["standard", "flat", "percent"]),
+    customMonthly: z.number().min(0).max(100000).nullable(),
+    customAnnual: z.number().min(0).max(1000000).nullable(),
+    discountPercent: z.number().min(0).max(100).nullable(),
+    notes: z.string().max(2000),
+  }).strict().superRefine((d, ctx) => {
+    if (d.pricingMode === "flat" && d.customMonthly == null && d.customAnnual == null) ctx.addIssue({ code: "custom", message: "Enter a custom monthly or annual rate" });
+    if (d.pricingMode === "percent" && d.discountPercent == null) ctx.addIssue({ code: "custom", message: "Enter a discount percentage" });
+  }).parse(v))
+  .handler(async ({ data, context }) => {
+    const admin = await requirePlatformAdmin(context.supabase);
+    const custom = data.pricingMode !== "standard";
+    const { error } = await admin.from("workspaces").update({
+      plan_id: data.planId, is_custom_pricing: custom, pricing_mode: data.pricingMode,
+      custom_monthly_price: data.pricingMode === "flat" ? data.customMonthly : null,
+      custom_annual_price: data.pricingMode === "flat" ? data.customAnnual : null,
+      discount_percent: data.pricingMode === "percent" ? data.discountPercent : null,
+    }).eq("id", data.workspaceId);
+    if (error) throw new Error("Could not update pricing");
+    await admin.from("workspace_admin_notes").upsert({ workspace_id: data.workspaceId, pricing_notes: data.notes, updated_by: context.userId, updated_at: new Date().toISOString() });
+    const { logPlatformEvent } = await import("./platform-events.server");
+    await logPlatformEvent("admin", "info", `Pricing updated: ${data.planId} / ${data.pricingMode}`, { by: context.userId }, data.workspaceId);
     return { ok: true };
   });
 
