@@ -3,10 +3,12 @@ import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Activity, Building2, DollarSign, Eye, FlaskConical, Search, Settings2, ShieldCheck, Truck } from "lucide-react";
+import { effectivePrice, STANDARD_RATES } from "@/shared/tenant-pricing";
+import { Textarea } from "@/components/ui/textarea";
+import { Activity, Tag, Building2, DollarSign, Eye, FlaskConical, Search, Settings2, ShieldCheck, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  getPlatformAccess, getPlatformLogs, getPlatformOverview, inspectTenantWorkspace, updateTenantWorkspace, TENANT_STATUSES,
+  getPlatformAccess, getPlatformLogs, getPlatformOverview, inspectTenantWorkspace, updateTenantWorkspace, updateTenantPricing, TENANT_STATUSES,
 } from "@/lib/platform-admin.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -60,6 +62,7 @@ function Dashboard() {
   const [plan, setPlan] = useState("all");
   const [editing, setEditing] = useState<Tenant | null>(null);
   const [inspecting, setInspecting] = useState<Tenant | null>(null);
+  const [pricing, setPricing] = useState<Tenant | null>(null);
 
   const rows = useMemo(() => (data?.workspaces ?? []).filter(w => {
     const s = q.trim().toLowerCase();
@@ -113,11 +116,12 @@ function Dashboard() {
                           <TableCell className="font-medium">{w.name}<div className="text-xs text-muted-foreground">#{w.id} · {w.members} members</div></TableCell>
                           <TableCell>{w.ownerName || "—"}<div className="text-xs text-muted-foreground">{w.ownerEmail}</div></TableCell>
                           <TableCell>{new Date(w.createdAt).toLocaleDateString()}</TableCell>
-                          <TableCell>{w.planName}{w.betaEndsAt && <div className="text-xs text-muted-foreground">Beta until {new Date(w.betaEndsAt).toLocaleDateString()}</div>}</TableCell>
+                          <TableCell><Badge variant={w.pricing.isCustomPricing ? "default" : "outline"}>{w.planLabel}</Badge>{w.betaEndsAt && <div className="text-xs text-muted-foreground">Beta until {new Date(w.betaEndsAt).toLocaleDateString()}</div>}</TableCell>
                           <TableCell><Badge variant={w.status === "suspended" || !WRITABLE.has(w.status) ? "destructive" : "secondary"}>{STATUS_LABEL[w.status] ?? w.status}</Badge></TableCell>
                           <TableCell className="text-right">{w.totalJobs}</TableCell>
                           <TableCell className="text-right whitespace-nowrap">
                             <Button size="sm" variant="ghost" onClick={() => setInspecting(w)}><Eye className="h-4 w-4 mr-1" />View</Button>
+                            <Button size="sm" variant="outline" className="mr-1" onClick={() => setPricing(w)}><Tag className="h-4 w-4 mr-1" />Subscription & Pricing</Button>
                             <Button size="sm" variant="outline" onClick={() => setEditing(w)}><Settings2 className="h-4 w-4 mr-1" />Manage</Button>
                           </TableCell>
                         </TableRow>
@@ -133,6 +137,7 @@ function Dashboard() {
         </Tabs>
       </main>
       {editing && data && <ControlsModal tenant={editing} plans={data.plans} onClose={() => setEditing(null)} />}
+      {pricing && <PricingModal tenant={pricing} onClose={() => setPricing(null)} />}
       {inspecting && <InspectModal tenant={inspecting} onClose={() => setInspecting(null)} />}
     </div>
   );
@@ -294,5 +299,59 @@ function HealthLog() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function PricingModal({ tenant, onClose }: { tenant: Tenant; onClose: () => void }) {
+  const save = useServerFn(updateTenantPricing);
+  const qc = useQueryClient();
+  const p = tenant.pricing;
+  const [planId, setPlanId] = useState<"starter" | "professional">(tenant.planId === "professional" ? "professional" : "starter");
+  const [mode, setMode] = useState<"standard" | "flat" | "percent">(p.isCustomPricing ? (p.pricingMode as "flat" | "percent") : "standard");
+  const [monthly, setMonthly] = useState(p.customMonthly?.toString() ?? "");
+  const [annual, setAnnual] = useState(p.customAnnual?.toString() ?? "");
+  const [pct, setPct] = useState(p.discountPercent?.toString() ?? "");
+  const [notes, setNotes] = useState(p.notes);
+  const [busy, setBusy] = useState(false);
+  const num = (v: string) => (v.trim() === "" ? null : Number(v));
+  const preview = effectivePrice({ planId, isCustomPricing: mode !== "standard", pricingMode: mode, customMonthly: num(monthly), customAnnual: num(annual), discountPercent: num(pct) });
+
+  const submit = async () => {
+    setBusy(true);
+    try {
+      await save({ data: { workspaceId: tenant.id, planId, pricingMode: mode, customMonthly: num(monthly), customAnnual: num(annual), discountPercent: num(pct), notes } });
+      toast.success("Pricing saved");
+      qc.invalidateQueries({ queryKey: ["platform", "overview"] });
+      onClose();
+    } catch (e) {
+      toast.error((e as Error).message || "Could not save");
+    } finally { setBusy(false); }
+  };
+
+  return (
+    <Dialog open onOpenChange={o => !o && onClose()}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
+        <DialogHeader><DialogTitle>Edit Plan / Set Custom Rate — {tenant.name}</DialogTitle></DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-1"><Label>Plan tier (feature access)</Label>
+            <Select value={planId} onValueChange={v => setPlanId(v as typeof planId)}><SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{Object.entries(STANDARD_RATES).map(([id, r]) => <SelectItem key={id} value={id}>{r.label} (${r.monthly}/mo · ${r.annual}/yr)</SelectItem>)}</SelectContent></Select></div>
+          <div className="space-y-1"><Label>Pricing mode</Label>
+            <Select value={mode} onValueChange={v => setMode(v as typeof mode)}><SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="standard">Standard Tier Rate</SelectItem><SelectItem value="flat">Custom Flat Rate</SelectItem><SelectItem value="percent">Percentage Discount</SelectItem></SelectContent></Select></div>
+          {mode === "flat" && <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1"><Label>Custom monthly rate ($)</Label><Input type="number" min={0} step="0.01" value={monthly} onChange={e => setMonthly(e.target.value)} placeholder="50" /></div>
+            <div className="space-y-1"><Label>Custom annual rate ($)</Label><Input type="number" min={0} step="0.01" value={annual} onChange={e => setAnnual(e.target.value)} placeholder="500" /></div>
+          </div>}
+          {mode === "percent" && <div className="space-y-1"><Label>Discount (%)</Label><Input type="number" min={0} max={100} value={pct} onChange={e => setPct(e.target.value)} placeholder="20" />
+            <p className="text-xs text-muted-foreground">100% = free lifetime access.</p></div>}
+          <div className="rounded-md border p-3 text-sm">Will be charged: <strong>${preview.monthly}/mo</strong> or <strong>${preview.annual}/yr</strong>
+            {preview.custom && <span className="text-muted-foreground"> (standard ${preview.standardMonthly}/mo · ${preview.standardAnnual}/yr)</span>}</div>
+          <div className="space-y-1"><Label>Internal admin notes</Label><Textarea value={notes} maxLength={2000} onChange={e => setNotes(e.target.value)} placeholder="Early tester rate for Lena" />
+            <p className="text-xs text-muted-foreground">Only platform admins can see this.</p></div>
+        </div>
+        <DialogFooter><Button variant="ghost" onClick={onClose}>Cancel</Button><Button onClick={submit} disabled={busy}>{busy ? "Saving…" : "Save pricing"}</Button></DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
